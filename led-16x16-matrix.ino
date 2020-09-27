@@ -19,6 +19,7 @@
 #include <AsyncElegantOTA.h>
 
 #define CONFIG "/config.txt"
+#define ROWS 16
 
 // create different instances
 WiFiClient client;
@@ -36,9 +37,7 @@ const int clk  = D7;               // 74HC595 clock pin
 const int sdi  = D5;               // 74HC595 serial data in pin
 const int le   = D6;               // 74HC595 latch pin
 
-//const uint8_t mask = 0xff;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
-uint8_t mask = 0x00;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
-
+uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
 bool mirror = 0;                   // Display horizontal spiegeln ?
 
 // =======================================================================
@@ -548,11 +547,17 @@ void readConfig() {
       mirrorCheckbox = configline.substring(configline.lastIndexOf("mirrorCheckbox=") + 15);
       mirrorCheckbox.trim();
       Serial.println("mirrorCheckbox= " + mirrorCheckbox);
+      if (mirrorCheckbox == "checked") {
+        mirror = 1;
+      }
     }
     if (configline.indexOf("reverseCheckbox=") >= 0) {
       reverseCheckbox = configline.substring(configline.lastIndexOf("reverseCheckbox=") + 16);
       reverseCheckbox.trim();
       Serial.println("reverseCheckbox= " + reverseCheckbox);
+      if (reverseCheckbox == "checked") {
+        mask = 0xff;
+      }
     }
     if (configline.indexOf("scrollSpeed=") >= 0) {
       scrollSpeed = configline.substring(configline.lastIndexOf("scrollSpeed=") + 12).toInt();
@@ -928,7 +933,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
     digitalWrite(le, LOW);
     digitalWrite(cs1, LOW);                   // enable display
     row = row + 1;
-    if ( row == 16 ) row = 0;                 // 16 rows
+    if ( row == ROWS ) row = 0;                 // Anzahl Zeilen
 
   } else {
 
@@ -957,7 +962,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
     digitalWrite(le, LOW);
     digitalWrite(cs1, LOW);                  // enable display
     row = row + 1;
-    if ( row == 16 ) row = 0;                // 16 rows
+    if ( row == ROWS ) row = 0;                // Anzahl Zeilen
 
   }
 
@@ -1072,8 +1077,27 @@ uint8_t zone7[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint8_t zone8[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint8_t msglineindex, charWidth;
 
-// void horTextScroll_16x20(const char* s, uint8_t q) {          // s = Text (Array); q = Textlänge
+// =======================================================================
+
+void clearLastScroll() {                         // Reste vom vorherigen Scrollen loeschen
+  for (uint8_t row = 0; row < ROWS; row++) {
+    zone1[row] = 0;
+    zone2[row] = 0;
+    zone3[row] = 0;
+    zone4[row] = 0;
+    zone5[row] = 0;
+    zone6[row] = 0;
+    zone7[row] = 0;
+    zone8[row] = 0;
+  }
+}
+
+// =======================================================================
+
+// void horTextScroll_16x20(const char* s, uint8_t q) {                  // s = Text (Array); q = Textlänge
 void horTextScroll_16x20(const char* s, uint8_t q, uint8_t d) {          // s = Text (Array); q = Textlänge
+clearLastScroll();
+  Serial.println("Start horTextScroll_16x20...");
   for (uint8_t k = 0; k < q-1; k++) {                         // Message Zeichen für Zeichen durchlaufen
     msglineindex = s[k];
     switch (msglineindex) {                                   // Umlaute auf unseren Zeichensatz mappen
@@ -1104,13 +1128,13 @@ void horTextScroll_16x20(const char* s, uint8_t q, uint8_t d) {          // s = 
 */
     uint8_t bytecount = 0;
     charWidth = ArialRoundL[(msglineindex - 32) * 41 + 40];   // Zeichenbreite (41. Byte jedes Zeichens im Font)
-    for (uint8_t row = 0; row < 20; row++) {                  // nächstes Zeichen in Puffer laden (2 Byte breit)
+    for (uint8_t row = 0; row < ROWS; row++) {                  // nächstes Zeichen in Puffer laden (2 Byte breit)
       buf1[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // erstes Byte des 2 Byte breiten Zeichens
       bytecount++;
       buf2[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // zweites Byte des 2 Byte breiten Zeichens
     }
     for (uint8_t shift = 0; shift < charWidth; shift++) {     // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
-      for (uint8_t row = 0; row < 20; row++) {                // dabei Zeile für Zeile durchgehen
+      for (uint8_t row = 0; row < ROWS; row++) {                // dabei Zeile für Zeile durchgehen
         zone8[row] = zone8[row] << 1;
         bitWrite(zone8[row],0 , bitRead(zone7[row],7));
         zone7[row] = zone7[row] << 1;
@@ -1147,7 +1171,7 @@ void horTextScroll_16x20(const char* s, uint8_t q, uint8_t d) {          // s = 
       const uint8_t* pSrc7 = zone7;
       uint8_t* pDst8 = displaybuf + 0;
       const uint8_t* pSrc8 = zone8;
-      for (uint8_t i = 0; i < 20; i++) {
+      for (uint8_t i = 0; i < ROWS; i++) {
         *pDst1 = *pSrc1;
         pDst1 += 8;
         pSrc1++;
@@ -1178,6 +1202,8 @@ void horTextScroll_16x20(const char* s, uint8_t q, uint8_t d) {          // s = 
       delay(d);
     }
   }
+  clearMatrix();
+  delay(1000);
 }
 
 // =======================================================================
@@ -1194,11 +1220,13 @@ char message[] = "   AAAA   ";
 uint8_t MessageIndex;
 uint8_t temp;
 
+/*
 void horTextScroll_16x16() {
+  Serial.println("Start horTextScroll_16x16...");
   for (uint8_t k = 0; k < (sizeof(message)-1); k++){                   // gesamte Message Zeichen für Zeichen durchgehen
     MessageIndex = message[k];                                         // k'ter Buchstabe der Message
     for (uint8_t scroll = 0; scroll < 8; scroll++) {                   // Zeichenbreite (hier 8 Bit) shiften
-      for (uint8_t row = 0; row < 16; row++){                          // 16 Zeilen durchzählen
+      for (uint8_t row = 0; row < ROWS; row++){                          // 16 Zeilen durchzählen
         temp = smallFont[(MessageIndex - 32) * 16 + row];              // aktuellen Zeile (8 Bit) des aktuellen Zeichens der Message
         Buffer2[row] = displaybuf[row * 8 + 6];                        // Byte in Zone 6 merken
         Buffer3[row] = displaybuf[row * 8 + 5];
@@ -1239,7 +1267,7 @@ void horTextScroll_16x16() {
       const uint8_t* pSrc7 = Buffer7;
       uint8_t* pDst8 = displaybuf + 0;
       const uint8_t* pSrc8 = Buffer8;
-      for (uint8_t i = 0; i < 16; i++) {   // alle 16 Zeilen anzeigen (in displaybuf) übertragen
+      for (uint8_t i = 0; i < ROWS; i++) {   // alle 16 Zeilen anzeigen (in displaybuf) übertragen
         *pDst = *pSrc;
         pDst += 8;
         pSrc++;
@@ -1269,6 +1297,7 @@ void horTextScroll_16x16() {
     }
   }
 }
+*/
 
 // =======================================================================
 
@@ -1441,12 +1470,12 @@ void starrySky() {
   clkTime8 = millis();
   while (millis() < (starDuration.toInt() * 1000) + clkTime8) {
     for (uint16_t i = 0; i < starCount.toInt(); i++) {
-      Serial.println("star_i= " + String(i));
-      Serial.println("Deleting old position " + String(xPos[i]) + " , " + String(yPos[i]));
+      //Serial.println("star_i= " + String(i));
+      //Serial.println("Deleting old position " + String(xPos[i]) + " , " + String(yPos[i]));
       drawPoint(xPos[i], yPos[i], 0);
       xPos[i] = random(0,63);
       yPos[i] = random(0,19);
-      Serial.println("Setting new position " + String(xPos[i]) + " , " + String(yPos[i]));
+      //Serial.println("Setting new position " + String(xPos[i]) + " , " + String(yPos[i]));
       drawPoint(xPos[i], yPos[i], 1);
       delay(starDelay.toInt());
     }
