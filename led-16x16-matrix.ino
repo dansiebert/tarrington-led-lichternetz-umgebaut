@@ -38,6 +38,8 @@ const int le   = D6;               // 74HC595 latch pin
 
 const uint8_t mask = 0xff;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
 
+bool mirror = 1;                   // Display horizontal spiegeln
+
 // =======================================================================
 
 String scrollText1 = "Text 1";
@@ -853,36 +855,30 @@ void setup() {
 // =======================================================================
 
 // transfer displaybuf onto led matrix using timer interrupt (configured in setup())
-//void IRAM_ATTR timer1_ISR() {
 ICACHE_RAM_ATTR void timer1_ISR() {
-  //Serial.print(".");
-  static uint8_t row = 0;                   // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8 + 7;   // pointer to begin of every row (8 byte per row)
+
+  if (mirror == 1) {
+    static uint8_t row = 0;                       // is only set the first time through the loop because of "static"
+    uint8_t *head = displaybuf + row * 8 + 7;   // pointer to last segment (8th byte) of every row
     uint8_t *ptr = head;
     for (uint8_t byte = 0; byte < 8; byte++) {
       uint8_t pixels = *ptr;
-      ptr--;
+      ptr--;                                    // pointer in row 1 segment (1 byte) back
       pixels = pixels ^ mask;
 
-      // pixels spiegeln
-	  uint8_t reversepixels = 0;
-	  for (uint8_t i = 0; i<8; i++) {
+      // mirror pixels
+	    uint8_t reversepixels = 0;
+	    for (uint8_t i = 0; i<8; i++) {
         bitWrite(reversepixels,7-i,bitRead(pixels,i));
       }
 	  
-      // 8x8 Bit in die Schieberegister shiften
-      // shiftOut(sdi, clk, MSBFIRST, pixels);  //mit shiftOut Funktion crash't der ESP8266 irgendwie immer bei Zugriff auf SPIFFS
       for (uint8_t i = 0; i<8; i++) {
         digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));
-		//digitalWrite(sdi, !!(pixels & (1 << i)));
         digitalWrite(clk,HIGH);
-//        delayMicroseconds(1);
         digitalWrite(clk,LOW);   
-//        delayMicroseconds(1);             
       }
-      
     }
-    digitalWrite(cs1, HIGH);                 // disable display (einfach beide 74HC138 deaktivieren)    
+    digitalWrite(cs1, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
     // select row
     digitalWrite(a0,  (row & 0x01));
     digitalWrite(a1,  (row & 0x02));
@@ -890,12 +886,42 @@ ICACHE_RAM_ATTR void timer1_ISR() {
     digitalWrite(cs0, (row & 0x08));
     // latch data
     digitalWrite(le, HIGH);
-//    delayMicroseconds(1);
     digitalWrite(le, LOW);
-//    delayMicroseconds(1);
+    digitalWrite(cs1, LOW);                   // enable display
+    row = row + 1;
+    if ( row == 16 ) row = 0;                 // 16 rows
+
+  } else {
+
+    static uint8_t row = 0;                   // is only set the first time through the loop because of "static"
+    uint8_t *head = displaybuf + row * 8;     // pointer to begin of every row (8 byte per row)
+    uint8_t *ptr = head;
+    for (uint8_t byte = 0; byte < 8; byte++) {
+      uint8_t pixels = *ptr;
+      ptr++;
+      pixels = pixels ^ mask;
+      for (uint8_t i = 0; i<8; i++) {
+        digitalWrite(sdi, !!(pixels & (1 << (7 - i))));
+        digitalWrite(clk,HIGH);
+        digitalWrite(clk,LOW);   
+      }
+      
+    }
+    digitalWrite(cs1, HIGH);                 // disable display (einfach beide 74HC138 via CS deaktivieren)    
+    // select row
+    digitalWrite(a0,  (row & 0x01));
+    digitalWrite(a1,  (row & 0x02));
+    digitalWrite(a2,  (row & 0x04));
+    digitalWrite(cs0, (row & 0x08));
+    // latch data
+    digitalWrite(le, HIGH);
+    digitalWrite(le, LOW);
     digitalWrite(cs1, LOW);                  // enable display
     row = row + 1;
-    if ( row == 16 ) row = 0;               // count row from 0 to 19
+    if ( row == 16 ) row = 0;                // 16 rows
+
+  }
+
     timer1_write(500);
 }
 
