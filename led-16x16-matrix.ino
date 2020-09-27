@@ -857,22 +857,24 @@ void setup() {
 ICACHE_RAM_ATTR void timer1_ISR() {
   //Serial.print(".");
   static uint8_t row = 0;                   // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8 + 8;   // pointer to begin of every row (8 byte per row)
+    uint8_t *head = displaybuf + row * 8 + 7;   // pointer to begin of every row (8 byte per row)
     uint8_t *ptr = head;
-    for (uint8_t byte = 8; byte > 0; byte--) {
+    for (uint8_t byte = 0; byte < 8; byte++) {
       uint8_t pixels = *ptr;
       ptr--;
       pixels = pixels ^ mask;
 
       // pixels spiegeln
-      for (uint8_t i = 0; i<8; i++) {
-        bitWrite(pixels,7-i,bitRead(pixels,i));
+	  uint8_t reversepixels = 0;
+	  for (uint8_t i = 0; i<8; i++) {
+        bitWrite(reversepixels,7-i,bitRead(pixels,i));
       }
-
+	  
       // 8x8 Bit in die Schieberegister shiften
       // shiftOut(sdi, clk, MSBFIRST, pixels);  //mit shiftOut Funktion crash't der ESP8266 irgendwie immer bei Zugriff auf SPIFFS
       for (uint8_t i = 0; i<8; i++) {
-        digitalWrite(sdi, !!(pixels & (1 << (7 - i))));
+        digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));
+		//digitalWrite(sdi, !!(pixels & (1 << i)));
         digitalWrite(clk,HIGH);
 //        delayMicroseconds(1);
         digitalWrite(clk,LOW);   
