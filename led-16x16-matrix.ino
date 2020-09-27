@@ -36,9 +36,10 @@ const int clk  = D7;               // 74HC595 clock pin
 const int sdi  = D5;               // 74HC595 serial data in pin
 const int le   = D6;               // 74HC595 latch pin
 
-const uint8_t mask = 0xff;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+//const uint8_t mask = 0xff;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+uint8_t mask = 0x00;         // reverse matrix: mask = 0xff, normal matrix: mask =0x00
 
-bool mirror = 1;                   // Display horizontal spiegeln
+bool mirror = 0;                   // Display horizontal spiegeln ?
 
 // =======================================================================
 
@@ -77,6 +78,8 @@ String locationCheckbox = "unchecked";
 String dotsCheckbox = "checked";
 String snowCheckbox = "checked";
 String starCheckbox = "checked";
+String mirrorCheckbox = "unchecked";
+String reverseCheckbox = "unchecked";
 
 // =======================================================================
 
@@ -182,6 +185,8 @@ const char* PARAM_INPUT_29 = "starCheckbox";
 const char* PARAM_INPUT_30 = "text1Delay";
 const char* PARAM_INPUT_31 = "text2Delay";
 const char* PARAM_INPUT_32 = "text3Delay";
+const char* PARAM_INPUT_33 = "mirrorCheckbox";
+const char* PARAM_INPUT_34 = "reverseCheckbox";
 
 // =======================================================================
 
@@ -257,6 +262,8 @@ const char index_html[] PROGMEM = R"rawliteral(
     <br><br>
     <b>Sonstige Einstellungen:</b>
     <table>
+    <tr><td>Display spiegeln</td><td><input type="checkbox" name="mirrorCheckbox" value="checked" %ENABLE_MIRROR_INPUT%></td></tr>
+    <tr><td>Display invertieren</td><td><input type="checkbox" name="reverseCheckbox" value="checked" %ENABLE_REVERSE_INPUT%></td></tr>
     <tr><td>OWMorg City-ID</td><td><input name="cityID" type="text" size="7" value="%CITYIDOPTIONS%">&nbsp;%WEATHERLOCATION%</td></tr>
     <tr><td>Anzahl Sterne</td><td><input name="starCount" type="number" min="1" max="1000" value=%STARCOUNTOPTIONS%></td></tr>
     <tr><td>Datum aktivieren</td><td><input type="checkbox" name="dateCheckbox" value="checked" %ENABLE_DATE_INPUT%></td></tr>
@@ -353,6 +360,10 @@ String processor(const String& var) {
     return snowCheckbox;
   } else if (var == "ENABLE_STAR_INPUT") {
     return starCheckbox;
+  } else if (var == "ENABLE_MIRROR_INPUT") {
+    return mirrorCheckbox;
+  } else if (var == "ENABLE_REVERSE_INPUT") {
+    return reverseCheckbox;
   }
   return String();
 }
@@ -404,6 +415,8 @@ void writeConfig() {
     f.println("scrolltext1Checkbox=" + scrolltext1Checkbox);
     f.println("scrolltext2Checkbox=" + scrolltext2Checkbox);
     f.println("scrolltext3Checkbox=" + scrolltext3Checkbox);
+    f.println("mirrorCheckbox=" + mirrorCheckbox);
+    f.println("reverseCheckbox=" + reverseCheckbox);
     f.println("snowCheckbox=" + snowCheckbox);
     f.println("starCheckbox=" + starCheckbox);
     f.println("dateCheckbox=" + dateCheckbox);
@@ -530,6 +543,16 @@ void readConfig() {
       starCheckbox = configline.substring(configline.lastIndexOf("starCheckbox=") + 13);
       starCheckbox.trim();
       Serial.println("starCheckbox= " + starCheckbox);
+    }
+    if (configline.indexOf("mirrorCheckbox=") >= 0) {
+      mirrorCheckbox = configline.substring(configline.lastIndexOf("mirrorCheckbox=") + 15);
+      mirrorCheckbox.trim();
+      Serial.println("mirrorCheckbox= " + mirrorCheckbox);
+    }
+    if (configline.indexOf("reverseCheckbox=") >= 0) {
+      reverseCheckbox = configline.substring(configline.lastIndexOf("reverseCheckbox=") + 16);
+      reverseCheckbox.trim();
+      Serial.println("reverseCheckbox= " + reverseCheckbox);
     }
     if (configline.indexOf("scrollSpeed=") >= 0) {
       scrollSpeed = configline.substring(configline.lastIndexOf("scrollSpeed=") + 12).toInt();
@@ -788,6 +811,20 @@ void setup() {
       } else {
         starCheckbox = "unchecked";
       }
+      if (request->hasParam(PARAM_INPUT_33)) {
+        mirrorCheckbox = request->getParam(PARAM_INPUT_33)->value();
+        mirror = 1;
+      } else {
+        mirrorCheckbox = "unchecked";
+        mirror = 0;
+      }
+      if (request->hasParam(PARAM_INPUT_34)) {
+        reverseCheckbox = request->getParam(PARAM_INPUT_34)->value();
+        mask = 0xff;
+      } else {
+        reverseCheckbox = "unchecked";
+        mask = 0x00;
+      }
     }
     Serial.println("scrollText1 = " + scrollText1);
     Serial.println("scrollText2 = " + scrollText2);
@@ -806,6 +843,8 @@ void setup() {
     Serial.println("dotsCheckbox= " + dotsCheckbox);
     Serial.println("snowCheckbox= " + snowCheckbox);
     Serial.println("starCheckbox= " + starCheckbox);
+    Serial.println("mirrorCheckbox= " + mirrorCheckbox);
+    Serial.println("reverseCheckbox= " + reverseCheckbox);
     Serial.println("scrollSpeed= " + String(scrollSpeed));
     Serial.println("text1Delay= " + String(text1Delay));
     Serial.println("text2Delay= " + String(text2Delay));
