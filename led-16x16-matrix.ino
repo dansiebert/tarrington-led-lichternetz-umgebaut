@@ -28,10 +28,10 @@ DNSServer dns;
 WiFiUDP Udp;
 
 const int cs0  = D0;
-const int cs1  = D8;
+const int cs1  = D4;
 const int a0   = D2;
 const int a1   = D3;
-const int a2   = D4;
+const int a2   = D8;
 
 const int clk  = D7;               // 74HC595 clock pin
 const int sdi  = D5;               // 74HC595 serial data in pin
@@ -672,10 +672,15 @@ void setup() {
   pinMode(sdi, OUTPUT);
   pinMode(le,  OUTPUT);
   digitalWrite(cs1, HIGH);
+
+  // https://www.instructables.com/id/MULTI-EFFECTS-INTERNET-CLOCK/
+  // With following setup, Timer 1 will run at 5MHz (80MHz/16=5MHz) or 1/5MHz = 0.2us.
+  // When we set timer1_write (500), this means the interrupt will be called timer1_ISR() every 500 x 0.2us = 100us.
   timer1_isr_init();
   timer1_attachInterrupt(timer1_ISR);
   timer1_enable(TIM_DIV16, TIM_EDGE, TIM_SINGLE);
   timer1_write(500);
+
   interrupts();
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
