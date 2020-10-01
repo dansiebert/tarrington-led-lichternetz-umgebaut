@@ -50,9 +50,9 @@ void getWeatherData()
   weatherString = "";
   if (tempCheckbox == "checked") {
     if (locationCheckbox == "checked") {
-      weatherString = "Temperatur in " + weatherLocation + ": " + String(onlinetemp, 1) + "`C    ";   // `-Zeichen ist im Font als Grad definiert
+      weatherString = "Temp. in " + weatherLocation + ": " + String(onlinetemp, 1) + "`C    ";   // `-Zeichen ist im Font als Grad definiert
     } else {
-      weatherString = "Temperatur: " + String(onlinetemp, 1) + "`C    ";
+      weatherString = "Temp.: " + String(onlinetemp, 1) + "`C    ";
     }
   }
   if (humidityCheckbox == "checked") {

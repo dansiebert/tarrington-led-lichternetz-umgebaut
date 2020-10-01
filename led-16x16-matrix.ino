@@ -19,7 +19,7 @@
 #include <AsyncElegantOTA.h>
 
 #define CONFIG "/config.txt"
-#define ROWS 16
+#define NUM_ROWS 16
 
 // create different instances
 WiFiClient client;
@@ -890,7 +890,9 @@ void setup() {
   setSyncInterval(86400);                            // Anzahl der Sekunden zwischen dem erneuten Synchronisieren ein. 86400 = 1 Tag
 
   delay(3000);
-  wipeHorizontal();
+  wipeHorizontalLine();
+  delay(1000);
+
   clkTime1 = millis();
   clkTime2 = millis();
   clkTime3 = millis();
@@ -938,7 +940,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
     digitalWrite(le, LOW);
     digitalWrite(cs1, LOW);                   // enable display
     row = row + 1;
-    if ( row == ROWS ) row = 0;                 // Anzahl Zeilen
+    if ( row == NUM_ROWS ) row = 0;                 // Anzahl Zeilen
 
   } else {
 
@@ -967,7 +969,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
     digitalWrite(le, LOW);
     digitalWrite(cs1, LOW);                  // enable display
     row = row + 1;
-    if ( row == ROWS ) row = 0;                // Anzahl Zeilen
+    if ( row == NUM_ROWS ) row = 0;                // Anzahl Zeilen
 
   }
 
@@ -1044,7 +1046,7 @@ void drawDigital_16(uint16_t x, uint16_t y, uint8_t n) {
 
 void clearMatrix() {
   uint8_t *ptr = displaybuf;
-    for (uint16_t i = 0; i < 160; i++) {
+    for (uint16_t i = 0; i < NUM_ROWS * 8; i++) {
       *ptr = 0x00;
       ptr++;
     }
@@ -1055,15 +1057,29 @@ void clearMatrix() {
 void wipeHorizontal() {
   clearMatrix();
   for (uint8_t i = 0; i < 64; i++) {
-    for (uint8_t j = 0; j < 20; j++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
       drawPoint(i, j, 1);
       delay(1);
     }
   }
   for (uint8_t i = 0; i < 64; i++) {
-    for (uint8_t j = 0; j < 20; j++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
       drawPoint(i, j, 0);
       delay(1);
+    }
+  }
+}
+
+// =======================================================================
+
+void wipeHorizontalLine() {
+  for (uint8_t i = 0; i < 64; i++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(i, j, 1);
+    }
+    delay(50);
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(i, j, 0);
     }
   }
 }
@@ -1085,7 +1101,7 @@ uint8_t msglineindex, charWidth;
 // =======================================================================
 
 void clearLastScroll() {                         // Reste vom vorherigen Scrollen loeschen
-  for (uint8_t row = 0; row < ROWS; row++) {
+  for (uint8_t row = 0; row < NUM_ROWS; row++) {
     zone1[row] = 0;
     zone2[row] = 0;
     zone3[row] = 0;
@@ -1133,13 +1149,13 @@ clearLastScroll();
 */
     uint8_t bytecount = 0;
     charWidth = ArialRoundL[(msglineindex - 32) * 41 + 40];   // Zeichenbreite (41. Byte jedes Zeichens im Font)
-    for (uint8_t row = 0; row < ROWS; row++) {                  // nächstes Zeichen in Puffer laden (2 Byte breit)
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {                  // nächstes Zeichen in Puffer laden (2 Byte breit)
       buf1[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // erstes Byte des 2 Byte breiten Zeichens
       bytecount++;
       buf2[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // zweites Byte des 2 Byte breiten Zeichens
     }
     for (uint8_t shift = 0; shift < charWidth; shift++) {     // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
-      for (uint8_t row = 0; row < ROWS; row++) {                // dabei Zeile für Zeile durchgehen
+      for (uint8_t row = 0; row < NUM_ROWS; row++) {                // dabei Zeile für Zeile durchgehen
         zone8[row] = zone8[row] << 1;
         bitWrite(zone8[row],0 , bitRead(zone7[row],7));
         zone7[row] = zone7[row] << 1;
@@ -1176,7 +1192,7 @@ clearLastScroll();
       const uint8_t* pSrc7 = zone7;
       uint8_t* pDst8 = displaybuf + 0;
       const uint8_t* pSrc8 = zone8;
-      for (uint8_t i = 0; i < ROWS; i++) {
+      for (uint8_t i = 0; i < NUM_ROWS; i++) {
         *pDst1 = *pSrc1;
         pDst1 += 8;
         pSrc1++;
@@ -1231,7 +1247,7 @@ void horTextScroll_16x16() {
   for (uint8_t k = 0; k < (sizeof(message)-1); k++){                   // gesamte Message Zeichen für Zeichen durchgehen
     MessageIndex = message[k];                                         // k'ter Buchstabe der Message
     for (uint8_t scroll = 0; scroll < 8; scroll++) {                   // Zeichenbreite (hier 8 Bit) shiften
-      for (uint8_t row = 0; row < ROWS; row++){                          // 16 Zeilen durchzählen
+      for (uint8_t row = 0; row < NUM_ROWS; row++){                          // 16 Zeilen durchzählen
         temp = smallFont[(MessageIndex - 32) * 16 + row];              // aktuellen Zeile (8 Bit) des aktuellen Zeichens der Message
         Buffer2[row] = displaybuf[row * 8 + 6];                        // Byte in Zone 6 merken
         Buffer3[row] = displaybuf[row * 8 + 5];
@@ -1272,7 +1288,7 @@ void horTextScroll_16x16() {
       const uint8_t* pSrc7 = Buffer7;
       uint8_t* pDst8 = displaybuf + 0;
       const uint8_t* pSrc8 = Buffer8;
-      for (uint8_t i = 0; i < ROWS; i++) {   // alle 16 Zeilen anzeigen (in displaybuf) übertragen
+      for (uint8_t i = 0; i < NUM_ROWS; i++) {   // alle 16 Zeilen anzeigen (in displaybuf) übertragen
         *pDst = *pSrc;
         pDst += 8;
         pSrc++;
@@ -1309,6 +1325,9 @@ void horTextScroll_16x16() {
 void snowFall() {   // Schneeflocke vertikal scrollen
   clearMatrix();
   clkTime6 = millis();
+  // s = Zaehler fuer Zustand der Flocke (Pointer auf Image aus stars-Array)
+  // t = Zaehler, ob Verzögerung erreicht - dann wird Flocke gestartet
+  // r = Zufallswert für Start-Verzoegerung einer Flocke
   uint8_t s1 = 0;
   uint8_t s2 = 0;
   uint8_t s3 = 0;
@@ -1335,12 +1354,12 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   uint8_t r8 = random(0,50);  
   while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
 
-    if ( t1 >= r1 ) {
-      const uint8_t *pSrc1 = stars + s1 * 16;
+    if ( t1 >= r1 ) {                           // Start dieser Flocke eine zufaellige Zeit verzögern
+      const uint8_t *pSrc1 = stars + s1 * 16;   // *psrc zeigt auf entsprechenden Flocken-Zustand (Image)
       drawImage( 56, 2, 8, 16, pSrc1);
       pSrc1++;
-      s1++;
-      if ( s1 == 23 ) {
+      s1++;                                     // Flocke eins runter
+      if ( s1 == 23 ) {                         // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s1 = 0;
         t1 = 0;
         r1 = random(0,50);
@@ -1446,7 +1465,7 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   clearMatrix();
 }
 
-void snowFall2() {   // Schneeflocke vertikal scrollen
+void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scrollen
   clearMatrix();
   clkTime6 = millis();
   while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
@@ -1514,6 +1533,7 @@ void loop() {
   case 1:
     if (weatherCheckbox == "checked") {
       if (millis() > (preTimeWeather.toInt() * 1000) + clkTime1) {
+        wipeHorizontalLine();
         updCnt--;
         Serial.println("updCnt=" + String(updCnt));
         if (updCnt <= 0) {
@@ -1547,6 +1567,7 @@ void loop() {
   case 2:
     if (scrolltext1Checkbox == "checked") {
       if (millis() > (preTimeText1.toInt() * 1000) + clkTime2) {
+        wipeHorizontalLine();
         Serial.println("Start scrolling scrollText1...");
         uint8_t scrollText1Length = scrollText1.length() + 1;
         Serial.print("scrollText1Length= ");
@@ -1568,6 +1589,7 @@ void loop() {
   case 3:
     if (scrolltext2Checkbox == "checked") {
       if (millis() > (preTimeText2.toInt() * 1000) + clkTime3) {
+        wipeHorizontalLine();
         Serial.println("Start scrolling scrollText2...");
         uint8_t scrollText2Length = scrollText2.length() + 1;
         char scrollText2CharBuf[scrollText2Length];
@@ -1587,6 +1609,7 @@ void loop() {
   case 4:
     if (scrolltext3Checkbox == "checked") {
       if (millis() > (preTimeText3.toInt() * 1000) + clkTime4) {
+        wipeHorizontalLine();
         Serial.println("Start scrolling scrollText3...");
         uint8_t scrollText3Length = scrollText3.length() + 1;
         char scrollText3CharBuf[scrollText3Length];
@@ -1606,6 +1629,7 @@ void loop() {
   case 5:
     if (snowCheckbox == "checked") {
       if (millis() > (preTimeSnow.toInt() * 1000) + clkTime5) {
+        wipeHorizontalLine();
         Serial.println("Start falling snow...");
         snowFall();
         Serial.println("Stop falling snow.");
@@ -1621,6 +1645,7 @@ void loop() {
   case 6:
     if (starCheckbox == "checked") {
       if (millis() > (preTimeStar.toInt() * 1000) + clkTime7) {
+        wipeHorizontalLine();
         Serial.println("Start star sky...");
         starrySky();
         Serial.println("Stop star sky.");
