@@ -889,9 +889,18 @@ void setup() {
   setSyncProvider(getNtpTime);
   setSyncInterval(86400);                            // Anzahl der Sekunden zwischen dem erneuten Synchronisieren ein. 86400 = 1 Tag
 
-  delay(3000);
-  wipeHorizontalLine();
   delay(1000);
+  wipeHorizontalLine();
+  delay(500);
+
+  for (uint8_t j = 0; j < 5; j++){
+    for (uint8_t i = 0; i < 16; i++){
+      //drawImage(xoffset, yoffset, width, height, *image);
+      drawImage(32, 0 + i, 8, 16 - i, numbers + j * 16);
+      delay(500);
+      clearMatrix();
+    }
+  }
 
   clkTime1 = millis();
   clkTime2 = millis();
@@ -910,11 +919,10 @@ ICACHE_RAM_ATTR void timer1_ISR() {
 
   if (mirror == 1) {
     static uint8_t row = 0;                       // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8 + 7;   // pointer to last segment (8th byte) of every row
-    uint8_t *ptr = head;
+    uint8_t *head = displaybuf + row * 8 + 7;     // pointer to last segment (8th byte) of every row
     for (uint8_t byte = 0; byte < 8; byte++) {
-      uint8_t pixels = *ptr;
-      ptr--;                                    // pointer in row 1 segment (1 byte) back
+      uint8_t pixels = *head;                     // 1 Byte aus Display-Puffer lesen
+      head--;                                     // pointer in row 1 segment (1 byte) back
       pixels = pixels ^ mask;
 
       // mirror pixels
@@ -946,10 +954,9 @@ ICACHE_RAM_ATTR void timer1_ISR() {
 
     static uint8_t row = 0;                   // is only set the first time through the loop because of "static"
     uint8_t *head = displaybuf + row * 8;     // pointer to begin of every row (8 byte per row)
-    uint8_t *ptr = head;
     for (uint8_t byte = 0; byte < 8; byte++) {
-      uint8_t pixels = *ptr;
-      ptr++;
+      uint8_t pixels = *head;
+      head++;
       pixels = pixels ^ mask;
       for (uint8_t i = 0; i<8; i++) {
         digitalWrite(sdi, !!(pixels & (1 << (7 - i))));
@@ -1085,6 +1092,35 @@ void wipeHorizontalLine() {
 }
 
 // =======================================================================
+
+void wipeVertical() {
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 1);
+      delay(1);
+    }
+  } 
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 0);
+      delay(1);
+    }
+  } 
+}
+
+// =======================================================================
+
+void wipeVerticalLine() {
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 1);
+    }
+    delay(70);
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 0);
+    }
+  } 
+}
 
 uint8_t buf1[20]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uint8_t buf2[20]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -1354,8 +1390,8 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   uint8_t r8 = random(0,50);  
   while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
 
-    if ( t1 >= r1 ) {                           // Start dieser Flocke eine zufaellige Zeit verzögern
-      const uint8_t *pSrc1 = stars + s1 * 16;   // *psrc zeigt auf entsprechenden Flocken-Zustand (Image)
+    if ( t1 >= r1 ) {                           // Start der Flocke um eine zufaellige Zeit verzögern
+      const uint8_t *pSrc1 = stars + s1 * 16;   // *psrc zeigt auf entsprechenden Flocken-Zustand (Image im stars-Array)
       drawImage( 56, 2, 8, 16, pSrc1);
       pSrc1++;
       s1++;                                     // Flocke eins runter
@@ -1533,7 +1569,7 @@ void loop() {
   case 1:
     if (weatherCheckbox == "checked") {
       if (millis() > (preTimeWeather.toInt() * 1000) + clkTime1) {
-        wipeHorizontalLine();
+        wipeVerticalLine();
         updCnt--;
         Serial.println("updCnt=" + String(updCnt));
         if (updCnt <= 0) {

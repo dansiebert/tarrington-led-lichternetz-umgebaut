@@ -75,25 +75,20 @@ int dots = 0;
 long dotTime = 0;
 void showClock() {
   getTimeLocal();
+
   dig[0] = h / 10;
   dig[1] = h % 10;
   dig[2] = m / 10;
   dig[3] = m % 10;
   dig[4] = s / 10;
   dig[5] = s % 10;
-  const uint8_t *pSrc1 = numbers + 16 * dig[0];
-  drawImage( 3, 2, 8, 16, pSrc1);
-  const uint8_t *pSrc2 = numbers + 16 * dig[1];
-  drawImage(12, 2, 8, 16, pSrc2);
-  const uint8_t *pSrc3 = numbers + 16 * dig[2];
-  drawImage(24, 2, 8, 16, pSrc3);
-  const uint8_t *pSrc4 = numbers + 16 * dig[3];
-  drawImage(33, 2, 8, 16, pSrc4);
-  const uint8_t *pSrc5 = numbers + 16 * dig[4];
-  drawImage(45, 2, 8, 16, pSrc5);
-  const uint8_t *pSrc6 = numbers + 16 * dig[5];
-  drawImage(54, 2, 8, 16, pSrc6);
-
+  drawImage(  3, 2, 8, 16, numbers + 16 * dig[0]);
+  drawImage( 12, 2, 8, 16, numbers + 16 * dig[1]);
+  drawImage( 24, 2, 8, 16, numbers + 16 * dig[2]);
+  drawImage( 33, 2, 8, 16, numbers + 16 * dig[3]);
+  drawImage( 45, 2, 8, 16, numbers + 16 * dig[4]);
+  drawImage( 54, 2, 8, 16, numbers + 16 * dig[5]);
+  
   if (dotsCheckbox == "checked") {
     //toggle colons
     if (millis() - dotTime > 500) {
