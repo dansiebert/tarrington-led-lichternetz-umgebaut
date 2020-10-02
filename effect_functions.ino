@@ -278,6 +278,8 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   // s = Zaehler fuer Zustand der Flocke (Pointer auf Image aus stars-Array)
   // t = Zaehler, ob Verzögerung erreicht - dann wird Flocke gestartet
   // r = Zufallswert für Start-Verzoegerung einer Flocke
+  // v = Zufalsswert fuer Fallgeschwindigkeit (Verzoegerung)
+  // w = Zaehler, ob Speed-Verzögerung erreicht - dann Flocke eins weiter
   uint8_t s1 = 0;
   uint8_t s2 = 0;
   uint8_t s3 = 0;
@@ -301,86 +303,176 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   uint8_t r5 = random(0,50);
   uint8_t r6 = random(0,50);  
   uint8_t r7 = random(0,50);
-  uint8_t r8 = random(0,50);  
+  uint8_t r8 = random(0,50);
+  uint8_t v1 = random(0,5);
+  uint8_t w1 = 0;
+  uint8_t v2 = random(0,5);
+  uint8_t w2 = 0;
+  uint8_t v3 = random(0,5);
+  uint8_t w3 = 0;
+  uint8_t v4 = random(0,5);
+  uint8_t w4 = 0;
+  uint8_t v5 = random(0,5);
+  uint8_t w5 = 0;
+  uint8_t v6 = random(0,5);
+  uint8_t w6 = 0;
+  uint8_t v7 = random(0,5);
+  uint8_t w7 = 0;
+  uint8_t v8 = random(0,5);
+  uint8_t w8 = 0;
+
+  uint8_t starimage[8];
+  uint8_t startdelay[8];
+  uint8_t speeddelay[8];
+  uint8_t startdelaycount[8];
+  uint8_t speeddelaycount[8];
+  for (uint8_t zone = 0; zone < 8; zone++) {
+    starimage[zone] = 0;
+    startdelay[zone] = random(0,50);
+    speeddelay[zone] = random(0,5);
+    startdelaycount[zone] = 0;
+    speeddelaycount[zone] = 0;
+  }
+
   while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
 
+    for (uint8_t zone = 0; zone < 8; zone++) {
+      if ( startdelaycount[zone] >= startdelay[zone] ) {                 // Start der Flocke um eine zufaellige Zeit verzögern
+        drawImage( zone * 8, 2, 8, 16, stars + starimage[zone] * 16);    // passendes Image aus stars-Font-Array zeichnen
+        if (speeddelaycount[zone] >= speeddelay[zone]) {
+          speeddelaycount[zone] = 0;
+          starimage[zone]++;                                             // Flocke eins runter
+        }
+        speeddelaycount[zone]++;
+        if ( starimage[zone] == 23 ) {                                   // letzter Zustand erreicht (Flocke unten rausgescrollt)
+          starimage[zone] = 0;
+          startdelaycount[zone] = 0;
+          startdelay[zone] = random(0,50);
+          speeddelay[zone] = random(0,5);
+        }
+      }
+      startdelaycount[zone]++;
+    }
+    delay(snowDelay.toInt());
+
+/*
     if ( t1 >= r1 ) {                              // Start der Flocke um eine zufaellige Zeit verzögern
       drawImage( 56, 2, 8, 16, stars + s1 * 16);   // passendes Image aus stars-Font-Array zeichnen
-      s1++;                                        // Flocke eins runter
+      if (w1 >= v1) {
+        w1 = 0;
+        s1++;                                      // Flocke eins runter
+      }
+      w1++;
       if ( s1 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s1 = 0;
         t1 = 0;
         r1 = random(0,50);
+        v1 = random(0,5);
       }
     }
 
     if ( t2 >= r2 ) {
       drawImage( 48, 2, 8, 16, stars + s2 * 16);
-      s2++;
-      if ( s2 == 23 ) {
+      if (w2 >= v2) {
+        w2 = 0;
+        s2++;                                      // Flocke eins runter
+      }
+      w2++;
+      if ( s2 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s2 = 0;
         t2 = 0;
         r2 = random(0,50);
+        v2 = random(0,5);
       }
     }
 
     if ( t3 >= r3 ) {
       drawImage( 40, 2, 8, 16, stars + s3 * 16);
-      s3++;
-      if ( s3 == 23 ) {
+      if (w3 >= v3) {
+        w3 = 0;
+        s3++;                                      // Flocke eins runter
+      }
+      w3++;
+      if ( s3 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s3 = 0;
         t3 = 0;
         r3 = random(0,50);
+        v3 = random(0,5);
       }
     }
 
     if ( t4 >= r4 ) {
       drawImage( 32, 2, 8, 16, stars + s4 * 16);
-      s4++;
-      if ( s4 == 23 ) {
+      if (w4 >= v4) {
+        w4 = 0;
+        s4++;                                      // Flocke eins runter
+      }
+      w4++;
+      if ( s4 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s4 = 0;
         t4 = 0;
         r4 = random(0,50);
+        v4 = random(0,5);
       }
     }
 
     if ( t5 >= r5 ) {
       drawImage( 24, 2, 8, 16, stars + s5 * 16);
-      s5++;
-      if ( s5 == 23 ) {
+      if (w5 >= v5) {
+        w5 = 0;
+        s5++;                                      // Flocke eins runter
+      }
+      w5++;
+      if ( s5 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s5 = 0;
         t5 = 0;
         r5 = random(0,50);
+        v5 = random(0,5);
       }
     }
 
     if ( t6 >= r6 ) {
       drawImage( 16, 2, 8, 16, stars + s6 * 16);
-      s6++;
-      if ( s6 == 23 ) {
+      if (w6 >= v6) {
+        w6 = 0;
+        s6++;                                      // Flocke eins runter
+      }
+      w6++;
+      if ( s6 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s6 = 0;
         t6 = 0;
         r6 = random(0,50);
+        v6 = random(0,5);
       }
     }
 
     if ( t7 >= r7 ) {
       drawImage( 8, 2, 8, 16, stars + s7 * 16);
-      s7++;
-      if ( s7 == 23 ) {
+      if (w7 >= v7) {
+        w7 = 0;
+        s7++;                                      // Flocke eins runter
+      }
+      w7++;
+      if ( s7 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s7 = 0;
         t7 = 0;
         r7 = random(0,50);
+        v7 = random(0,5);
       }
     }
 
     if ( t8 >= r8 ) {
       drawImage( 0, 2, 8, 16, stars + s8 * 16);
-      s8++;
-      if ( s8 == 23 ) {
+      if (w8 >= v8) {
+        w8 = 0;
+        s8++;                                      // Flocke eins runter
+      }
+      w8++;
+      if ( s8 == 23 ) {                            // letzter Zustand erreicht (Flocke unten rausgescrollt)
         s8 = 0;
         t8 = 0;
         r8 = random(0,50);
+        v8 = random(0,5);
       }
     }
 
@@ -393,8 +485,9 @@ void snowFall() {   // Schneeflocke vertikal scrollen
     t7++;
     t8++;
     delay(snowDelay.toInt());
+*/
   }
-  
+
   delay(1000);
   clearMatrix();
 }
