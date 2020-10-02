@@ -73,6 +73,7 @@ void getTimeLocal()
 byte dig[6] = {0,0,0,0,0,0};
 int dots = 0;
 long dotTime = 0;
+
 void showClock() {
   getTimeLocal();
 
@@ -82,12 +83,12 @@ void showClock() {
   dig[3] = m % 10;
   dig[4] = s / 10;
   dig[5] = s % 10;
-  drawImage(  3, 2, 8, 16, numbers + 16 * dig[0]);
-  drawImage( 12, 2, 8, 16, numbers + 16 * dig[1]);
-  drawImage( 24, 2, 8, 16, numbers + 16 * dig[2]);
-  drawImage( 33, 2, 8, 16, numbers + 16 * dig[3]);
-  drawImage( 45, 2, 8, 16, numbers + 16 * dig[4]);
-  drawImage( 54, 2, 8, 16, numbers + 16 * dig[5]);
+  drawImage(  3, 0, 8, 16, numbers + 16 * dig[0]);
+  drawImage( 12, 0, 8, 16, numbers + 16 * dig[1]);
+  drawImage( 24, 0, 8, 16, numbers + 16 * dig[2]);
+  drawImage( 33, 0, 8, 16, numbers + 16 * dig[3]);
+  drawImage( 45, 0, 8, 16, numbers + 16 * dig[4]);
+  drawImage( 54, 0, 8, 16, numbers + 16 * dig[5]);
   
   if (dotsCheckbox == "checked") {
     //toggle colons
@@ -138,4 +139,15 @@ void showClock() {
   //String TimeString = "Time: " + String(dig[0]) + String(dig[1]) + ":" + String(dig[2]) + String(dig[3]) + ":" + String(dig[4]) + String(dig[5]);
   //Serial.println(TimeString);
   //delay(200);
+}
+
+void testVerticalScroll() {
+  for (uint8_t j = 0; j < 5; j++){
+    for (uint8_t i = 0; i < 16; i++){
+      //drawImage(xoffset, yoffset, width, height, *image);
+      drawImage(32, 0 + i, 8, 16 - i, numbers + j * 16);
+      delay(500);
+      clearMatrix();
+    }
+  }
 }
