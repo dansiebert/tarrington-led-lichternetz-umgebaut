@@ -83,7 +83,10 @@ void showClock() {
   dig[3] = m % 10;
   dig[4] = s / 10;
   dig[5] = s % 10;
-  drawImage(  3, 0, 8, 16, numbers + 16 * dig[0]);
+
+  if (h > 9) {
+    drawImage(  3, 0, 8, 16, numbers + 16 * dig[0]);
+  }
   drawImage( 12, 0, 8, 16, numbers + 16 * dig[1]);
   drawImage( 24, 0, 8, 16, numbers + 16 * dig[2]);
   drawImage( 33, 0, 8, 16, numbers + 16 * dig[3]);
