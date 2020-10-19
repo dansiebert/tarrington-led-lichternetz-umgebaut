@@ -179,6 +179,84 @@ void horTextScroll_16x20(const char *s, uint8_t q, uint8_t sdelay) {          //
 }
 
 // =======================================================================
+
+void hTextScroll16x20(const char *s, uint8_t sdelay) {                        // s = Text (Array); sdelay = Speed (Verzögerung)
+  clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
+  Serial.println("Start hTextScroll16x20...");
+  while (*s) {
+    unsigned char msglineindex = *s;                                          // ACSII-Wert des aktuellen Zeichens
+    switch (msglineindex) {                                                   // Umlaute auf unseren Zeichensatz mappen
+      case 196: msglineindex = 95 + 32;   // Ä
+        break;
+      case 214: msglineindex = 96 + 32;   // Ö
+        break;
+      case 220: msglineindex = 97 + 32;   // Ü
+        break;
+      case 228: msglineindex = 98 + 32;   // ä
+        break;
+      case 246: msglineindex = 99 + 32;   // ö
+        break;
+      case 252: msglineindex = 100 + 32;  // ü
+        break;
+      case 223: msglineindex = 101 + 32;  // ß
+        break;
+    }
+
+    uint8_t bytecount = 0;
+    charWidth = ArialRoundL[(msglineindex - 32) * 41 + 40];                 // Zeichenbreite (41. Byte jedes Zeichens im Font)
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {                          // nächstes Zeichen in Puffer laden (2 Byte breit)
+      buf1[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // erstes Byte des 2 Byte breiten Zeichens
+      bytecount++;
+      buf2[row] = ArialRoundL[(msglineindex - 32) * 41 + row + bytecount];  // zweites Byte des 2 Byte breiten Zeichens
+    }
+    for (uint8_t shift = 0; shift < charWidth; shift++) {                   // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
+      for (uint8_t row = 0; row < NUM_ROWS; row++) {                        // dabei Zeile für Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8;                               // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen
+        // jede Zeile ist in 8 Zonen (8 Bytes) aufgeteilt
+        zone8[row] = zone8[row] << 1;                                       // alle Bits der Zone eins nach links schieben
+        bitWrite(zone8[row],0 , bitRead(zone7[row],7));                     // linkes Bit der rechten Zone hierher als rechtes Bit holen
+        *pDst = zone8[row];                                                 // Zone (Byte) in Displaypuffer uebertragen
+        zone7[row] = zone7[row] << 1;
+        bitWrite(zone7[row],0 , bitRead(zone6[row],7));
+        pDst++;                                                             // Pointer auf naechstes Byte der aktuellen Zeile setzen
+        *pDst = zone7[row];
+        zone6[row] = zone6[row] << 1;
+        bitWrite(zone6[row],0 , bitRead(zone5[row],7));
+        pDst++;
+        *pDst = zone6[row];
+        zone5[row] = zone5[row] << 1;
+        bitWrite(zone5[row],0 , bitRead(zone4[row],7));
+        pDst++;
+        *pDst = zone5[row];
+        zone4[row] = zone4[row] << 1;
+        bitWrite(zone4[row],0 , bitRead(zone3[row],7));
+        pDst++;
+        *pDst = zone4[row];
+        zone3[row] = zone3[row] << 1;
+        bitWrite(zone3[row],0 , bitRead(zone2[row],7));
+        pDst++;
+        *pDst = zone3[row];
+        zone2[row] = zone2[row] << 1;
+        bitWrite(zone2[row],0 , bitRead(zone1[row],7));
+        pDst++;
+        *pDst = zone2[row];
+        zone1[row] = zone1[row] << 1;
+        bitWrite(zone1[row],0 , bitRead(buf1[row],7));
+        pDst++;
+        *pDst = zone1[row];
+        buf1[row] = buf1[row] << 1;
+        bitWrite(buf1[row],0 , bitRead(buf2[row],7));
+        buf2[row] = buf2[row] << 1;
+      }
+      delay(sdelay);
+    }
+  s++;
+  }
+  clearMatrix();
+  delay(1000);
+}
+
+// =======================================================================
 /*
 uint8_t Buffer[16]  = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};               // die 16 Zeilen des Fonts (8x16)
 uint8_t Buffer2[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -366,3 +444,4 @@ void starrySky() {
 }
 
 // =======================================================================
+

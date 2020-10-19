@@ -894,6 +894,9 @@ void setup() {
   wipeHorizontalLine();
   delay(500);
 
+  String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
+  hTextScroll16x20(startString.c_str(), 20);
+
   clkTime1 = millis();
   clkTime2 = millis();
   clkTime3 = millis();
