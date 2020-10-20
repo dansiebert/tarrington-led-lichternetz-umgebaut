@@ -1057,11 +1057,14 @@ void loop() {
       if (millis() > (preTimeText2.toInt() * 1000) + clkTime3) {
         wipeHorizontalLine();
         Serial.println("Start scrolling scrollText2...");
+        hTextScroll8x16(scrollText2.c_str(), text2Delay.toInt());
+        /*
         uint8_t scrollText2Length = scrollText2.length() + 1;
         char scrollText2CharBuf[scrollText2Length];
         scrollText2.toCharArray(scrollText2CharBuf, scrollText2Length);
         // horTextScroll_16x20(scrollText2CharBuf, scrollText2Length);
         horTextScroll_16x20(scrollText2CharBuf, scrollText2Length, text2Delay.toInt());
+        */
         Serial.println("Stop scrolling scrollText2.");
         state = 4;
         clkTime4 = millis();
