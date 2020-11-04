@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-#define DEV
+//#define DEV
 
 #include "fonts.h"
 #include <LittleFS.h>
@@ -43,7 +43,7 @@ WiFiUDP Udp;
   const int clk  = D7;               // 74HC595 clock pin
   const int sdi  = D5;               // 74HC595 serial data in pin
   const int le   = D6;               // 74HC595 latch pin
-  uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+  uint8_t mask = 0xff;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
   bool mirror = 0;                   // Display horizontal spiegeln ?
   String mirrorCheckbox = "checked";
   String reverseCheckbox = "checked";
@@ -59,7 +59,7 @@ WiFiUDP Udp;
   const int sdi  = D5;               // TM1818 serial data in pin
   const int le   = D6;               // TM1818 latch pin
   const int oe   = D1;               // TM1818 output enable pin
-  uint8_t mask = 0xff;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+  uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
   bool mirror = 1;                   // Display horizontal spiegeln ?
   String mirrorCheckbox = "checked";
   String reverseCheckbox = "unchecked";
@@ -1144,7 +1144,7 @@ void clearLastScroll() {                         // Reste vom vorherigen Scrolle
 
 // =======================================================================
 
-void horTextScroll_16x20(const char *s, uint8_t q, uint8_t sdelay) {          // s = Text (Array); q = Textlänge
+void h_TextScroll_16x20_v1(const char *s, uint8_t q, uint8_t sdelay) {        // s = Text (Array); q = Textlänge
   clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
   Serial.println("Start horTextScroll_16x20...");
   for (uint8_t k = 0; k < q-1; k++) {                                         // Message Zeichen für Zeichen durchlaufen
@@ -1230,7 +1230,7 @@ void horTextScroll_16x20(const char *s, uint8_t q, uint8_t sdelay) {          //
 
 // =======================================================================
 
-void hTextScroll16x20(const char *s, uint8_t sdelay) {                        // s = Text (Array); sdelay = Speed (Verzögerung)
+void h_TextScroll_16x20_v2(const char *s, uint8_t sdelay) {                        // s = Text (Array); sdelay = Speed (Verzögerung)
   clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
   Serial.println("Start hTextScroll16x20...");
   while (*s) {
@@ -1308,7 +1308,7 @@ void hTextScroll16x20(const char *s, uint8_t sdelay) {                        //
 
 // =======================================================================
 
-void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                         // s = Text (Array); sdelay = Speed (Verzögerung)
+void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                       // s = Text (Array); sdelay = Speed (Verzögerung)
   clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
   Serial.println("Start hTextScroll8x16...");
   while (*s) {
@@ -1331,12 +1331,12 @@ void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                         
     }
 
     charWidth = smallFont[(msglineindex - 32) * 17 + 16];                   // Zeichenbreite (17. Byte eines Zeichens im Font)
-    for (uint8_t row = 0; row < NUM_ROWS; row++) {                          // nächstes Zeichen zeilenweise in Puffer laden (1 Byte)
+    for (uint8_t row = 0; row < NUM_ROWS - (NUM_ROWS - 16); row++) {        // nächstes Zeichen zeilenweise (20 oder 16 Zeilen) in Puffer laden (1 Byte)
       buf1[row] = smallFont[(msglineindex - 32) * 17 + row];
     }
     for (uint8_t shift = 0; shift < charWidth; shift++) {                   // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
-      for (uint8_t row = 0; row < NUM_ROWS; row++) {                        // dabei Zeile für Zeile durchgehen
-        uint8_t *pDst = displaybuf + row * 8;                               // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen
+      for (uint8_t row = 0; row < NUM_ROWS - (NUM_ROWS - 16); row++) {      // dabei Zeile für Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8 + (NUM_ROWS - 16) * 4;         // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen (Start in 3. Zeile)
         // jede Zeile ist in 8 Zonen (8 Bytes) aufgeteilt - links ist Zone 1 - rechts ist Zone 8 - daneben der Puffer fuer neues Zeichen
         zone8[row] = zone8[row] << 1;                                       // alle Bits der Zone eins nach links schieben
         bitWrite(zone8[row],0 , bitRead(zone7[row],7));                     // linkes Bit der rechten Zone hierher als rechtes Bit holen
@@ -1763,7 +1763,8 @@ void setup() {
   delay(500);
 
   String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
-  hTextScroll16x20(startString.c_str(), 20);
+  //h_TextScroll_16x20_v2(startString.c_str(), 45);
+  h_TextScroll_8x16(startString.c_str(), 70);
 
   clkTime1 = millis();
   clkTime2 = millis();
@@ -1816,7 +1817,7 @@ void loop() {
         // scrollen
         Serial.println("Start scrolling online weather data...");
         // horTextScroll_16x20(charBuf, stringlength);
-        horTextScroll_16x20(charBuf, stringlength, scrollSpeed.toInt());
+        h_TextScroll_16x20_v1(charBuf, stringlength, scrollSpeed.toInt());
         Serial.println("Stop scrolling online weather data.");
         state = 2;
         clkTime2 = millis();
@@ -1838,7 +1839,7 @@ void loop() {
         char scrollText1CharBuf[scrollText1Length];
         scrollText1.toCharArray(scrollText1CharBuf, scrollText1Length);
         // horTextScroll_16x20(scrollText1CharBuf, scrollText1Length);
-        horTextScroll_16x20(scrollText1CharBuf, scrollText1Length, text1Delay.toInt());
+        h_TextScroll_16x20_v1(scrollText1CharBuf, scrollText1Length, text1Delay.toInt());
         Serial.println("Stop scrolling scrollText1.");
         state = 3;
         clkTime3 = millis();
@@ -1881,7 +1882,7 @@ void loop() {
         char scrollText3CharBuf[scrollText3Length];
         scrollText3.toCharArray(scrollText3CharBuf, scrollText3Length);
         // horTextScroll_16x20(scrollText3CharBuf, scrollText3Length);
-        horTextScroll_16x20(scrollText3CharBuf, scrollText3Length, text3Delay.toInt());
+        h_TextScroll_16x20_v1(scrollText3CharBuf, scrollText3Length, text3Delay.toInt());
         Serial.println("Stop scrolling scrollText3.");
         state = 5;
         clkTime5 = millis();
