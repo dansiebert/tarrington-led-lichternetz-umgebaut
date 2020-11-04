@@ -1,4 +1,10 @@
-#include "fonts.h";
+#include <Arduino.h>
+
+// DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
+#define DEV
+
+#include "fonts.h"
+#include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <Timezone.h>
@@ -19,7 +25,6 @@
 #include <AsyncElegantOTA.h>
 
 #define CONFIG "/config.txt"
-#define NUM_ROWS 16
 
 // create different instances
 WiFiClient client;
@@ -27,18 +32,38 @@ AsyncWebServer server(80);
 DNSServer dns;
 WiFiUDP Udp;
 
-const int cs0  = D0;
-const int cs1  = D4;
-const int a0   = D2;
-const int a1   = D3;
-const int a2   = D8;
-
-const int clk  = D7;               // 74HC595 clock pin
-const int sdi  = D5;               // 74HC595 serial data in pin
-const int le   = D6;               // 74HC595 latch pin
-
-uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
-bool mirror = 0;                   // Display horizontal spiegeln ?
+#ifdef DEV
+  #define Y_OFFSET 0
+  #define NUM_ROWS 16
+  const int cs0  = D0;
+  const int cs1  = D4;
+  const int a0   = D2;
+  const int a1   = D3;
+  const int a2   = D8;
+  const int clk  = D7;               // 74HC595 clock pin
+  const int sdi  = D5;               // 74HC595 serial data in pin
+  const int le   = D6;               // 74HC595 latch pin
+  uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+  bool mirror = 0;                   // Display horizontal spiegeln ?
+  String mirrorCheckbox = "checked";
+  String reverseCheckbox = "checked";
+#else
+  #define Y_OFFSET 2
+  #define NUM_ROWS 20
+  const int cs0  = D0;
+  const int cs1  = D8;
+  const int a0   = D2;
+  const int a1   = D3;
+  const int a2   = D4;
+  const int clk  = D7;               // TM1818 clock pin
+  const int sdi  = D5;               // TM1818 serial data in pin
+  const int le   = D6;               // TM1818 latch pin
+  const int oe   = D1;               // TM1818 output enable pin
+  uint8_t mask = 0xff;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
+  bool mirror = 1;                   // Display horizontal spiegeln ?
+  String mirrorCheckbox = "checked";
+  String reverseCheckbox = "unchecked";
+#endif
 
 // =======================================================================
 
@@ -77,8 +102,6 @@ String locationCheckbox = "unchecked";
 String dotsCheckbox = "checked";
 String snowCheckbox = "checked";
 String starCheckbox = "checked";
-String mirrorCheckbox = "unchecked";
-String reverseCheckbox = "unchecked";
 
 // =======================================================================
 
@@ -109,15 +132,15 @@ Timezone CE(CEST, CET);
 String scrollString;
 String dayName[] = {"Err", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
 
-long clkTime1 = 0;
-long clkTime2 = 0;
-long clkTime3 = 0;
-long clkTime4 = 0;
-long clkTime5 = 0;
-long clkTime6 = 0;
-long clkTime7 = 0;
-long clkTime8 = 0;
-long clkTimeWeatherUpdate = 0;
+unsigned long clkTime1 = 0;
+unsigned long clkTime2 = 0;
+unsigned long clkTime3 = 0;
+unsigned long clkTime4 = 0;
+unsigned long clkTime5 = 0;
+unsigned long clkTime6 = 0;
+unsigned long clkTime7 = 0;
+unsigned long clkTime8 = 0;
+unsigned long clkTimeWeatherUpdate = 0;
 int updCnt = 0;
 uint8_t state = 1;
 
@@ -187,6 +210,188 @@ const char* PARAM_INPUT_32 = "text3Delay";
 const char* PARAM_INPUT_33 = "mirrorCheckbox";
 const char* PARAM_INPUT_34 = "reverseCheckbox";
 
+// =======================================================================
+
+// transfer displaybuf onto led matrix using timer interrupt (configured in setup())
+ICACHE_RAM_ATTR void timer1_ISR() {
+
+  if (mirror == 1) {
+    static uint8_t row = 0;                       // is only set the first time through the loop because of "static"
+    uint8_t *head = displaybuf + row * 8 + 7;     // pointer to last segment (8th byte) of every row
+    for (uint8_t byte = 0; byte < 8; byte++) {
+      uint8_t pixels = *head;                     // 1 Byte aus Display-Puffer lesen
+      head--;                                     // pointer in row 1 segment (1 byte) back
+      pixels = pixels ^ mask;
+
+      // mirror pixels
+	    uint8_t reversepixels = 0;
+	    for (uint8_t i = 0; i<8; i++) {
+        bitWrite(reversepixels,7-i,bitRead(pixels,i));
+      }
+	  
+      for (uint8_t i = 0; i<8; i++) {
+        digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));
+        digitalWrite(clk,HIGH);
+        digitalWrite(clk,LOW);   
+      }
+    }
+    #ifdef DEV
+      digitalWrite(cs1, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      // select row
+      digitalWrite(a0,  (row & 0x01));
+      digitalWrite(a1,  (row & 0x02));
+      digitalWrite(a2,  (row & 0x04));
+      digitalWrite(cs0, (row & 0x08));
+      // latch data
+      digitalWrite(le,  HIGH);
+      digitalWrite(le,  LOW);
+      digitalWrite(cs1, LOW);                   // enable display
+    #else
+      digitalWrite(oe, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      // select row
+      digitalWrite(a0,  (row & 0x01));
+      digitalWrite(a1,  (row & 0x02));
+      digitalWrite(a2,  (row & 0x04));
+      digitalWrite(cs0, (row & 0x08));
+      digitalWrite(cs1, (row & 0x10));
+      // latch data
+      digitalWrite(le, HIGH);
+      digitalWrite(le, LOW);
+      digitalWrite(oe, LOW);                   // enable display
+    #endif
+    row = row + 1;
+    if ( row == NUM_ROWS ) row = 0;            // Anzahl Zeilen
+
+  } else {
+
+    static uint8_t row = 0;                    // is only set the first time through the loop because of "static"
+    uint8_t *head = displaybuf + row * 8;      // pointer to begin of every row (8 byte per row)
+    for (uint8_t byte = 0; byte < 8; byte++) {
+      uint8_t pixels = *head;
+      head++;
+      pixels = pixels ^ mask;
+      for (uint8_t i = 0; i<8; i++) {
+        digitalWrite(sdi, !!(pixels & (1 << (7 - i))));
+        digitalWrite(clk,HIGH);
+        digitalWrite(clk,LOW);   
+      }
+      
+    }
+    #ifdef DEV
+      digitalWrite(cs1, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      // select row
+      digitalWrite(a0,  (row & 0x01));
+      digitalWrite(a1,  (row & 0x02));
+      digitalWrite(a2,  (row & 0x04));
+      digitalWrite(cs0, (row & 0x08));
+      // latch data
+      digitalWrite(le,  HIGH);
+      digitalWrite(le,  LOW);
+      digitalWrite(cs1, LOW);                   // enable display
+    #else
+      digitalWrite(oe, HIGH);                   // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      // select row
+      digitalWrite(a0,  (row & 0x01));
+      digitalWrite(a1,  (row & 0x02));
+      digitalWrite(a2,  (row & 0x04));
+      digitalWrite(cs0, (row & 0x08));
+      digitalWrite(cs1, (row & 0x10));
+      // latch data
+      digitalWrite(le, HIGH);
+      digitalWrite(le, LOW);
+      digitalWrite(oe, LOW);                   // enable display
+    #endif
+    row = row + 1;
+    if ( row == NUM_ROWS ) row = 0;            // Anzahl Zeilen
+
+  }
+
+    timer1_write(500);
+}
+
+// =======================================================================
+
+int8_t getWifiQuality() {   // converts the dBm to a range between 0 and 100%
+  int32_t dbm = WiFi.RSSI();
+  if (dbm <= -100) {
+    return 0;
+  } else if (dbm >= -50) {
+    return 100;
+  } else {
+    return 2 * (dbm + 100);
+  }
+}
+
+// =======================================================================
+/* --- draw functions --- */
+
+void clearMatrix() {
+  uint8_t *ptr = displaybuf;
+    for (uint16_t i = 0; i < NUM_ROWS * 8; i++) {
+      *ptr = 0x00;
+      ptr++;
+    }
+}
+
+void drawPoint(uint16_t x, uint16_t y, uint8_t pixel) {
+  if ( x < 0 || x > 63 || y < 0 || y > 19 ) {
+    return;
+  }
+  uint8_t *byte = displaybuf + x / 8 + y * 8;
+  uint8_t  bit = x % 8;
+  if (pixel) {
+    *byte |= 0x80 >> bit;
+  } else {
+    *byte &= ~(0x80 >> bit);
+  }
+}
+
+void drawRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint8_t pixel) {
+  for (uint16_t x = x1; x < x2; x++) {
+    for (uint16_t y = y1; y < y2; y++) {
+      drawPoint(x, y, pixel);
+    }
+  }
+}
+
+void drawImage(uint16_t xoffset, uint16_t yoffset, uint16_t width, uint16_t height, const uint8_t *image) {
+  for (uint16_t y = 0; y < height; y++) {
+    for (uint16_t x = 0; x < width; x++) {
+      const uint8_t *byte = image + (x + y * width) / 8;
+      uint8_t  bit = 7 - x % 8;
+      uint8_t  pixel = (*byte >> bit) & 1;
+      drawPoint(x + xoffset, y + yoffset, pixel);
+    }
+  }
+}
+
+// (x, y) top-left position, x should be multiple of 8
+void drawDigital_8(uint16_t x, uint16_t y, uint8_t n) {
+  if ((n >= 10) || (0 != (x % 8))) {
+    return;
+  }
+  uint8_t *pDst = displaybuf + y * 8 + x / 8;
+  const uint8_t *pSrc = digitals + n * 16;
+  for (uint8_t i = 0; i < 16; i++) {
+    *pDst = *pSrc;
+    pDst += 8;
+    pSrc++;
+  }
+}
+
+void drawDigital_16(uint16_t x, uint16_t y, uint8_t n) {
+  uint8_t *pDst = displaybuf + y * 8 + x / 8;
+  const uint8_t *pSrc = BigFont + n * 32;
+  for (uint8_t i = 0; i < 16; i++) {
+    *pDst = *pSrc;
+    pDst++;
+    pSrc++;
+    *pDst = *pSrc;
+    pDst += 7;
+    pSrc++;
+  }
+}
+/* --- end draw functions --- */
 // =======================================================================
 
 const char index_html[] PROGMEM = R"rawliteral(
@@ -372,25 +577,14 @@ void notFound(AsyncWebServerRequest *request) {
   request->send(404, "text/plain", "Not found");
 }
 
-int8_t getWifiQuality() {   // converts the dBm to a range between 0 and 100%
-  int32_t dbm = WiFi.RSSI();
-  if (dbm <= -100) {
-    return 0;
-  } else if (dbm >= -50) {
-    return 100;
-  } else {
-    return 2 * (dbm + 100);
-  }
-}
-
-void initSPIFFS() {
-  SPIFFS.begin();
-  if (!SPIFFS.exists("/formatComplete.txt")) {
+void initLittleFS() {
+  LittleFS.begin();
+  if (!LittleFS.exists("/formatComplete.txt")) {
     Serial.println();
-    Serial.println("Please wait 30 secs for SPIFFS to be formatted...");
-    SPIFFS.format();
-    Serial.println("SPIFFS formatted.");   
-    File f = SPIFFS.open("/formatComplete.txt", "w");
+    Serial.println("Please wait 30 secs for LittleFS to be formatted...");
+    LittleFS.format();
+    Serial.println("LittleFS formatted.");   
+    File f = LittleFS.open("/formatComplete.txt", "w");
     if (!f) {
       Serial.println("File open failed!");
     } else {
@@ -398,17 +592,17 @@ void initSPIFFS() {
     }
   } else {
     Serial.println();
-    Serial.println("SPIFFS is formatted. Moving along...");
+    Serial.println("LittleFS is formatted. Moving along...");
   }
 }
 
 void writeConfig() {
-  File f = SPIFFS.open(CONFIG, "w");
+  File f = LittleFS.open(CONFIG, "w");
   if (!f) {
     Serial.println("File open failed!");
   } else {
     Serial.println();
-    Serial.println("Saving settings to SPIFFS now...");
+    Serial.println("Saving settings to LittleFS now...");
     f.println("scrollText1=" + scrollText1);
     f.println("scrollText2=" + scrollText2);
     f.println("scrollText3=" + scrollText3);
@@ -449,13 +643,13 @@ void writeConfig() {
 }
 
 void readConfig() {
-  if (SPIFFS.exists(CONFIG) == false) {
+  if (LittleFS.exists(CONFIG) == false) {
     Serial.println("Settings File does not yet exists.");
     writeConfig();
   }
-  File fr = SPIFFS.open(CONFIG, "r");
+  File fr = LittleFS.open(CONFIG, "r");
   Serial.println();
-  Serial.println("Reading settings from SPIFFS now...");
+  Serial.println("Reading settings from LittleFS now...");
   String configline;  
   while (fr.available()) {
     configline = fr.readStringUntil('\n');
@@ -632,12 +826,676 @@ void readConfig() {
 
 // =======================================================================
 
+/*-------- NTP code ----------*/
+const int NTP_PACKET_SIZE = 48; // NTP-Zeit in den ersten 48 Bytes der Nachricht
+byte packetBuffer[NTP_PACKET_SIZE]; //Puffer für eingehende und ausgehende Pakete
+
+time_t getNtpTime()
+{
+  IPAddress ntpServerIP; // NTP server's ip Adresse
+
+  while (Udp.parsePacket() > 0) ; // alle zuvor empfangenen Pakete verwerfen
+  Serial.println("Transmit NTP Request");
+  // einen zufälligen Server aus dem Pool holen
+  WiFi.hostByName(ntpServerName, ntpServerIP);
+  Serial.print(ntpServerName);
+  Serial.print(": ");
+  Serial.println(ntpServerIP);
+  sendNTPpacket(ntpServerIP);
+  uint32_t beginWait = millis();
+  while (millis() - beginWait < 1500) {
+    int size = Udp.parsePacket();
+    if (size >= NTP_PACKET_SIZE) {
+      Serial.println("Receive NTP Response");
+      Udp.read(packetBuffer, NTP_PACKET_SIZE);  // Paket in den Puffer einlesen
+      unsigned long secsSince1900;
+      // vier Bytes ab Position 40 in eine lange Ganzzahl umwandeln
+      secsSince1900 =  (unsigned long)packetBuffer[40] << 24;
+      secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
+      secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
+      secsSince1900 |= (unsigned long)packetBuffer[43];
+      return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
+    }
+  }
+  Serial.println("keine NTP Antwort");
+  return 0; // gibt 0 zurück, wenn die Zeit nicht ermittelt werden kann.
+}
+
+// send an NTP request to the time server at the given address
+void sendNTPpacket(IPAddress &address)
+{
+  // alle Bytes im Puffer auf 0 setzen
+  memset(packetBuffer, 0, NTP_PACKET_SIZE);
+  // Initialisieren von Werten, die für die Bildung von NTP-Requests benötigt werden.
+  // (siehe URL oben für Details zu den Paketen)
+  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+  packetBuffer[1] = 0;     // Stratum, or type of clock
+  packetBuffer[2] = 6;     // Polling Interval
+  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  // 8 bytes of zero for Root Delay & Root Dispersion
+  packetBuffer[12] = 49;
+  packetBuffer[13] = 0x4E;
+  packetBuffer[14] = 49;
+  packetBuffer[15] = 52;
+  // alle NTP-Felder wurden jetzt mit Werten versehen
+  // Sie können ein Paket senden, das einen Zeitstempel anfordert.:
+  Udp.beginPacket(address, 123); //NTP-Requests sollen auf Port 123 erfolgen
+  Udp.write(packetBuffer, NTP_PACKET_SIZE);
+  Udp.endPacket();
+}
+
+void getTimeLocal()
+{
+  time_t tT = now();
+  time_t tTlocal = CE.toLocal(tT);
+  w = weekday(tTlocal);
+  d = day(tTlocal);
+  mo = month(tTlocal);
+  ye = year(tTlocal);
+  h = hour(tTlocal);
+  m = minute(tTlocal);
+  s = second(tTlocal);
+  localMillisAtUpdate = millis();
+}
+
+byte dig[6] = {0,0,0,0,0,0};
+int dots = 0;
+long dotTime = 0;
+
+void showClock() {
+  getTimeLocal();
+
+  dig[0] = h / 10;
+  dig[1] = h % 10;
+  dig[2] = m / 10;
+  dig[3] = m % 10;
+  dig[4] = s / 10;
+  dig[5] = s % 10;
+
+  if (h > 9) {
+    drawImage(  3, 0, 8, 16, numbers + 16 * dig[0]);
+  }
+  drawImage( 12, Y_OFFSET, 8, 16, numbers + 16 * dig[1]);
+  drawImage( 24, Y_OFFSET, 8, 16, numbers + 16 * dig[2]);
+  drawImage( 33, Y_OFFSET, 8, 16, numbers + 16 * dig[3]);
+  drawImage( 45, Y_OFFSET, 8, 16, numbers + 16 * dig[4]);
+  drawImage( 54, Y_OFFSET, 8, 16, numbers + 16 * dig[5]);
+  
+  if (dotsCheckbox == "checked") {
+    //toggle colons
+    if (millis() - dotTime > 500) {
+      // Serial.println("Toggeling colons...");
+      dotTime = millis();
+      dots = !dots;
+    }
+  } else {
+    dots = 1;
+  }
+  if (dots) {
+    drawPoint(21,5,1);
+    drawPoint(21,10,1);
+    drawPoint(22,5,1);
+    drawPoint(22,10,1);
+    drawPoint(42,5,1);
+    drawPoint(42,10,1);
+    drawPoint(43,5,1);
+    drawPoint(43,10,1);
+    drawPoint(21,6,1);
+    drawPoint(21,11,1);
+    drawPoint(22,6,1);
+    drawPoint(22,11,1);
+    drawPoint(42,6,1);
+    drawPoint(42,11,1);
+    drawPoint(43,6,1);
+    drawPoint(43,11,1);
+  } else {
+    drawPoint(21,5,0);
+    drawPoint(21,10,0);
+    drawPoint(22,5,0);
+    drawPoint(22,10,0);
+    drawPoint(42,5,0);
+    drawPoint(42,10,0);  
+    drawPoint(43,5,0);
+    drawPoint(43,10,0);  
+    drawPoint(21,6,0);
+    drawPoint(21,11,0);
+    drawPoint(22,6,0);
+    drawPoint(22,11,0);
+    drawPoint(42,6,0);
+    drawPoint(42,11,0);  
+    drawPoint(43,6,0);
+    drawPoint(43,11,0);  
+  }
+  
+  //String TimeString = "Time: " + String(dig[0]) + String(dig[1]) + ":" + String(dig[2]) + String(dig[3]) + ":" + String(dig[4]) + String(dig[5]);
+  //Serial.println(TimeString);
+  //delay(200);
+}
+/*-------- End NTP code ----------*/
+
+// =======================================================================
+
+/* --- online weather function --- */
+void getWeatherData()
+{ 
+  String weatherGetString = "Hole Internet-Wetter-Daten.                       ";
+  Serial.println("Getting online weather data for cityid " + cityID + "...");
+  Serial.println("Connecting to " + String(weatherHost) + "...");
+  WiFiClient client;
+  if (client.connect(weatherHost, 80)) {
+    client.println(String("GET /data/2.5/weather?id=") + cityID + "&units=metric&appid=" + weatherKey + weatherLang + "\r\n" +
+                   "Host: " + weatherHost + "\r\nUser-Agent: ArduinoWiFi/1.1\r\n" +
+                   "Connection: close\r\n\r\n");
+  } else {
+    Serial.println("Connection failed!");
+    weatherGetString = "Fehlgeschlagen!                      ";
+    weatherString = "Online-Wetter: keine Daten";
+    return;
+  }
+  String line;
+  int repeatCounter = 0;
+  while (!client.available() && repeatCounter < 10) {
+    delay(500);
+    Serial.println("...");
+    repeatCounter++;
+  }
+  while (client.available()) {
+    char c = client.read();
+    line += c;
+  }
+  client.stop();
+  Serial.println(line);
+  DynamicJsonDocument jsonDoc(2048);
+  DeserializationError error = deserializeJson(jsonDoc, line);
+  if (error)   {
+    Serial.print("deserializeJson() failed with code ");
+    Serial.println(error.c_str());
+    weatherGetString = "Fehlgeschlagen!                      ";
+    weatherString = "Online-Wetter: keine Daten";
+    return;
+  }
+  weatherGetString = "OK.                      ";
+  weatherLocation = jsonDoc["name"].as<String>();
+  onlinetemp = jsonDoc["main"]["temp"];
+  humidity = jsonDoc["main"]["humidity"];
+  pressure = jsonDoc["main"]["pressure"];
+  tempMin = jsonDoc["main"]["temp_min"];
+  tempMax = jsonDoc["main"]["temp_max"];
+  windSpeed = jsonDoc["wind"]["speed"];
+  windDeg = jsonDoc["wind"]["deg"];
+  clouds = jsonDoc["clouds"]["all"];
+  weatherString = "";
+  if (tempCheckbox == "checked") {
+    if (locationCheckbox == "checked") {
+      weatherString = "Temperatur in " + weatherLocation + ": " + String(onlinetemp, 1) + "`C    ";   // `-Zeichen ist im Font als Grad definiert
+    } else {
+      weatherString = "Temperatur: " + String(onlinetemp, 1) + "`C    ";
+    }
+  }
+  if (humidityCheckbox == "checked") {
+    weatherString += "Luftfeuchte: " + String(humidity) + "%    ";
+  }
+  if (pressureCheckbox == "checked") {
+    weatherString += "Luftdruck: " + String(pressure) + "hPa    ";
+  }
+  if (rainCheckbox == "checked") {
+    weatherString += "Niederschlagsrisiko: " + String(clouds) + "%    ";
+  }
+  if (windCheckbox == "checked") {
+    weatherString += "Wind: " + String(windSpeed, 1) + "m/s    ";
+  }
+}
+/* --- end online weather function --- */
+
+// =======================================================================
+/* --- effect functions --- */
+
+void wipeHorizontal() {
+  clearMatrix();
+  for (uint8_t i = 0; i < 64; i++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(i, j, 1);
+      delay(1);
+    }
+  }
+  for (uint8_t i = 0; i < 64; i++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(i, j, 0);
+      delay(1);
+    }
+  }
+}
+
+// =======================================================================
+
+void wipeHorizontalLine() {
+  for (uint8_t i = 0; i < 64; i++) {
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(63 - i, j, 1);
+    }
+    delay(45);
+    for (uint8_t j = 0; j < NUM_ROWS; j++) {
+      drawPoint(63 - i, j, 0);
+    }
+  }
+}
+
+// =======================================================================
+
+void wipeVertical() {
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 1);
+      delay(1);
+    }
+  } 
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 0);
+      delay(1);
+    }
+  } 
+}
+
+// =======================================================================
+
+void wipeVerticalLine() {
+  for (uint8_t j = 0; j < NUM_ROWS; j++) {
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 1);
+    }
+    delay(70);
+    for (uint8_t i = 0; i < 64; i++) {
+      drawPoint(i, j, 0);
+    }
+  } 
+}
+
+// =======================================================================
+
+// Arrays fuer die 8 Zonen + Puffer fuer neu reinlaufendes Zeichen
+uint8_t  buf1[NUM_ROWS];
+uint8_t  buf2[NUM_ROWS];
+uint8_t zone1[NUM_ROWS];
+uint8_t zone2[NUM_ROWS];
+uint8_t zone3[NUM_ROWS];
+uint8_t zone4[NUM_ROWS];
+uint8_t zone5[NUM_ROWS];
+uint8_t zone6[NUM_ROWS];
+uint8_t zone7[NUM_ROWS];
+uint8_t zone8[NUM_ROWS];
+
+uint8_t msglineindex, charWidth;
+
+void clearLastScroll() {                         // Reste vom vorherigen Scrollen loeschen
+  for (uint8_t row = 0; row < NUM_ROWS; row++) {
+    buf1[row]  = 0;
+    buf2[row]  = 0;
+    zone1[row] = 0;
+    zone2[row] = 0;
+    zone3[row] = 0;
+    zone4[row] = 0;
+    zone5[row] = 0;
+    zone6[row] = 0;
+    zone7[row] = 0;
+    zone8[row] = 0;
+  }
+}
+
+// =======================================================================
+
+void horTextScroll_16x20(const char *s, uint8_t q, uint8_t sdelay) {          // s = Text (Array); q = Textlänge
+  clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
+  Serial.println("Start horTextScroll_16x20...");
+  for (uint8_t k = 0; k < q-1; k++) {                                         // Message Zeichen für Zeichen durchlaufen
+    msglineindex = s[k];
+    switch (msglineindex) {                                                   // Umlaute auf unseren Zeichensatz mappen
+      case 196: msglineindex = 95 + 32;   // Ä
+        break;
+      case 214: msglineindex = 96 + 32;   // Ö
+        break;
+      case 220: msglineindex = 97 + 32;   // Ü
+        break;
+      case 228: msglineindex = 98 + 32;   // ä
+        break;
+      case 246: msglineindex = 99 + 32;   // ö
+        break;
+      case 252: msglineindex = 100 + 32;  // ü
+        break;
+      case 223: msglineindex = 101 + 32;  // ß
+        break;
+    }
+/*
+    Serial.print("stringLength ");
+    Serial.print(q);
+    Serial.print(" ... char ");
+    Serial.print(k);
+    Serial.print(" --> ");
+    Serial.write(msglineindex);                               // https://stackoverflow.com/questions/46301534/in-arduino-how-to-print-character-for-givien-ascii-number
+    Serial.print(" --> ASCII: ");
+    Serial.println(msglineindex);
+*/
+    uint8_t bytecount = 0;
+    charWidth = ArialRound[(msglineindex - 32) * 41 + 40];                 // Zeichenbreite (41. Byte jedes Zeichens im Font)
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {                          // nächstes Zeichen in Puffer laden (2 Byte breit)
+      buf1[row] = ArialRound[(msglineindex - 32) * 41 + row + bytecount];  // erstes Byte des 2 Byte breiten Zeichens
+      bytecount++;
+      buf2[row] = ArialRound[(msglineindex - 32) * 41 + row + bytecount];  // zweites Byte des 2 Byte breiten Zeichens
+    }
+    for (uint8_t shift = 0; shift < charWidth; shift++) {                   // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
+      for (uint8_t row = 0; row < NUM_ROWS; row++) {                        // dabei Zeile für Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8;                               // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen
+        // jede Zeile ist in 8 Zonen (8 Bytes) aufgeteilt
+        zone8[row] = zone8[row] << 1;                                       // alle Bits der Zone eins nach links schieben
+        bitWrite(zone8[row],0 , bitRead(zone7[row],7));                     // linkes Bit der rechten Zone hierher als rechtes Bit holen
+        *pDst = zone8[row];                                                 // Zone (Byte) in Displaypuffer uebertragen
+        zone7[row] = zone7[row] << 1;
+        bitWrite(zone7[row],0 , bitRead(zone6[row],7));
+        pDst++;                                                             // Pointer auf naechstes Byte der aktuellen Zeile setzen
+        *pDst = zone7[row];
+        zone6[row] = zone6[row] << 1;
+        bitWrite(zone6[row],0 , bitRead(zone5[row],7));
+        pDst++;
+        *pDst = zone6[row];
+        zone5[row] = zone5[row] << 1;
+        bitWrite(zone5[row],0 , bitRead(zone4[row],7));
+        pDst++;
+        *pDst = zone5[row];
+        zone4[row] = zone4[row] << 1;
+        bitWrite(zone4[row],0 , bitRead(zone3[row],7));
+        pDst++;
+        *pDst = zone4[row];
+        zone3[row] = zone3[row] << 1;
+        bitWrite(zone3[row],0 , bitRead(zone2[row],7));
+        pDst++;
+        *pDst = zone3[row];
+        zone2[row] = zone2[row] << 1;
+        bitWrite(zone2[row],0 , bitRead(zone1[row],7));
+        pDst++;
+        *pDst = zone2[row];
+        zone1[row] = zone1[row] << 1;
+        bitWrite(zone1[row],0 , bitRead(buf1[row],7));
+        pDst++;
+        *pDst = zone1[row];
+        buf1[row] = buf1[row] << 1;
+        bitWrite(buf1[row],0 , bitRead(buf2[row],7));
+        buf2[row] = buf2[row] << 1;
+      }
+      delay(sdelay);
+    }
+  }
+  clearMatrix();
+  delay(1000);
+}
+
+// =======================================================================
+
+void hTextScroll16x20(const char *s, uint8_t sdelay) {                        // s = Text (Array); sdelay = Speed (Verzögerung)
+  clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
+  Serial.println("Start hTextScroll16x20...");
+  while (*s) {
+    unsigned char msglineindex = *s;                                          // ACSII-Wert des aktuellen Zeichens
+    switch (msglineindex) {                                                   // Umlaute auf unseren Zeichensatz mappen
+      case 196: msglineindex = 95 + 32;   // Ä
+        break;
+      case 214: msglineindex = 96 + 32;   // Ö
+        break;
+      case 220: msglineindex = 97 + 32;   // Ü
+        break;
+      case 228: msglineindex = 98 + 32;   // ä
+        break;
+      case 246: msglineindex = 99 + 32;   // ö
+        break;
+      case 252: msglineindex = 100 + 32;  // ü
+        break;
+      case 223: msglineindex = 101 + 32;  // ß
+        break;
+    }
+
+    uint8_t bytecount = 0;
+    charWidth = ArialRound[(msglineindex - 32) * 41 + 40];                 // Zeichenbreite (41. Byte jedes Zeichens im Font)
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {                          // nächstes Zeichen in Puffer laden (2 Byte breit)
+      buf1[row] = ArialRound[(msglineindex - 32) * 41 + row + bytecount];  // erstes Byte des 2 Byte breiten Zeichens
+      bytecount++;
+      buf2[row] = ArialRound[(msglineindex - 32) * 41 + row + bytecount];  // zweites Byte des 2 Byte breiten Zeichens
+    }
+    for (uint8_t shift = 0; shift < charWidth; shift++) {                   // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
+      for (uint8_t row = 0; row < NUM_ROWS; row++) {                        // dabei Zeile für Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8;                               // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen
+        // jede Zeile ist in 8 Zonen (8 Bytes) aufgeteilt
+        zone8[row] = zone8[row] << 1;                                       // alle Bits der Zone eins nach links schieben
+        bitWrite(zone8[row],0 , bitRead(zone7[row],7));                     // linkes Bit der rechten Zone hierher als rechtes Bit holen
+        *pDst = zone8[row];                                                 // Zone (Byte) in Displaypuffer uebertragen
+        zone7[row] = zone7[row] << 1;
+        bitWrite(zone7[row],0 , bitRead(zone6[row],7));
+        pDst++;                                                             // Pointer auf naechstes Byte der aktuellen Zeile setzen
+        *pDst = zone7[row];
+        zone6[row] = zone6[row] << 1;
+        bitWrite(zone6[row],0 , bitRead(zone5[row],7));
+        pDst++;
+        *pDst = zone6[row];
+        zone5[row] = zone5[row] << 1;
+        bitWrite(zone5[row],0 , bitRead(zone4[row],7));
+        pDst++;
+        *pDst = zone5[row];
+        zone4[row] = zone4[row] << 1;
+        bitWrite(zone4[row],0 , bitRead(zone3[row],7));
+        pDst++;
+        *pDst = zone4[row];
+        zone3[row] = zone3[row] << 1;
+        bitWrite(zone3[row],0 , bitRead(zone2[row],7));
+        pDst++;
+        *pDst = zone3[row];
+        zone2[row] = zone2[row] << 1;
+        bitWrite(zone2[row],0 , bitRead(zone1[row],7));
+        pDst++;
+        *pDst = zone2[row];
+        zone1[row] = zone1[row] << 1;
+        bitWrite(zone1[row],0 , bitRead(buf1[row],7));
+        pDst++;
+        *pDst = zone1[row];
+        buf1[row] = buf1[row] << 1;
+        bitWrite(buf1[row],0 , bitRead(buf2[row],7));
+        buf2[row] = buf2[row] << 1;
+      }
+      delay(sdelay);
+    }
+  s++;
+  }
+  clearMatrix();
+  delay(1000);
+}
+
+// =======================================================================
+
+void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                         // s = Text (Array); sdelay = Speed (Verzögerung)
+  clearLastScroll();                                                          // Reste vom vorherigen Scrollen loeschen
+  Serial.println("Start hTextScroll8x16...");
+  while (*s) {
+    unsigned char msglineindex = *s;                                          // ACSII-Wert des aktuellen Zeichens
+    switch (msglineindex) {                                                   // Umlaute auf unseren Zeichensatz mappen
+      case 196: msglineindex = 95 + 32;   // Ä
+        break;
+      case 214: msglineindex = 96 + 32;   // Ö
+        break;
+      case 220: msglineindex = 97 + 32;   // Ü
+        break;
+      case 228: msglineindex = 98 + 32;   // ä
+        break;
+      case 246: msglineindex = 99 + 32;   // ö
+        break;
+      case 252: msglineindex = 100 + 32;  // ü
+        break;
+      case 223: msglineindex = 101 + 32;  // ß
+        break;
+    }
+
+    charWidth = smallFont[(msglineindex - 32) * 17 + 16];                   // Zeichenbreite (17. Byte eines Zeichens im Font)
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {                          // nächstes Zeichen zeilenweise in Puffer laden (1 Byte)
+      buf1[row] = smallFont[(msglineindex - 32) * 17 + row];
+    }
+    for (uint8_t shift = 0; shift < charWidth; shift++) {                   // Bit fuer Bit um Zeichenbreite des aktuellen Zeichens nach links shiften
+      for (uint8_t row = 0; row < NUM_ROWS; row++) {                        // dabei Zeile für Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8;                               // Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers setzen
+        // jede Zeile ist in 8 Zonen (8 Bytes) aufgeteilt - links ist Zone 1 - rechts ist Zone 8 - daneben der Puffer fuer neues Zeichen
+        zone8[row] = zone8[row] << 1;                                       // alle Bits der Zone eins nach links schieben
+        bitWrite(zone8[row],0 , bitRead(zone7[row],7));                     // linkes Bit der rechten Zone hierher als rechtes Bit holen
+        *pDst = zone8[row];                                                 // Zone (Byte) in Displaypuffer uebertragen
+        zone7[row] = zone7[row] << 1;
+        bitWrite(zone7[row],0 , bitRead(zone6[row],7));
+        pDst++;                                                             // Pointer auf naechstes Byte der aktuellen Zeile setzen
+        *pDst = zone7[row];
+        zone6[row] = zone6[row] << 1;
+        bitWrite(zone6[row],0 , bitRead(zone5[row],7));
+        pDst++;
+        *pDst = zone6[row];
+        zone5[row] = zone5[row] << 1;
+        bitWrite(zone5[row],0 , bitRead(zone4[row],7));
+        pDst++;
+        *pDst = zone5[row];
+        zone4[row] = zone4[row] << 1;
+        bitWrite(zone4[row],0 , bitRead(zone3[row],7));
+        pDst++;
+        *pDst = zone4[row];
+        zone3[row] = zone3[row] << 1;
+        bitWrite(zone3[row],0 , bitRead(zone2[row],7));
+        pDst++;
+        *pDst = zone3[row];
+        zone2[row] = zone2[row] << 1;
+        bitWrite(zone2[row],0 , bitRead(zone1[row],7));
+        pDst++;
+        *pDst = zone2[row];
+        zone1[row] = zone1[row] << 1;
+        bitWrite(zone1[row],0 , bitRead(buf1[row],7));
+        pDst++;
+        *pDst = zone1[row];
+        buf1[row] = buf1[row] << 1;
+      }
+      delay(sdelay);
+    }
+  s++;
+  }
+  clearMatrix();
+  delay(1000);
+}
+
+// =======================================================================
+
+void snowFall() {   // Schneeflocke vertikal scrollen
+  clearMatrix();
+  clkTime6 = millis();
+  
+  uint8_t starimage[8];
+  uint8_t startdelay[8];
+  uint8_t speeddelay[8];
+  uint8_t startdelaycount[8];
+  uint8_t speeddelaycount[8];
+  for (uint8_t zone = 0; zone < 8; zone++) {
+    starimage[zone] = 0;
+    startdelay[zone] = random(0,50);
+    speeddelay[zone] = random(0,5);
+    startdelaycount[zone] = 0;
+    speeddelaycount[zone] = 0;
+  }
+
+  while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
+    for (uint8_t zone = 0; zone < 8; zone++) {
+      if ( startdelaycount[zone] >= startdelay[zone] ) {                     // Start der Flocke um eine zufaellige Zeit verzögern
+        drawImage( zone * 8, 2, 8, 20, stars20 + starimage[zone] * 20);      // passendes Image aus stars-Font-Array zeichnen
+        if (speeddelaycount[zone] >= speeddelay[zone]) {
+          speeddelaycount[zone] = 0;
+          starimage[zone]++;                                                 // Flocke eins runter
+        }
+        speeddelaycount[zone]++;
+        if ( starimage[zone] == 28 ) {                                       // letzter Zustand erreicht (Flocke unten rausgescrollt)
+          starimage[zone] = 0;
+          startdelaycount[zone] = 0;
+          startdelay[zone] = random(0,50);
+          speeddelay[zone] = random(0,5);
+        }
+      }
+      startdelaycount[zone]++;
+    }
+    delay(snowDelay.toInt());
+  }
+  
+  delay(1000);
+  clearMatrix();
+}
+
+// =======================================================================
+
+void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scrollen
+  clearMatrix();
+  clkTime6 = millis();
+  while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
+    uint8_t x = random(0,7);
+    Serial.println("snow_pos= " + String(x * 8));
+    for (uint16_t i = 0; i < 23; i++) {
+      //Serial.println("snow_char= " + String(i));
+      const uint8_t *pSrc = stars16 + i * 16;
+      drawImage( x * 8, 2, 8, 16, pSrc);
+      pSrc++;
+      delay(snowDelay.toInt());
+    }
+  }
+  delay(1000);
+  clearMatrix();
+}
+
+// =======================================================================
+
+void starrySky() {
+  clearMatrix();
+  uint8_t xPos[1000];
+  uint8_t yPos[1000];
+  for (uint16_t i = 0; i < starCount.toInt(); i++) {
+    xPos[i] = 0;
+    yPos[i] = 0;
+  }
+  clkTime8 = millis();
+  while (millis() < (starDuration.toInt() * 1000) + clkTime8) {
+    for (uint16_t i = 0; i < starCount.toInt(); i++) {
+      //Serial.println("star_i= " + String(i));
+      //Serial.println("Deleting old position " + String(xPos[i]) + " , " + String(yPos[i]));
+      drawPoint(xPos[i], yPos[i], 0);
+      xPos[i] = random(0,63);
+      yPos[i] = random(0,19);
+      //Serial.println("Setting new position " + String(xPos[i]) + " , " + String(yPos[i]));
+      drawPoint(xPos[i], yPos[i], 1);
+      delay(starDelay.toInt());
+    }
+  }
+  for (uint16_t i = 0; i < starCount.toInt(); i++) {
+    delay(starDelay.toInt());
+    drawPoint(xPos[i], yPos[i], 0);
+  }
+  delay(1000);
+  clearMatrix();
+}
+/* --- end effect functions --- */
+
+// =======================================================================
+
+void testVerticalScroll() {
+  for (uint8_t j = 0; j < 5; j++){
+    for (uint8_t i = 0; i < 16; i++){
+      //drawImage(xoffset, yoffset, width, height, *image);
+      drawImage(32, 0 + i, 8, 16 - i, numbers + j * 16);
+      delay(500);
+      clearMatrix();
+    }
+  }
+}
+
+// =======================================================================
+
 void setup() {  
   Serial.begin(115200);
   delay(10);
   Serial.println('\n');
 
-  initSPIFFS();
+  initLittleFS();
   readConfig();
 
   AsyncWiFiManager wifiManager(&server,&dns);
@@ -672,7 +1530,12 @@ void setup() {
   pinMode(clk, OUTPUT);
   pinMode(sdi, OUTPUT);
   pinMode(le,  OUTPUT);
-  digitalWrite(cs1, HIGH);
+  #ifdef DEV
+    digitalWrite(cs1, HIGH);
+  #else
+    pinMode(oe,  OUTPUT);
+    digitalWrite(oe, HIGH);
+  #endif
 
   // https://www.instructables.com/id/MULTI-EFFECTS-INTERNET-CLOCK/
   // With following setup, Timer 1 will run at 5MHz (80MHz/16=5MHz) or 1/5MHz = 0.2us.
@@ -690,7 +1553,12 @@ void setup() {
 
   server.on("/ota", HTTP_GET, [](AsyncWebServerRequest *request){
     Serial.println("Switching off display due to unfavorable states...");
-    digitalWrite(cs1, HIGH);     // switch off display due to unfavorable states
+    #ifdef DEV
+      digitalWrite(cs1, HIGH);     // switch off display due to unfavorable states
+    #else
+      pinMode(oe,  OUTPUT);
+      digitalWrite(oe, HIGH);
+    #endif
     request->redirect("/update");
   });
 
@@ -909,77 +1777,6 @@ void setup() {
 
 // =======================================================================
 
-// transfer displaybuf onto led matrix using timer interrupt (configured in setup())
-ICACHE_RAM_ATTR void timer1_ISR() {
-
-  if (mirror == 1) {
-    static uint8_t row = 0;                       // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8 + 7;     // pointer to last segment (8th byte) of every row
-    for (uint8_t byte = 0; byte < 8; byte++) {
-      uint8_t pixels = *head;                     // 1 Byte aus Display-Puffer lesen
-      head--;                                     // pointer in row 1 segment (1 byte) back
-      pixels = pixels ^ mask;
-
-      // mirror pixels
-	    uint8_t reversepixels = 0;
-	    for (uint8_t i = 0; i<8; i++) {
-        bitWrite(reversepixels,7-i,bitRead(pixels,i));
-      }
-	  
-      for (uint8_t i = 0; i<8; i++) {
-        digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));
-        digitalWrite(clk,HIGH);
-        digitalWrite(clk,LOW);   
-      }
-    }
-    digitalWrite(cs1, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
-    // select row
-    digitalWrite(a0,  (row & 0x01));
-    digitalWrite(a1,  (row & 0x02));
-    digitalWrite(a2,  (row & 0x04));
-    digitalWrite(cs0, (row & 0x08));
-    // latch data
-    digitalWrite(le, HIGH);
-    digitalWrite(le, LOW);
-    digitalWrite(cs1, LOW);                   // enable display
-    row = row + 1;
-    if ( row == NUM_ROWS ) row = 0;                 // Anzahl Zeilen
-
-  } else {
-
-    static uint8_t row = 0;                   // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8;     // pointer to begin of every row (8 byte per row)
-    for (uint8_t byte = 0; byte < 8; byte++) {
-      uint8_t pixels = *head;
-      head++;
-      pixels = pixels ^ mask;
-      for (uint8_t i = 0; i<8; i++) {
-        digitalWrite(sdi, !!(pixels & (1 << (7 - i))));
-        digitalWrite(clk,HIGH);
-        digitalWrite(clk,LOW);   
-      }
-      
-    }
-    digitalWrite(cs1, HIGH);                 // disable display (einfach beide 74HC138 via CS deaktivieren)    
-    // select row
-    digitalWrite(a0,  (row & 0x01));
-    digitalWrite(a1,  (row & 0x02));
-    digitalWrite(a2,  (row & 0x04));
-    digitalWrite(cs0, (row & 0x08));
-    // latch data
-    digitalWrite(le, HIGH);
-    digitalWrite(le, LOW);
-    digitalWrite(cs1, LOW);                  // enable display
-    row = row + 1;
-    if ( row == NUM_ROWS ) row = 0;                // Anzahl Zeilen
-
-  }
-
-    timer1_write(500);
-}
-
-// =======================================================================
-
 void loop() {
   AsyncElegantOTA.loop();
   showClock();
@@ -1057,7 +1854,7 @@ void loop() {
       if (millis() > (preTimeText2.toInt() * 1000) + clkTime3) {
         wipeHorizontalLine();
         Serial.println("Start scrolling scrollText2...");
-        hTextScroll8x16(scrollText2.c_str(), text2Delay.toInt());
+        h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
         /*
         uint8_t scrollText2Length = scrollText2.length() + 1;
         char scrollText2CharBuf[scrollText2Length];
