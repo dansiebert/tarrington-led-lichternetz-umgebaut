@@ -215,23 +215,24 @@ const char* PARAM_INPUT_34 = "reverseCheckbox";
 // transfer displaybuf onto led matrix using timer interrupt (configured in setup())
 ICACHE_RAM_ATTR void timer1_ISR() {
 
-  if (mirror == 1) {
-    static uint8_t row = 0;                       // is only set the first time through the loop because of "static"
-    uint8_t *head = displaybuf + row * 8 + 7;     // pointer to last segment (8th byte) of every row
+  if (mirror == 1) {   // Scroll-Richtung tauschen (beim letzten Byte (Zone) beginnen und alle Bits in den Bytes spiegeln)
+    static uint8_t row = 0;                       // wird wegen Typ "static" nur beim ersten Durchlauf auf 0 gesetzt
+    uint8_t *head = displaybuf + row * 8 + 7;     // Zeiger auf letzte Zone (8. Byte) der aktuellen Zeile setzen
     for (uint8_t byte = 0; byte < 8; byte++) {
-      uint8_t pixels = *head;                     // 1 Byte aus Display-Puffer lesen
-      head--;                                     // pointer in row 1 segment (1 byte) back
-      pixels = pixels ^ mask;
+      uint8_t pixels = *head;                     // 1 Byte (pixels) aus Display-Puffer (wo der Zeiger (*head) gerade hinzeigt) lesen
+      head--;                                     // Zeiger in aktueller Zeile eine Zone (1 Byte) nach links setzen (verringern)
+      pixels = pixels ^ mask;                     // aktuelles Byte ggf. reversieren
 
-      // mirror pixels
+      // alle Bits im aktuellen Byte spiegeln (pixels wird zu reversepixels)
 	    uint8_t reversepixels = 0;
 	    for (uint8_t i = 0; i<8; i++) {
         bitWrite(reversepixels,7-i,bitRead(pixels,i));
       }
 	  
+      // aktuelles Byte ins Schieberegister shiften
       for (uint8_t i = 0; i<8; i++) {
-        digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));
-        digitalWrite(clk,HIGH);
+        digitalWrite(sdi, !!(reversepixels & (1 << (7 - i))));   // Bit an seriellen Eingang des Schieberegisters legen
+        digitalWrite(clk,HIGH);                                  // Flankenwechsel an Takteingang des Schieberegisters zum Laden des Bits
         digitalWrite(clk,LOW);   
       }
     }
@@ -247,7 +248,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
       digitalWrite(le,  LOW);
       digitalWrite(cs1, LOW);                   // enable display
     #else
-      digitalWrite(oe, HIGH);                  // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      digitalWrite(oe, HIGH);                  // disable display    
       // select row
       digitalWrite(a0,  (row & 0x01));
       digitalWrite(a1,  (row & 0x02));
@@ -289,7 +290,7 @@ ICACHE_RAM_ATTR void timer1_ISR() {
       digitalWrite(le,  LOW);
       digitalWrite(cs1, LOW);                   // enable display
     #else
-      digitalWrite(oe, HIGH);                   // disable display (einfach beide 74HC138 via CS deaktivieren)    
+      digitalWrite(oe, HIGH);                   // disable display    
       // select row
       digitalWrite(a0,  (row & 0x01));
       digitalWrite(a1,  (row & 0x02));
