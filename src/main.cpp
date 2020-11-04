@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-//#define DEV
+#define DEV
 
 #include "fonts.h"
 #include <LittleFS.h>
@@ -1381,7 +1381,7 @@ void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                       //
 
 // =======================================================================
 
-void snowFall() {   // Schneeflocke vertikal scrollen
+void snowFall() {   // Schneeflocken vertikal scrollen
   clearMatrix();
   clkTime6 = millis();
   
@@ -1390,17 +1390,24 @@ void snowFall() {   // Schneeflocke vertikal scrollen
   uint8_t speeddelay[8];
   uint8_t startdelaycount[8];
   uint8_t speeddelaycount[8];
+  uint8_t starDone[8];
+  uint8_t allStarsDone = 0;
+
   for (uint8_t zone = 0; zone < 8; zone++) {
     starimage[zone] = 0;
     startdelay[zone] = random(0,50);
     speeddelay[zone] = random(0,5);
     startdelaycount[zone] = 0;
     speeddelaycount[zone] = 0;
+    starDone[zone] = 0;
   }
 
-  while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
+  while ( allStarsDone < 8 ) {
     for (uint8_t zone = 0; zone < 8; zone++) {
-      if ( startdelaycount[zone] >= startdelay[zone] ) {                     // Start der Flocke um eine zufaellige Zeit verzögern
+      if ( (millis() > (snowDuration.toInt() * 1000) + clkTime6) and starimage[zone] == 0 ) {   // wenn Zeit abgelaufen und Flocke unten raus
+        starDone[zone] = 1;
+      }
+      if ( startdelaycount[zone] >= startdelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
         drawImage( zone * 8, 2, 8, 20, stars20 + starimage[zone] * 20);      // passendes Image aus stars-Font-Array zeichnen
         if (speeddelaycount[zone] >= speeddelay[zone]) {
           speeddelaycount[zone] = 0;
@@ -1415,6 +1422,10 @@ void snowFall() {   // Schneeflocke vertikal scrollen
         }
       }
       startdelaycount[zone]++;
+      allStarsDone = 0;
+      for (uint8_t i = 0; i < 8; i++) {   // checken, ob alle Flocken fertig gescrollt sind
+        allStarsDone += starDone[i];
+      }
     }
     delay(snowDelay.toInt());
   }
@@ -1764,7 +1775,7 @@ void setup() {
 
   String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
   //h_TextScroll_16x20_v2(startString.c_str(), 45);
-  h_TextScroll_8x16(startString.c_str(), 70);
+  h_TextScroll_8x16(startString.c_str(), 40);
 
   clkTime1 = millis();
   clkTime2 = millis();
