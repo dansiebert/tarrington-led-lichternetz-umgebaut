@@ -3,7 +3,12 @@
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
 #define DEV
 
+#include "defaultsettings.h"
 #include "fonts.h"
+#include "christmas-symbols_16x16_bin.h"
+#include "inputparameters.h"
+#include "website.h"
+
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
@@ -67,44 +72,6 @@ WiFiUDP Udp;
 
 // =======================================================================
 
-String scrollText1 = "Text 1";
-String scrollText2 = "Text 2";
-String scrollText3 = "Text 3";
-String scrollSpeed = "45";
-String text1Delay = "45";
-String text2Delay = "45";
-String text3Delay = "45";
-String preTimeWeather = "20";
-String preTimeText1 = "20";
-String preTimeText2 = "20";
-String preTimeText3 = "20";
-String preTimeSnow = "20";
-String preTimeStar = "20";
-String snowDuration = "20";
-String snowDelay = "50";
-String starDuration = "20";
-String starDelay = "10";
-String starCount = "300";
-String timeBetweenUpdates = "60";
-String cityID = "2944098";           // Brandenburg/Briest;
-String weatherLocation = "Briest";   // passend zur CityID
-String scrolltext1Checkbox = "checked";
-String scrolltext2Checkbox = "unchecked";
-String scrolltext3Checkbox = "unchecked";
-String dateCheckbox = "checked";
-String weatherCheckbox = "checked";
-String tempCheckbox = "checked";
-String rainCheckbox = "checked";
-String windCheckbox = "checked";
-String humidityCheckbox = "unchecked";
-String pressureCheckbox = "unchecked";
-String locationCheckbox = "unchecked";
-String dotsCheckbox = "checked";
-String snowCheckbox = "checked";
-String starCheckbox = "checked";
-
-// =======================================================================
-
 const char* weatherHost = "api.openweathermap.org";
 String weatherKey = "OpenWheaterMap-API-Key_eintragen";
 String weatherLang = "&lang=en";
@@ -132,15 +99,8 @@ Timezone CE(CEST, CET);
 String scrollString;
 String dayName[] = {"Err", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
 
-unsigned long clkTime1 = 0;
-unsigned long clkTime2 = 0;
-unsigned long clkTime3 = 0;
-unsigned long clkTime4 = 0;
-unsigned long clkTime5 = 0;
-unsigned long clkTime6 = 0;
-unsigned long clkTime7 = 0;
-unsigned long clkTime8 = 0;
-unsigned long clkTimeWeatherUpdate = 0;
+unsigned long clkTimeEffect = 0;
+unsigned long clkTimePre = 0;
 int updCnt = 0;
 uint8_t state = 1;
 
@@ -170,45 +130,6 @@ uint8_t displaybuf[160] = {
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 };
-
-// =======================================================================
-
-const char* PARAM_INPUT_01 = "scrollText1";
-const char* PARAM_INPUT_02 = "scrollText2";
-const char* PARAM_INPUT_03 = "scrollText3";
-const char* PARAM_INPUT_04 = "scrolltext1Checkbox";
-const char* PARAM_INPUT_05 = "scrolltext2Checkbox";
-const char* PARAM_INPUT_06 = "scrolltext3Checkbox";
-const char* PARAM_INPUT_3 = "weatherCheckbox";
-const char* PARAM_INPUT_6 = "tempCheckbox";
-const char* PARAM_INPUT_7 = "rainCheckbox";
-const char* PARAM_INPUT_8 = "windCheckbox";
-const char* PARAM_INPUT_9 = "humidityCheckbox";
-const char* PARAM_INPUT_10 = "pressureCheckbox";
-const char* PARAM_INPUT_11 = "updatecountCheckbox";
-const char* PARAM_INPUT_12 = "locationCheckbox";
-const char* PARAM_INPUT_13 = "dateCheckbox";
-const char* PARAM_INPUT_14 = "scrollSpeed";
-const char* PARAM_INPUT_15 = "dotsCheckbox";
-const char* PARAM_INPUT_16 = "snowCheckbox";
-const char* PARAM_INPUT_17 = "preTimeWeather";
-const char* PARAM_INPUT_18 = "preTimeText1";
-const char* PARAM_INPUT_19 = "preTimeText2";
-const char* PARAM_INPUT_20 = "cityID";
-const char* PARAM_INPUT_21 = "preTimeText3";
-const char* PARAM_INPUT_22 = "preTimeSnow";
-const char* PARAM_INPUT_23 = "preTimeStar";
-const char* PARAM_INPUT_24 = "snowDuration";
-const char* PARAM_INPUT_25 = "snowDelay";
-const char* PARAM_INPUT_26 = "starDuration";
-const char* PARAM_INPUT_27 = "starDelay";
-const char* PARAM_INPUT_28 = "starCount";
-const char* PARAM_INPUT_29 = "starCheckbox";
-const char* PARAM_INPUT_30 = "text1Delay";
-const char* PARAM_INPUT_31 = "text2Delay";
-const char* PARAM_INPUT_32 = "text3Delay";
-const char* PARAM_INPUT_33 = "mirrorCheckbox";
-const char* PARAM_INPUT_34 = "reverseCheckbox";
 
 // =======================================================================
 
@@ -336,7 +257,7 @@ void clearMatrix() {
 }
 
 void drawPoint(uint16_t x, uint16_t y, uint8_t pixel) {
-  if ( x < 0 || x > 63 || y < 0 || y > 19 ) {
+  if ( x < 0 || x > 63 || y < 0 || y > (NUM_ROWS - 1) ) {
     return;
   }
   uint8_t *byte = displaybuf + x / 8 + y * 8;
@@ -394,100 +315,6 @@ void drawDigital_16(uint16_t x, uint16_t y, uint8_t n) {
   }
 }
 /* --- end draw functions --- */
-// =======================================================================
-
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html><head>
-  <title>LED Lichternetz Konfiguration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  </head><body>
-  <table>
-    <tr><td>Verbunden mit:</td><td>%NETWORK%</td></tr>
-    <tr><td>Signal-St&auml;rke:</td><td>%RSSI% &#037;</td></tr>
-  </table>
-  <h2>Einstellungen:</h2>
-  <form action="/get">
-    <table>
-      <tr><td>Scrolltext 1</td><td><input type="text" size="80" name="scrollText1" value="%SCROLLTEXT1OPTIONS%" required></td></tr>
-      <tr><td>Scrolltext 2</td><td><input type="text" size="80" name="scrollText2" value="%SCROLLTEXT2OPTIONS%" required></td></tr>
-      <tr><td>Scrolltext 3</td><td><input type="text" size="80" name="scrollText3" value="%SCROLLTEXT3OPTIONS%" required></td></tr>
-    </table>
-    <br><br>
-    <table>
-      <tr>
-        <td></td>
-        <td>aktiv</td>
-        <td>Vorlauf</td>
-        <td>Speed</td>
-        <td>Dauer</td>
-      </tr>
-      <tr>
-        <td>Wetter</td>
-        <td><input type="checkbox" name="weatherCheckbox" value="checked" %ENABLE_WEATHER_INPUT% onClick="this.form.submit();"></td>
-        <td><input name="preTimeWeather" type="number" min="0" max="300" value="%preTimeWeatherOPTIONS%"></td>
-        <!-- <td><select name="scrollSpeed">%SCROLLSPEEDOPTIONS%</select></td> -->
-        <td><input name="scrollSpeed" type="number" min="5" max="1000" value=%SCROLLSPEEDOPTIONS%></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Text 1</td>
-        <td><input type="checkbox" name="scrolltext1Checkbox" value="checked" %SCROLLTEXT1_CHECKBOX_OPTIONS% onClick="this.form.submit();"></td>
-        <td><input name="preTimeText1" type="number" min="0" max="300" value="%PRETIMETEXT1OPTIONS%"></td>
-        <td><input name="text1Delay" type="number" min="5" max="1000" value=%TEXT1DELAYOPTIONS%></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Text 2</td>
-        <td><input type="checkbox" name="scrolltext2Checkbox" value="checked" %SCROLLTEXT2_CHECKBOX_OPTIONS% onClick="this.form.submit();"></td>
-        <td><input name="preTimeText2" type="number" min="0" max="300" value="%PRETIMETEXT2OPTIONS%"></td>
-        <td><input name="text2Delay" type="number" min="5" max="1000" value=%TEXT2DELAYOPTIONS%></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Text 3</td>
-        <td><input type="checkbox" name="scrolltext3Checkbox" value="checked" %SCROLLTEXT3_CHECKBOX_OPTIONS% onClick="this.form.submit();"></td>
-        <td><input name="preTimeText3" type="number" min="0" max="300" value="%PRETIMETEXT3OPTIONS%"></td>
-        <td><input name="text3Delay" type="number" min="5" max="1000" value=%TEXT3DELAYOPTIONS%></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Schnee </td>
-        <td><input type="checkbox" name="snowCheckbox" value="checked" %ENABLE_SNOW_INPUT% onClick="this.form.submit();"></td>
-        <td><input name="preTimeSnow" type="number" min="0" max="300" value="%PRETIMESNOWOPTIONS%"></td>
-        <td><input name="snowDelay" type="number" min="5" max="1000" value=%SNOWDELAYOPTIONS%></td>
-        <td><input name="snowDuration" type="number" min="0" max="300" value="%SNOWDURATIONOPTIONS%"></td>
-      </tr>
-      <tr>
-        <td>Sterne </td>
-        <td><input type="checkbox" name="starCheckbox" value="checked" %ENABLE_STAR_INPUT% onClick="this.form.submit();"></td>
-        <td><input name="preTimeStar" type="number" min="0" max="300" value="%PRETIMESTAROPTIONS%"></td>
-        <td><input name="starDelay" type="number" min="5" max="1000" value=%STARDELAYOPTIONS%></td>
-        <td><input name="starDuration" type="number" min="0" max="300" value="%STARDURATIONOPTIONS%"></td>
-      </tr>
-    </table>
-    <br><br>
-    <b>Sonstige Einstellungen:</b>
-    <br><br>
-    <table>
-    <tr><td>Display spiegeln</td><td><input type="checkbox" name="mirrorCheckbox" value="checked" %ENABLE_MIRROR_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Display invertieren</td><td><input type="checkbox" name="reverseCheckbox" value="checked" %ENABLE_REVERSE_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>OWMorg City-ID</td><td><input name="cityID" type="text" size="7" value="%CITYIDOPTIONS%">&nbsp;%WEATHERLOCATION%</td></tr>
-    <tr><td>Anzahl Sterne</td><td><input name="starCount" type="number" min="1" max="1000" value=%STARCOUNTOPTIONS%></td></tr>
-    <tr><td>Datum aktivieren</td><td><input type="checkbox" name="dateCheckbox" value="checked" %ENABLE_DATE_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Temperatur anzeigen</td><td><input type="checkbox" name="tempCheckbox" value="checked" %ENABLE_TEMP_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Regen anzeigen</td><td><input type="checkbox" name="rainCheckbox" value="checked" %ENABLE_RAIN_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Wind anzeigen</td><td><input type="checkbox" name="windCheckbox" value="checked" %ENABLE_WIND_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Luftfeuchte anzeigen</td><td><input type="checkbox" name="humidityCheckbox" value="checked" %ENABLE_HUMIDITY_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Luftdruck anzeigen</td><td><input type="checkbox" name="pressureCheckbox" value="checked" %ENABLE_PRESSURE_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>Ort anzeigen</td><td><input type="checkbox" name="locationCheckbox" value="checked" %ENABLE_LOCATION_INPUT% onClick="this.form.submit();"></td></tr>
-    <tr><td>blinkende Doppelpunkte</td><td><input type="checkbox" name="dotsCheckbox" value="checked" %ENABLE_DOTS_INPUT% onClick="this.form.submit();"></td></tr>
-    </table>
-    <br><br>
-    <a href="/ota">Firmwareupdate</a>
-    <br><br>
-    <input type="submit" value="speichern">
-  </form>
-</body></html>)rawliteral";
 
 // =======================================================================
 
@@ -529,18 +356,30 @@ String processor(const String& var) {
     return preTimeText3;
   } else if (var == "PRETIMESNOWOPTIONS") {
     return preTimeSnow;
+  } else if (var == "PRETIMESNOWFALL2OPTIONS") {
+    return preTimeSnowFall2;
   } else if (var == "PRETIMESTAROPTIONS") {
     return preTimeStar;
+  } else if (var == "PRETIMECHRISTMASSYMBOLSOPTIONS") {
+    return preTimeChristmasSymbols;
   } else if (var == "SNOWDURATIONOPTIONS") {
     return snowDuration;
   } else if (var == "SNOWDELAYOPTIONS") {
     return snowDelay;
+  } else if (var == "SNOWFALL2DURATIONOPTIONS") {
+    return snowFall2Duration;
+  } else if (var == "SNOWFALL2DELAYOPTIONS") {
+    return snowFall2Delay;
   } else if (var == "STARDURATIONOPTIONS") {
     return starDuration;
   } else if (var == "STARDELAYOPTIONS") {
     return starDelay;
   } else if (var == "STARCOUNTOPTIONS") {
     return starCount;
+  } else if (var == "CHRISTMASSYMBOLSDURATIONOPTIONS") {
+    return christmasSymbolsDuration;
+  } else if (var == "CHRISTMASSYMBOLSDELAYOPTIONS") {
+    return christmasSymbolsDelay;
   } else if (var == "CITYIDOPTIONS") {
     return cityID;
   } else if (var == "WEATHERLOCATION") {
@@ -565,8 +404,12 @@ String processor(const String& var) {
     return dotsCheckbox;
   } else if (var == "ENABLE_SNOW_INPUT") {
     return snowCheckbox;
+  } else if (var == "ENABLE_SNOWFALL2_INPUT") {
+    return snowFall2Checkbox;
   } else if (var == "ENABLE_STAR_INPUT") {
     return starCheckbox;
+  } else if (var == "ENABLE_CHRISTMASSYMBOLS_INPUT") {
+    return christmasSymbolsCheckbox;
   } else if (var == "ENABLE_MIRROR_INPUT") {
     return mirrorCheckbox;
   } else if (var == "ENABLE_REVERSE_INPUT") {
@@ -614,6 +457,7 @@ void writeConfig() {
     f.println("mirrorCheckbox=" + mirrorCheckbox);
     f.println("reverseCheckbox=" + reverseCheckbox);
     f.println("snowCheckbox=" + snowCheckbox);
+    f.println("snowFall2Checkbox=" + snowFall2Checkbox);
     f.println("starCheckbox=" + starCheckbox);
     f.println("dateCheckbox=" + dateCheckbox);
     f.println("weatherCheckbox=" + weatherCheckbox);
@@ -633,12 +477,18 @@ void writeConfig() {
     f.println("preTimeText2=" + String(preTimeText2));
     f.println("preTimeText3=" + String(preTimeText3));
     f.println("preTimeSnow=" + String(preTimeSnow));
+    f.println("preTimeSnowFall2=" + String(preTimeSnowFall2));
     f.println("preTimeStar=" + String(preTimeStar));
+    f.println("preTimeChristmasSymbols=" + String(preTimeChristmasSymbols));
     f.println("snowDuration=" + String(snowDuration));
     f.println("snowDelay=" + String(snowDelay));
+    f.println("snowFall2Duration=" + String(snowFall2Duration));
+    f.println("snowFall2Delay=" + String(snowFall2Delay));
     f.println("starDuration=" + String(starDuration));
     f.println("starDelay=" + String(starDelay));
     f.println("starCount=" + String(starCount));
+    f.println("christmasSymbolsDuration=" + String(christmasSymbolsDuration));
+    f.println("christmasSymbolsDelay=" + String(christmasSymbolsDelay));
     f.println("cityID=" + String(cityID));
   }
   f.close();
@@ -735,10 +585,20 @@ void readConfig() {
       snowCheckbox.trim();
       Serial.println("snowCheckbox= " + snowCheckbox);
     }
+    if (configline.indexOf("snowFall2Checkbox=") >= 0) {
+      snowFall2Checkbox = configline.substring(configline.lastIndexOf("snowFall2Checkbox=") + 18);
+      snowFall2Checkbox.trim();
+      Serial.println("snowFall2Checkbox= " + snowFall2Checkbox);
+    }
     if (configline.indexOf("starCheckbox=") >= 0) {
       starCheckbox = configline.substring(configline.lastIndexOf("starCheckbox=") + 13);
       starCheckbox.trim();
       Serial.println("starCheckbox= " + starCheckbox);
+    }
+    if (configline.indexOf("christmasSymbolsCheckbox=") >= 0) {
+      christmasSymbolsCheckbox = configline.substring(configline.lastIndexOf("christmasSymbolsCheckbox=") + 25);
+      christmasSymbolsCheckbox.trim();
+      Serial.println("christmasSymbolsCheckbox= " + christmasSymbolsCheckbox);
     }
     if (configline.indexOf("mirrorCheckbox=") >= 0) {
       mirrorCheckbox = configline.substring(configline.lastIndexOf("mirrorCheckbox=") + 15);
@@ -792,9 +652,17 @@ void readConfig() {
       preTimeSnow = configline.substring(configline.lastIndexOf("preTimeSnow=") + 12).toInt();
       Serial.println("preTimeSnow= " + String(preTimeSnow));
     }
+    if (configline.indexOf("preTimeSnowFall2=") >= 0) {
+      preTimeSnowFall2 = configline.substring(configline.lastIndexOf("preTimeSnowFall2=") + 17).toInt();
+      Serial.println("preTimeSnowFall2= " + String(preTimeSnowFall2));
+    }
     if (configline.indexOf("preTimeStar=") >= 0) {
       preTimeStar = configline.substring(configline.lastIndexOf("preTimeStar=") + 12).toInt();
       Serial.println("preTimeStar= " + String(preTimeStar));
+    }
+    if (configline.indexOf("preTimeChristmasSymbols=") >= 0) {
+      preTimeChristmasSymbols = configline.substring(configline.lastIndexOf("preTimeChristmasSymbols=") + 24).toInt();
+      Serial.println("preTimeChristmasSymbols= " + String(preTimeChristmasSymbols));
     }
     if (configline.indexOf("snowDuration=") >= 0) {
       snowDuration = configline.substring(configline.lastIndexOf("snowDuration=") + 13).toInt();
@@ -803,6 +671,14 @@ void readConfig() {
     if (configline.indexOf("snowDelay=") >= 0) {
       snowDelay = configline.substring(configline.lastIndexOf("snowDelay=") + 10).toInt();
       Serial.println("snowDelay= " + String(snowDelay));
+    }
+    if (configline.indexOf("snowFall2Duration=") >= 0) {
+      snowFall2Duration = configline.substring(configline.lastIndexOf("snowFall2Duration=") + 18).toInt();
+      Serial.println("snowFall2Duration= " + String(snowFall2Duration));
+    }
+    if (configline.indexOf("snowFall2Delay=") >= 0) {
+      snowFall2Delay = configline.substring(configline.lastIndexOf("snowFall2Delay=") + 15).toInt();
+      Serial.println("snowFall2Delay= " + String(snowFall2Delay));
     }
     if (configline.indexOf("starDuration=") >= 0) {
       starDuration = configline.substring(configline.lastIndexOf("starDuration=") + 13).toInt();
@@ -815,6 +691,14 @@ void readConfig() {
     if (configline.indexOf("starCount=") >= 0) {
       starCount = configline.substring(configline.lastIndexOf("starCount=") + 10).toInt();
       Serial.println("starCount= " + String(starCount));
+    }
+    if (configline.indexOf("christmasSymbolsDuration=") >= 0) {
+      christmasSymbolsDuration = configline.substring(configline.lastIndexOf("christmasSymbolsDuration=") + 25).toInt();
+      Serial.println("christmasSymbolsDuration= " + String(christmasSymbolsDuration));
+    }
+    if (configline.indexOf("christmasSymbolsDelay=") >= 0) {
+      christmasSymbolsDelay = configline.substring(configline.lastIndexOf("christmasSymbolsDelay=") + 22).toInt();
+      Serial.println("christmasSymbolsDelay= " + String(christmasSymbolsDelay));
     }
     if (configline.indexOf("cityID=") >= 0) {
       cityID = configline.substring(configline.lastIndexOf("cityID=") + 7);
@@ -1383,9 +1267,24 @@ void h_TextScroll_8x16(const char *s, uint8_t sdelay) {                       //
 
 // =======================================================================
 
+void drawChristmasSymbols() {
+  Serial.println("Start drawing christmasSymbols");
+  clkTimeEffect = millis();
+  while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
+    uint8_t x = random(0,47);
+    uint8_t y = random(0,3);
+    uint8_t s = random(0,3);
+    drawImage( x, y, 16, 16, christmasSymbols16x16 + s * 32);
+    delay(1000);
+    clearMatrix();
+  }
+}  
+  
+// =======================================================================  
+
 void snowFall() {   // Schneeflocken vertikal scrollen
   clearMatrix();
-  clkTime6 = millis();
+  clkTimeEffect = millis();
   
   uint8_t starimage[8];
   uint8_t startdelay[8];
@@ -1406,7 +1305,7 @@ void snowFall() {   // Schneeflocken vertikal scrollen
 
   while ( allStarsDone < 8 ) {
     for (uint8_t zone = 0; zone < 8; zone++) {
-      if ( (millis() > (snowDuration.toInt() * 1000) + clkTime6) and starimage[zone] == 0 ) {   // wenn Zeit abgelaufen und Flocke unten raus
+      if ( (millis() > (snowDuration.toInt() * 1000) + clkTimeEffect) and starimage[zone] == 0 ) {   // wenn Zeit abgelaufen und Flocke unten raus
         starDone[zone] = 1;
       }
       if ( startdelaycount[zone] >= startdelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
@@ -1440,10 +1339,10 @@ void snowFall() {   // Schneeflocken vertikal scrollen
 
 void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scrollen
   clearMatrix();
-  clkTime6 = millis();
-  while (millis() < (snowDuration.toInt() * 1000) + clkTime6) {
+  clkTimeEffect = millis();
+  while (millis() < (snowDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,7);
-    Serial.println("snow_pos= " + String(x * 8));
+    //Serial.println("snow_pos= " + String(x * 8));
     for (uint16_t i = 0; i < 23; i++) {
       //Serial.println("snow_char= " + String(i));
       const uint8_t *pSrc = stars16 + i * 16;
@@ -1466,8 +1365,8 @@ void starrySky() {
     xPos[i] = 0;
     yPos[i] = 0;
   }
-  clkTime8 = millis();
-  while (millis() < (starDuration.toInt() * 1000) + clkTime8) {
+  clkTimeEffect = millis();
+  while (millis() < (starDuration.toInt() * 1000) + clkTimeEffect) {
     for (uint16_t i = 0; i < starCount.toInt(); i++) {
       //Serial.println("star_i= " + String(i));
       //Serial.println("Deleting old position " + String(xPos[i]) + " , " + String(yPos[i]));
@@ -1612,14 +1511,26 @@ void setup() {
       if (request->hasParam(PARAM_INPUT_22)) {
         preTimeSnow = request->getParam(PARAM_INPUT_22)->value();
       }
+      if (request->hasParam(PARAM_INPUT_35)) {
+        preTimeSnowFall2 = request->getParam(PARAM_INPUT_35)->value();
+      }
       if (request->hasParam(PARAM_INPUT_23)) {
         preTimeStar = request->getParam(PARAM_INPUT_23)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_38)) {
+        preTimeChristmasSymbols = request->getParam(PARAM_INPUT_38)->value();
       }
       if (request->hasParam(PARAM_INPUT_24)) {
         snowDuration = request->getParam(PARAM_INPUT_24)->value();
       }
       if (request->hasParam(PARAM_INPUT_25)) {
         snowDelay = request->getParam(PARAM_INPUT_25)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_36)) {
+        snowFall2Duration = request->getParam(PARAM_INPUT_36)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_37)) {
+        snowFall2Delay = request->getParam(PARAM_INPUT_37)->value();
       }
       if (request->hasParam(PARAM_INPUT_26)) {
         starDuration = request->getParam(PARAM_INPUT_26)->value();
@@ -1629,6 +1540,12 @@ void setup() {
       }
       if (request->hasParam(PARAM_INPUT_28)) {
         starCount = request->getParam(PARAM_INPUT_28)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_39)) {
+        christmasSymbolsDuration = request->getParam(PARAM_INPUT_39)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_40)) {
+        christmasSymbolsDelay = request->getParam(PARAM_INPUT_40)->value();
       }
       if (request->hasParam(PARAM_INPUT_20)) {
         cityID = request->getParam(PARAM_INPUT_20)->value();
@@ -1699,10 +1616,20 @@ void setup() {
       } else {
         snowCheckbox = "unchecked";
       }
+      if (request->hasParam(PARAM_INPUT_41)) {
+        snowFall2Checkbox = request->getParam(PARAM_INPUT_41)->value();
+      } else {
+        snowFall2Checkbox = "unchecked";
+      }
       if (request->hasParam(PARAM_INPUT_29)) {
         starCheckbox = request->getParam(PARAM_INPUT_29)->value();
       } else {
         starCheckbox = "unchecked";
+      }
+      if (request->hasParam(PARAM_INPUT_42)) {
+        christmasSymbolsCheckbox = request->getParam(PARAM_INPUT_42)->value();
+      } else {
+        christmasSymbolsCheckbox = "unchecked";
       }
       if (request->hasParam(PARAM_INPUT_33)) {
         mirrorCheckbox = request->getParam(PARAM_INPUT_33)->value();
@@ -1735,7 +1662,9 @@ void setup() {
     Serial.println("locationCheckbox= " + locationCheckbox);
     Serial.println("dotsCheckbox= " + dotsCheckbox);
     Serial.println("snowCheckbox= " + snowCheckbox);
+    Serial.println("snowFall2Checkbox= " + snowFall2Checkbox);
     Serial.println("starCheckbox= " + starCheckbox);
+    Serial.println("christmasSymbolsCheckbox= " + christmasSymbolsCheckbox);
     Serial.println("mirrorCheckbox= " + mirrorCheckbox);
     Serial.println("reverseCheckbox= " + reverseCheckbox);
     Serial.println("scrollSpeed= " + String(scrollSpeed));
@@ -1747,11 +1676,17 @@ void setup() {
     Serial.println("preTimeText2= " + String(preTimeText2));
     Serial.println("preTimeText3= " + String(preTimeText3));
     Serial.println("preTimeSnow= " + String(preTimeSnow));
+    Serial.println("preTimeSnowFall2= " + String(preTimeSnowFall2));
     Serial.println("preTimeStar= " + String(preTimeStar));
+    Serial.println("preTimeChristmasSymbols= " + String(preTimeChristmasSymbols));
     Serial.println("snowDuration= " + String(snowDuration));
+    Serial.println("snowFall2Duration= " + String(snowFall2Duration));
     Serial.println("starDuration= " + String(starDuration));
+    Serial.println("christmasSymbolsDuration= " + String(christmasSymbolsDuration));
     Serial.println("snowDelay= " + String(snowDelay));
+    Serial.println("snowFall2Delay= " + String(snowFall2Delay));
     Serial.println("starDelay= " + String(starDelay));
+    Serial.println("christmasSymbolsDelay= " + String(christmasSymbolsDelay));
     Serial.println("starCount= " + String(starCount));
     Serial.println("cityID= " + String(cityID));
     writeConfig();
@@ -1778,16 +1713,9 @@ void setup() {
 
   String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
   //h_TextScroll_16x20_v2(startString.c_str(), 45);
-  h_TextScroll_8x16(startString.c_str(), 40);
+  h_TextScroll_8x16(startString.c_str(), 30);
 
-  clkTime1 = millis();
-  clkTime2 = millis();
-  clkTime3 = millis();
-  clkTime4 = millis();
-  clkTime5 = millis();
-  clkTime6 = millis();
-  clkTime7 = millis();
-  clkTime8 = millis();
+  clkTimePre = millis();
 }
 
 // =======================================================================
@@ -1808,9 +1736,9 @@ void loop() {
 */
 
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
-  case 1:
+  case 1:   // Wetter
     if (weatherCheckbox == "checked") {
-      if (millis() > (preTimeWeather.toInt() * 1000) + clkTime1) {
+      if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre) {
         wipeVerticalLine();
         updCnt--;
         Serial.println("updCnt=" + String(updCnt));
@@ -1834,17 +1762,17 @@ void loop() {
         h_TextScroll_16x20_v1(charBuf, stringlength, scrollSpeed.toInt());
         Serial.println("Stop scrolling online weather data.");
         state = 2;
-        clkTime2 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime2 = millis();
+      clkTimePre = millis();
       state = 2;
     }
     break;
 
-  case 2:
+  case 2:   // Scrolltext 1
     if (scrolltext1Checkbox == "checked") {
-      if (millis() > (preTimeText1.toInt() * 1000) + clkTime2) {
+      if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre) {
         wipeHorizontalLine();
         Serial.println("Start scrolling scrollText1...");
         uint8_t scrollText1Length = scrollText1.length() + 1;
@@ -1856,17 +1784,17 @@ void loop() {
         h_TextScroll_16x20_v1(scrollText1CharBuf, scrollText1Length, text1Delay.toInt());
         Serial.println("Stop scrolling scrollText1.");
         state = 3;
-        clkTime3 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime3 = millis();
+      clkTimePre = millis();
       state = 3;
     }
     break;
     
-  case 3:
+  case 3:   // Scrolltext 2
     if (scrolltext2Checkbox == "checked") {
-      if (millis() > (preTimeText2.toInt() * 1000) + clkTime3) {
+      if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre) {
         wipeHorizontalLine();
         Serial.println("Start scrolling scrollText2...");
         h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
@@ -1879,17 +1807,17 @@ void loop() {
         */
         Serial.println("Stop scrolling scrollText2.");
         state = 4;
-        clkTime4 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime4 = millis();
+      clkTimePre = millis();
       state = 4;
     }
     break;
 
-  case 4:
+  case 4:   // Scrolltext 3
     if (scrolltext3Checkbox == "checked") {
-      if (millis() > (preTimeText3.toInt() * 1000) + clkTime4) {
+      if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre) {
         wipeHorizontalLine();
         Serial.println("Start scrolling scrollText3...");
         uint8_t scrollText3Length = scrollText3.length() + 1;
@@ -1899,42 +1827,74 @@ void loop() {
         h_TextScroll_16x20_v1(scrollText3CharBuf, scrollText3Length, text3Delay.toInt());
         Serial.println("Stop scrolling scrollText3.");
         state = 5;
-        clkTime5 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime5 = millis();
+      clkTimePre = millis();
       state = 5;
     }
     break;
 
-  case 5:
+  case 5:   // Schneefall viele Flocken
     if (snowCheckbox == "checked") {
-      if (millis() > (preTimeSnow.toInt() * 1000) + clkTime5) {
+      if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre) {
         wipeHorizontalLine();
         Serial.println("Start falling snow...");
         snowFall();
         Serial.println("Stop falling snow.");
         state = 6;
-        clkTime7 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime7 = millis();
+      clkTimePre = millis();
       state = 6;
     }
     break;
 
-  case 6:
+  case 6:   // Weihnachtssymbole
+    if (christmasSymbolsCheckbox == "checked") {
+      if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre) {
+        wipeHorizontalLine();
+        Serial.println("Start drawChristmasSymbols...");
+        drawChristmasSymbols();
+        Serial.println("Stop drawChristmasSymbols.");
+        state = 7;
+        clkTimePre = millis();
+      }
+    } else {
+      clkTimePre = millis();
+      state = 7;
+    }
+    break;
+
+  case 7:   // Schneefall einzelne Flocken
+    if (snowFall2Checkbox == "checked") {
+      if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre) {
+        wipeHorizontalLine();
+        Serial.println("Start snowFall2...");
+        snowFall2();
+        Serial.println("Stop snowFall2.");
+        state = 8;
+        clkTimePre = millis();
+      }
+    } else {
+      clkTimePre = millis();
+      state = 8;
+    }
+    break;
+
+  case 8:   // Sternenhimmel
     if (starCheckbox == "checked") {
-      if (millis() > (preTimeStar.toInt() * 1000) + clkTime7) {
+      if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre) {
         wipeHorizontalLine();
         Serial.println("Start star sky...");
         starrySky();
         Serial.println("Stop star sky.");
         state = 1;
-        clkTime1 = millis();
+        clkTimePre = millis();
       }
     } else {
-      clkTime1 = millis();
+      clkTimePre = millis();
       state = 1;
     }
     break;
