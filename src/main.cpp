@@ -346,6 +346,21 @@ String processor(const String& var) {
     return text2Delay;
   } else if (var == "TEXT3DELAYOPTIONS") {
     return text3Delay;
+  } else if (var == "TEXT1FONTOPTIONS") {
+      String fFont = text1Font;
+      String textFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
+      textFontOptions.replace(fFont + "'", fFont + "' selected" );
+    return textFontOptions;
+  } else if (var == "TEXT2FONTOPTIONS") {
+      String fFont = text2Font;
+      String textFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
+      textFontOptions.replace(fFont + "'", fFont + "' selected" );
+    return textFontOptions;
+  } else if (var == "TEXT3FONTOPTIONS") {
+      String fFont = text3Font;
+      String textFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
+      textFontOptions.replace(fFont + "'", fFont + "' selected" );
+    return textFontOptions;
   } else if (var == "preTimeWeatherOPTIONS") {
     return preTimeWeather;
   } else if (var == "PRETIMETEXT1OPTIONS") {
@@ -459,6 +474,7 @@ void writeConfig() {
     f.println("snowCheckbox=" + snowCheckbox);
     f.println("snowFall2Checkbox=" + snowFall2Checkbox);
     f.println("starCheckbox=" + starCheckbox);
+    f.println("christmasSymbolsCheckbox=" + christmasSymbolsCheckbox);
     f.println("dateCheckbox=" + dateCheckbox);
     f.println("weatherCheckbox=" + weatherCheckbox);
     f.println("tempCheckbox=" + tempCheckbox);
@@ -472,6 +488,9 @@ void writeConfig() {
     f.println("text1Delay=" + String(text1Delay));
     f.println("text2Delay=" + String(text2Delay));
     f.println("text3Delay=" + String(text3Delay));
+    f.println("text1Font=" + String(text1Font));
+    f.println("text2Font=" + String(text2Font));
+    f.println("text3Font=" + String(text3Font));
     f.println("preTimeWeather=" + String(preTimeWeather));
     f.println("preTimeText1=" + String(preTimeText1));
     f.println("preTimeText2=" + String(preTimeText2));
@@ -631,6 +650,18 @@ void readConfig() {
     if (configline.indexOf("text3Delay=") >= 0) {
       text3Delay = configline.substring(configline.lastIndexOf("text3Delay=") + 11).toInt();
       Serial.println("text3Delay= " + String(text3Delay));
+    }
+    if (configline.indexOf("text1Font=") >= 0) {
+      text1Font = configline.substring(configline.lastIndexOf("text1Font=") + 10).toInt();
+      Serial.println("text1Font= " + String(text1Font));
+    }
+    if (configline.indexOf("text2Font=") >= 0) {
+      text2Font = configline.substring(configline.lastIndexOf("text2Font=") + 10).toInt();
+      Serial.println("text2Font= " + String(text2Font));
+    }
+    if (configline.indexOf("text3Font=") >= 0) {
+      text3Font = configline.substring(configline.lastIndexOf("text3Font=") + 10).toInt();
+      Serial.println("text3Font= " + String(text3Font));
     }
     if (configline.indexOf("preTimeWeather=") >= 0) {
       preTimeWeather = configline.substring(configline.lastIndexOf("preTimeWeather=") + 15).toInt();
@@ -937,7 +968,7 @@ void getWeatherData()
 /* --- effect functions --- */
 
 void wipeHorizontal() {
-  clearMatrix();
+  //clearMatrix();
   for (uint8_t i = 0; i < 64; i++) {
     for (uint8_t j = 0; j < NUM_ROWS; j++) {
       drawPoint(i, j, 1);
@@ -997,6 +1028,26 @@ void wipeVerticalLine() {
   } 
 }
 
+// =======================================================================
+
+void wipeRandom(){
+  uint8_t wipeType = random(0,4);
+  Serial.println("wipeRandomType: " + String(wipeType));
+  switch (wipeType) {
+    case 0:
+      wipeHorizontal();
+      break;
+    case 1:
+       wipeHorizontalLine();
+       break;
+    case 2:
+      wipeVertical();
+      break;
+    case 3:
+      wipeVerticalLine();
+      break;
+  } 
+} 
 // =======================================================================
 
 // Arrays fuer die 8 Zonen + Puffer fuer neu reinlaufendes Zeichen
@@ -1271,9 +1322,9 @@ void drawChristmasSymbols() {
   Serial.println("Start drawing christmasSymbols");
   clkTimeEffect = millis();
   while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
-    uint8_t x = random(0,47);
-    uint8_t y = random(0,3);
-    uint8_t s = random(0,3);
+    uint8_t x = random(0,48);
+    uint8_t y = random(0,4);
+    uint8_t s = random(0,4);
     drawImage( x, y, 16, 16, christmasSymbols16x16 + s * 32);
     delay(1000);
     clearMatrix();
@@ -1296,7 +1347,7 @@ void snowFall() {   // Schneeflocken vertikal scrollen
 
   for (uint8_t zone = 0; zone < 8; zone++) {
     starimage[zone] = 0;
-    startdelay[zone] = random(0,50);
+    startdelay[zone] = random(0,51);
     speeddelay[zone] = random(0,5);
     startdelaycount[zone] = 0;
     speeddelaycount[zone] = 0;
@@ -1318,8 +1369,8 @@ void snowFall() {   // Schneeflocken vertikal scrollen
         if ( starimage[zone] == 28 ) {                                       // letzter Zustand erreicht (Flocke unten rausgescrollt)
           starimage[zone] = 0;
           startdelaycount[zone] = 0;
-          startdelay[zone] = random(0,50);
-          speeddelay[zone] = random(0,5);
+          startdelay[zone] = random(0,51);
+          speeddelay[zone] = random(0,6);
         }
       }
       startdelaycount[zone]++;
@@ -1341,14 +1392,14 @@ void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scro
   clearMatrix();
   clkTimeEffect = millis();
   while (millis() < (snowDuration.toInt() * 1000) + clkTimeEffect) {
-    uint8_t x = random(0,7);
+    uint8_t x = random(0,8);
     //Serial.println("snow_pos= " + String(x * 8));
     for (uint16_t i = 0; i < 23; i++) {
       //Serial.println("snow_char= " + String(i));
       const uint8_t *pSrc = stars16 + i * 16;
       drawImage( x * 8, 2, 8, 16, pSrc);
       pSrc++;
-      delay(snowDelay.toInt());
+      delay(snowFall2Delay.toInt());
     }
   }
   delay(1000);
@@ -1371,8 +1422,8 @@ void starrySky() {
       //Serial.println("star_i= " + String(i));
       //Serial.println("Deleting old position " + String(xPos[i]) + " , " + String(yPos[i]));
       drawPoint(xPos[i], yPos[i], 0);
-      xPos[i] = random(0,63);
-      yPos[i] = random(0,19);
+      xPos[i] = random(0,64);
+      yPos[i] = random(0,20);
       //Serial.println("Setting new position " + String(xPos[i]) + " , " + String(yPos[i]));
       drawPoint(xPos[i], yPos[i], 1);
       delay(starDelay.toInt());
@@ -1495,6 +1546,15 @@ void setup() {
       }
       if (request->hasParam(PARAM_INPUT_32)) {
         text3Delay = request->getParam(PARAM_INPUT_32)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_43)) {
+        text1Font = request->getParam(PARAM_INPUT_43)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_44)) {
+        text2Font = request->getParam(PARAM_INPUT_44)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_45)) {
+        text3Font = request->getParam(PARAM_INPUT_45)->value();
       }
       if (request->hasParam(PARAM_INPUT_17)) {
         preTimeWeather = request->getParam(PARAM_INPUT_17)->value();
@@ -1671,6 +1731,9 @@ void setup() {
     Serial.println("text1Delay= " + String(text1Delay));
     Serial.println("text2Delay= " + String(text2Delay));
     Serial.println("text3Delay= " + String(text3Delay));
+    Serial.println("text1Font= " + String(text1Font));
+    Serial.println("text2Font= " + String(text2Font));
+    Serial.println("text3Font= " + String(text3Font));
     Serial.println("preTimeWeather= " + String(preTimeWeather));
     Serial.println("preTimeText1= " + String(preTimeText1));
     Serial.println("preTimeText2= " + String(preTimeText2));
@@ -1739,7 +1802,7 @@ void loop() {
   case 1:   // Wetter
     if (weatherCheckbox == "checked") {
       if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre) {
-        wipeVerticalLine();
+        wipeRandom();
         updCnt--;
         Serial.println("updCnt=" + String(updCnt));
         if (updCnt <= 0) {
@@ -1773,15 +1836,25 @@ void loop() {
   case 2:   // Scrolltext 1
     if (scrolltext1Checkbox == "checked") {
       if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start scrolling scrollText1...");
-        uint8_t scrollText1Length = scrollText1.length() + 1;
-        Serial.print("scrollText1Length= ");
-        Serial.println (scrollText1.length());
-        char scrollText1CharBuf[scrollText1Length];
-        scrollText1.toCharArray(scrollText1CharBuf, scrollText1Length);
-        // horTextScroll_16x20(scrollText1CharBuf, scrollText1Length);
-        h_TextScroll_16x20_v1(scrollText1CharBuf, scrollText1Length, text1Delay.toInt());
+        switch (text1Font.toInt()){
+          case 1:
+            h_TextScroll_8x16(scrollText1.c_str(), text1Delay.toInt());
+            break;
+          case 2:
+            h_TextScroll_16x20_v2(scrollText1.c_str(), text1Delay.toInt());
+            break;
+          case 3:
+            uint8_t rand = random(1,3);
+            Serial.println("random: " + String(rand));
+            if (rand == 1) {
+              h_TextScroll_8x16(scrollText1.c_str(), text1Delay.toInt());
+            } else {
+              h_TextScroll_16x20_v2(scrollText1.c_str(), text1Delay.toInt());
+            }
+            break;
+        }
         Serial.println("Stop scrolling scrollText1.");
         state = 3;
         clkTimePre = millis();
@@ -1795,16 +1868,25 @@ void loop() {
   case 3:   // Scrolltext 2
     if (scrolltext2Checkbox == "checked") {
       if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start scrolling scrollText2...");
-        h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
-        /*
-        uint8_t scrollText2Length = scrollText2.length() + 1;
-        char scrollText2CharBuf[scrollText2Length];
-        scrollText2.toCharArray(scrollText2CharBuf, scrollText2Length);
-        // horTextScroll_16x20(scrollText2CharBuf, scrollText2Length);
-        horTextScroll_16x20(scrollText2CharBuf, scrollText2Length, text2Delay.toInt());
-        */
+        switch (text2Font.toInt()){
+          case 1:
+            h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
+            break;
+          case 2:
+            h_TextScroll_16x20_v2(scrollText2.c_str(), text2Delay.toInt());
+            break;
+          case 3:
+            uint8_t rand = random(1,3);
+            Serial.println("random: " + String(rand));
+            if (rand == 1) {
+              h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
+            } else {
+              h_TextScroll_16x20_v2(scrollText2.c_str(), text2Delay.toInt());
+            }
+            break;
+        }
         Serial.println("Stop scrolling scrollText2.");
         state = 4;
         clkTimePre = millis();
@@ -1818,13 +1900,25 @@ void loop() {
   case 4:   // Scrolltext 3
     if (scrolltext3Checkbox == "checked") {
       if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start scrolling scrollText3...");
-        uint8_t scrollText3Length = scrollText3.length() + 1;
-        char scrollText3CharBuf[scrollText3Length];
-        scrollText3.toCharArray(scrollText3CharBuf, scrollText3Length);
-        // horTextScroll_16x20(scrollText3CharBuf, scrollText3Length);
-        h_TextScroll_16x20_v1(scrollText3CharBuf, scrollText3Length, text3Delay.toInt());
+        switch (text3Font.toInt()){
+          case 1:
+            h_TextScroll_8x16(scrollText3.c_str(), text3Delay.toInt());
+            break;
+          case 2:
+            h_TextScroll_16x20_v2(scrollText3.c_str(), text3Delay.toInt());
+            break;
+          case 3:
+            uint8_t rand = random(1,3);
+            Serial.println("random: " + String(rand));
+            if (rand == 1) {
+              h_TextScroll_8x16(scrollText3.c_str(), text3Delay.toInt());
+            } else {
+              h_TextScroll_16x20_v2(scrollText3.c_str(), text3Delay.toInt());
+            }
+            break;
+        }
         Serial.println("Stop scrolling scrollText3.");
         state = 5;
         clkTimePre = millis();
@@ -1838,7 +1932,7 @@ void loop() {
   case 5:   // Schneefall viele Flocken
     if (snowCheckbox == "checked") {
       if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start falling snow...");
         snowFall();
         Serial.println("Stop falling snow.");
@@ -1854,7 +1948,7 @@ void loop() {
   case 6:   // Weihnachtssymbole
     if (christmasSymbolsCheckbox == "checked") {
       if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start drawChristmasSymbols...");
         drawChristmasSymbols();
         Serial.println("Stop drawChristmasSymbols.");
@@ -1870,7 +1964,7 @@ void loop() {
   case 7:   // Schneefall einzelne Flocken
     if (snowFall2Checkbox == "checked") {
       if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start snowFall2...");
         snowFall2();
         Serial.println("Stop snowFall2.");
@@ -1886,7 +1980,7 @@ void loop() {
   case 8:   // Sternenhimmel
     if (starCheckbox == "checked") {
       if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre) {
-        wipeHorizontalLine();
+        wipeRandom();
         Serial.println("Start star sky...");
         starrySky();
         Serial.println("Stop star sky.");

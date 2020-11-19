@@ -44,3 +44,6 @@ const char* PARAM_INPUT_39 = "christmasSymbolsDuration";
 const char* PARAM_INPUT_40 = "christmasSymbolsDelay";
 const char* PARAM_INPUT_41 = "snowFall2Checkbox";
 const char* PARAM_INPUT_42 = "christmasSymbolsCheckbox";
+const char* PARAM_INPUT_43 = "text1Font";
+const char* PARAM_INPUT_44 = "text2Font";
+const char* PARAM_INPUT_45 = "text3Font";
