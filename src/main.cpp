@@ -1030,8 +1030,29 @@ void wipeVerticalLine() {
 
 // =======================================================================
 
+void wipeLeftShift() {
+  Serial.println("Starte wipeLeftShift...");
+  for (uint8_t shift = 0; shift < 64; shift++) {       // 64 Spalten
+    for (uint8_t row = 0; row < NUM_ROWS; row++) {     // Zeile für Zeile durchgehen
+      for (uint8_t zone = 0; zone < 8; zone++){        // alle 8 Zonen der aktuellen Zeile durchgehen
+        uint8_t *pDst = displaybuf + row * 8 + zone;   // Deklaration Pointer auf erstes (linkes) Byte der aktuellen Zeile des Displaypuffers
+        uint8_t *pSrc = pDst + 1;                      // Deklaration Pointer pSrc ein Byte (1 Zone) weiter als pDst
+        *pDst = *pDst << 1;                            // alle Bits der Zone um eins nach links schieben
+        if (zone == 7) {
+          bitWrite(*pDst, 0 , bitRead(0x00, 7));       // fuer Zone 8 holen wir uns Nullen (sonst wäre es das nächste Byte aus displaybuf und am Ende sogar irgendwas außerhalb)
+        } else {
+          bitWrite(*pDst, 0 , bitRead(*pSrc, 7));      // linkes Bit der rechten Zone hierher als rechtes Bit holen
+        }
+      } 
+    }
+    delay(40);
+  }
+} 
+
+// =======================================================================
+
 void wipeRandom(){
-  uint8_t wipeType = random(0,4);
+  uint8_t wipeType = random(0,5);   // bei random() ist der Startwert inklusive, der Endwert exklusive
   Serial.println("wipeRandomType: " + String(wipeType));
   switch (wipeType) {
     case 0:
@@ -1046,8 +1067,12 @@ void wipeRandom(){
     case 3:
       wipeVerticalLine();
       break;
+    case 4:
+      wipeLeftShift();
+      break;
   } 
-} 
+}
+
 // =======================================================================
 
 // Arrays fuer die 8 Zonen + Puffer fuer neu reinlaufendes Zeichen
@@ -1771,7 +1796,7 @@ void setup() {
   setSyncInterval(86400);                            // Anzahl der Sekunden zwischen dem erneuten Synchronisieren ein. 86400 = 1 Tag
 
   delay(2000);
-  wipeHorizontalLine();
+  wipeLeftShift();
   delay(500);
 
   String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
