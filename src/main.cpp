@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-#define DEV
+//#define DEV
 
 #include "defaultsettings.h"
 #include "fonts.h"
@@ -830,7 +830,7 @@ void showClock() {
   dig[5] = s % 10;
 
   if (h > 9) {
-    drawImage(  3, 0, 8, 16, numbers + 16 * dig[0]);
+    drawImage(  3, Y_OFFSET, 8, 16, numbers + 16 * dig[0]);
   }
   drawImage( 12, Y_OFFSET, 8, 16, numbers + 16 * dig[1]);
   drawImage( 24, Y_OFFSET, 8, 16, numbers + 16 * dig[2]);
@@ -1394,10 +1394,14 @@ void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scro
   while (millis() < (snowDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,8);
     //Serial.println("snow_pos= " + String(x * 8));
-    for (uint16_t i = 0; i < 23; i++) {
+    for (uint16_t i = 0; i < 28; i++) {
       //Serial.println("snow_char= " + String(i));
-      const uint8_t *pSrc = stars16 + i * 16;
-      drawImage( x * 8, 2, 8, 16, pSrc);
+      #ifdef DEV
+        const uint8_t *pSrc = stars16 + i * 16;
+      #else
+        const uint8_t *pSrc = stars20 + i * 20;
+      #endif
+      drawImage( x * 8, 2, 8, 20, pSrc);
       pSrc++;
       delay(snowFall2Delay.toInt());
     }
