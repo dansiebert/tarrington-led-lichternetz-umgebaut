@@ -29,7 +29,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <tr>
         <td>Wetter </td>
         <td><input type="checkbox" name="weatherCheckbox" value="checked" %ENABLE_WEATHER_INPUT% onClick="this.form.submit();"></td>
-        <td><input name="preTimeWeather" type="number" min="0" max="300" value="%preTimeWeatherOPTIONS%"></td>
+        <td><input name="preTimeWeather" type="number" min="0" max="300" value="%PRETIMEWEATHEROPTIONS%"></td>
         <!-- <td><select name="scrollSpeed">%SCROLLSPEEDOPTIONS%</select></td> -->
         <td><input name="scrollSpeed" type="number" min="5" max="1000" value=%SCROLLSPEEDOPTIONS%></td>
         <td></td>
@@ -85,6 +85,13 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td><input name="preTimeStar" type="number" min="0" max="300" value="%PRETIMESTAROPTIONS%"></td>
         <td><input name="starDelay" type="number" min="5" max="1000" value=%STARDELAYOPTIONS%></td>
         <td><input name="starDuration" type="number" min="0" max="300" value="%STARDURATIONOPTIONS%"></td>
+      </tr>
+      <tr>
+        <td>Wachsende Schneeflocke </td>
+        <td><input type="checkbox" name="growingStar16x15Checkbox" value="checked" %ENABLE_GROWINGSTAR16X15_INPUT% onClick="this.form.submit();"></td>
+        <td><input name="preTimeGrowingStar16x15" type="number" min="0" max="300" value="%PRETIMEGROWINGSTAR16X15OPTIONS%"></td>
+        <td><input name="growingStar16x15Delay" type="number" min="5" max="1000" value=%GROWINGSTAR16X15DELAYOPTIONS%></td>
+        <td><input name="growingStar16x15Duration" type="number" min="0" max="300" value="%GROWINGSTAR16X15DURATIONOPTIONS%"></td>
       </tr>
     </table>
     <br><br>

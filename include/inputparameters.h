@@ -47,3 +47,7 @@ const char* PARAM_INPUT_42 = "christmasSymbolsCheckbox";
 const char* PARAM_INPUT_43 = "text1Font";
 const char* PARAM_INPUT_44 = "text2Font";
 const char* PARAM_INPUT_45 = "text3Font";
+const char* PARAM_INPUT_46 = "growingStar16x15Duration";
+const char* PARAM_INPUT_47 = "growingStar16x15Delay";
+const char* PARAM_INPUT_48 = "preTimeGrowingStar16x15";
+const char* PARAM_INPUT_49 = "growingStar16x15Checkbox";

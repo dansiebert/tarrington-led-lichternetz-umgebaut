@@ -1,11 +1,12 @@
 #include <Arduino.h>
 
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-//#define DEV
+#define DEV
 
 #include "defaultsettings.h"
 #include "fonts.h"
 #include "christmas-symbols_16x16_bin.h"
+#include "star-symbols.h"
 #include "inputparameters.h"
 #include "website.h"
 
@@ -361,7 +362,7 @@ String processor(const String& var) {
       String textFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
       textFontOptions.replace(fFont + "'", fFont + "' selected" );
     return textFontOptions;
-  } else if (var == "preTimeWeatherOPTIONS") {
+  } else if (var == "PRETIMEWEATHEROPTIONS") {
     return preTimeWeather;
   } else if (var == "PRETIMETEXT1OPTIONS") {
     return preTimeText1;
@@ -375,6 +376,8 @@ String processor(const String& var) {
     return preTimeSnowFall2;
   } else if (var == "PRETIMESTAROPTIONS") {
     return preTimeStar;
+  } else if (var == "PRETIMEGROWINGSTAR16X15OPTIONS") {
+    return preTimeGrowingStar16x15;
   } else if (var == "PRETIMECHRISTMASSYMBOLSOPTIONS") {
     return preTimeChristmasSymbols;
   } else if (var == "SNOWDURATIONOPTIONS") {
@@ -391,6 +394,10 @@ String processor(const String& var) {
     return starDelay;
   } else if (var == "STARCOUNTOPTIONS") {
     return starCount;
+  } else if (var == "GROWINGSTAR16X15DURATIONOPTIONS") {
+    return growingStar16x15Duration;
+  } else if (var == "GROWINGSTAR16X15DELAYOPTIONS") {
+    return growingStar16x15Delay;
   } else if (var == "CHRISTMASSYMBOLSDURATIONOPTIONS") {
     return christmasSymbolsDuration;
   } else if (var == "CHRISTMASSYMBOLSDELAYOPTIONS") {
@@ -423,6 +430,8 @@ String processor(const String& var) {
     return snowFall2Checkbox;
   } else if (var == "ENABLE_STAR_INPUT") {
     return starCheckbox;
+  } else if (var == "ENABLE_GROWINGSTAR16X15_INPUT") {
+    return growingStar16x15Checkbox;
   } else if (var == "ENABLE_CHRISTMASSYMBOLS_INPUT") {
     return christmasSymbolsCheckbox;
   } else if (var == "ENABLE_MIRROR_INPUT") {
@@ -474,6 +483,7 @@ void writeConfig() {
     f.println("snowCheckbox=" + snowCheckbox);
     f.println("snowFall2Checkbox=" + snowFall2Checkbox);
     f.println("starCheckbox=" + starCheckbox);
+    f.println("growingStar16x15Checkbox=" + growingStar16x15Checkbox);
     f.println("christmasSymbolsCheckbox=" + christmasSymbolsCheckbox);
     f.println("dateCheckbox=" + dateCheckbox);
     f.println("weatherCheckbox=" + weatherCheckbox);
@@ -498,6 +508,7 @@ void writeConfig() {
     f.println("preTimeSnow=" + String(preTimeSnow));
     f.println("preTimeSnowFall2=" + String(preTimeSnowFall2));
     f.println("preTimeStar=" + String(preTimeStar));
+    f.println("preTimeGrowingStar16x15=" + String(preTimeGrowingStar16x15));
     f.println("preTimeChristmasSymbols=" + String(preTimeChristmasSymbols));
     f.println("snowDuration=" + String(snowDuration));
     f.println("snowDelay=" + String(snowDelay));
@@ -506,6 +517,8 @@ void writeConfig() {
     f.println("starDuration=" + String(starDuration));
     f.println("starDelay=" + String(starDelay));
     f.println("starCount=" + String(starCount));
+    f.println("growingStar16x15Duration=" + String(growingStar16x15Duration));
+    f.println("growingStar16x15=" + String(growingStar16x15Delay));
     f.println("christmasSymbolsDuration=" + String(christmasSymbolsDuration));
     f.println("christmasSymbolsDelay=" + String(christmasSymbolsDelay));
     f.println("cityID=" + String(cityID));
@@ -614,6 +627,11 @@ void readConfig() {
       starCheckbox.trim();
       Serial.println("starCheckbox= " + starCheckbox);
     }
+    if (configline.indexOf("growingStar16x15Checkbox=") >= 0) {
+      growingStar16x15Checkbox = configline.substring(configline.lastIndexOf("growingStar16x15Checkbox=") + 25);
+      growingStar16x15Checkbox.trim();
+      Serial.println("growingStar16x15Checkbox= " + growingStar16x15Checkbox);
+    }
     if (configline.indexOf("christmasSymbolsCheckbox=") >= 0) {
       christmasSymbolsCheckbox = configline.substring(configline.lastIndexOf("christmasSymbolsCheckbox=") + 25);
       christmasSymbolsCheckbox.trim();
@@ -691,6 +709,10 @@ void readConfig() {
       preTimeStar = configline.substring(configline.lastIndexOf("preTimeStar=") + 12).toInt();
       Serial.println("preTimeStar= " + String(preTimeStar));
     }
+    if (configline.indexOf("preTimeGrowingStar16x15=") >= 0) {
+      preTimeGrowingStar16x15 = configline.substring(configline.lastIndexOf("preTimeGrowingStar16x15=") + 24).toInt();
+      Serial.println("preTimeGrowingStar16x15= " + String(preTimeGrowingStar16x15));
+    }
     if (configline.indexOf("preTimeChristmasSymbols=") >= 0) {
       preTimeChristmasSymbols = configline.substring(configline.lastIndexOf("preTimeChristmasSymbols=") + 24).toInt();
       Serial.println("preTimeChristmasSymbols= " + String(preTimeChristmasSymbols));
@@ -722,6 +744,14 @@ void readConfig() {
     if (configline.indexOf("starCount=") >= 0) {
       starCount = configline.substring(configline.lastIndexOf("starCount=") + 10).toInt();
       Serial.println("starCount= " + String(starCount));
+    }
+    if (configline.indexOf("growingStar16x15Duration=") >= 0) {
+      growingStar16x15Duration = configline.substring(configline.lastIndexOf("growingStar16x15Duration=") + 25).toInt();
+      Serial.println("growingStar16x15Duration= " + String(growingStar16x15Duration));
+    }
+    if (configline.indexOf("growingStar16x15Delay=") >= 0) {
+      growingStar16x15Delay = configline.substring(configline.lastIndexOf("growingStar16x15Delay=") + 12).toInt();
+      Serial.println("growingStar16x15Delay= " + String(growingStar16x15Delay));
     }
     if (configline.indexOf("christmasSymbolsDuration=") >= 0) {
       christmasSymbolsDuration = configline.substring(configline.lastIndexOf("christmasSymbolsDuration=") + 25).toInt();
@@ -829,6 +859,17 @@ void showClock() {
   dig[4] = s / 10;
   dig[5] = s % 10;
 
+  #ifndef DEV
+  for (uint8_t x = 0; x <64; x++){
+    drawPoint(x, 0, 1);
+    drawPoint(x, 19, 1);
+  }
+  #endif
+  for (uint8_t y = 0; y < NUM_ROWS; y++){
+    drawPoint(0, y, 1);
+    drawPoint(63, y, 1);
+  } 
+  
   if (h > 9) {
     drawImage(  3, Y_OFFSET, 8, 16, numbers + 16 * dig[0]);
   }
@@ -1358,6 +1399,29 @@ void drawChristmasSymbols() {
   
 // =======================================================================  
 
+void growingStar_16x15() {
+  Serial.println("Start growingStar_16x15");
+  clkTimeEffect = millis();
+  while (millis() < (growingStar16x15Duration.toInt() * 1000) + clkTimeEffect) {
+    uint8_t x = random(0,48);
+    uint8_t y = random(0,6);
+    for (uint8_t i = 0; i < 9; i++) {
+      drawImage( x, y, 16, 15, growingStar16x15 + i * 30);
+      delay(growingStar16x15Delay.toInt());
+    }
+    delay(300);
+    /*
+    for (uint8_t i = 0; i < 9; i++) {
+      drawImage( x, y, 16, 15, growingStar16x15 + (8 - i) * 30);
+      delay(growingStar16x15Delay.toInt());
+    }
+    */
+    clearMatrix();
+  }
+}  
+  
+// =======================================================================  
+
 void snowFall() {   // Schneeflocken vertikal scrollen
   clearMatrix();
   clkTimeEffect = millis();
@@ -1418,15 +1482,14 @@ void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scro
   clkTimeEffect = millis();
   while (millis() < (snowDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,8);
-    //Serial.println("snow_pos= " + String(x * 8));
-    for (uint16_t i = 0; i < 28; i++) {
+    for (uint16_t i = 0; i < NUM_ROWS + 8; i++) {   // bei DEV (16 Zeilen) bis 24 zaehlen, sonst bis 28
       //Serial.println("snow_char= " + String(i));
       #ifdef DEV
         const uint8_t *pSrc = stars16 + i * 16;
       #else
         const uint8_t *pSrc = stars20 + i * 20;
       #endif
-      drawImage( x * 8, 2, 8, 20, pSrc);
+      drawImage( x * 8, 2, 8, NUM_ROWS, pSrc);
       pSrc++;
       delay(snowFall2Delay.toInt());
     }
@@ -1606,6 +1669,9 @@ void setup() {
       if (request->hasParam(PARAM_INPUT_23)) {
         preTimeStar = request->getParam(PARAM_INPUT_23)->value();
       }
+      if (request->hasParam(PARAM_INPUT_48)) {
+        preTimeGrowingStar16x15 = request->getParam(PARAM_INPUT_48)->value();
+      }
       if (request->hasParam(PARAM_INPUT_38)) {
         preTimeChristmasSymbols = request->getParam(PARAM_INPUT_38)->value();
       }
@@ -1629,6 +1695,12 @@ void setup() {
       }
       if (request->hasParam(PARAM_INPUT_28)) {
         starCount = request->getParam(PARAM_INPUT_28)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_46)) {
+        growingStar16x15Duration = request->getParam(PARAM_INPUT_46)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_47)) {
+        growingStar16x15Delay = request->getParam(PARAM_INPUT_47)->value();
       }
       if (request->hasParam(PARAM_INPUT_39)) {
         christmasSymbolsDuration = request->getParam(PARAM_INPUT_39)->value();
@@ -1714,6 +1786,11 @@ void setup() {
         starCheckbox = request->getParam(PARAM_INPUT_29)->value();
       } else {
         starCheckbox = "unchecked";
+      }
+      if (request->hasParam(PARAM_INPUT_49)) {
+        growingStar16x15Checkbox = request->getParam(PARAM_INPUT_49)->value();
+      } else {
+        growingStar16x15Checkbox = "unchecked";
       }
       if (request->hasParam(PARAM_INPUT_42)) {
         christmasSymbolsCheckbox = request->getParam(PARAM_INPUT_42)->value();
@@ -1803,9 +1880,8 @@ void setup() {
   wipeLeftShift();
   delay(500);
 
-  String startString = "Webserver gestartet.    IP: " + WiFi.localIP().toString() + "                       ";
-  //h_TextScroll_16x20_v2(startString.c_str(), 45);
-  h_TextScroll_8x16(startString.c_str(), 30);
+  String startString = "Webserver-IP: " + WiFi.localIP().toString() + "                       ";
+  h_TextScroll_8x16(startString.c_str(), 25);
 
   clkTimePre = millis();
 }
@@ -1816,7 +1892,7 @@ void loop() {
   AsyncElegantOTA.loop();
   showClock();
 
-/*
+  /*
   // Intervall fuer Online Wetter Daten Aktualisierung
   if (millis() > timeBetweenUpdates.toInt() * 1000 + clkTimeWeatherUpdate) {
     clkTimeWeatherUpdate = millis();
@@ -1825,204 +1901,219 @@ void loop() {
       getWeatherData();
     }
   }
-*/
+  */
 
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
-  case 1:   // Wetter
-    if (weatherCheckbox == "checked") {
-      if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        updCnt--;
-        Serial.println("updCnt=" + String(updCnt));
-        if (updCnt <= 0) {
-          updCnt = 10;
-          getWeatherData();
+    case 1:   // Wetter
+      if (weatherCheckbox == "checked") {
+        if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          updCnt--;
+          Serial.println("updCnt=" + String(updCnt));
+          if (updCnt <= 0) {
+            updCnt = 10;
+            getWeatherData();
+          }
+          scrollString = "";
+          if (dateCheckbox == "checked") {
+            scrollString += dayName[w]  + ", " + String(d) + "." + String(mo) + "." + String(ye) + "    ";
+          }
+          scrollString += weatherString;
+          scrollString += "     ";
+          // String fuer Scroll-Funktion in Array wandeln
+          uint8_t stringlength = scrollString.length() + 1;
+          char charBuf[stringlength];
+          scrollString.toCharArray(charBuf, stringlength);
+          // scrollen
+          Serial.println("Start scrolling online weather data...");
+          // horTextScroll_16x20(charBuf, stringlength);
+          h_TextScroll_16x20_v1(charBuf, stringlength, scrollSpeed.toInt());
+          Serial.println("Stop scrolling online weather data.");
+          state = 2;
+          clkTimePre = millis();
         }
-        scrollString = "";
-        if (dateCheckbox == "checked") {
-          scrollString += dayName[w]  + ", " + String(d) + "." + String(mo) + "." + String(ye) + "    ";
-        }
-        scrollString += weatherString;
-        scrollString += "     ";
-        // String fuer Scroll-Funktion in Array wandeln
-        uint8_t stringlength = scrollString.length() + 1;
-        char charBuf[stringlength];
-        scrollString.toCharArray(charBuf, stringlength);
-        // scrollen
-        Serial.println("Start scrolling online weather data...");
-        // horTextScroll_16x20(charBuf, stringlength);
-        h_TextScroll_16x20_v1(charBuf, stringlength, scrollSpeed.toInt());
-        Serial.println("Stop scrolling online weather data.");
+      } else {
+        clkTimePre = millis();
         state = 2;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 2;
-    }
-    break;
-
-  case 2:   // Scrolltext 1
-    if (scrolltext1Checkbox == "checked") {
-      if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start scrolling scrollText1...");
-        switch (text1Font.toInt()){
-          case 1:
-            h_TextScroll_8x16(scrollText1.c_str(), text1Delay.toInt());
-            break;
-          case 2:
-            h_TextScroll_16x20_v2(scrollText1.c_str(), text1Delay.toInt());
-            break;
-          case 3:
-            uint8_t rand = random(1,3);
-            Serial.println("random: " + String(rand));
-            if (rand == 1) {
+      break;
+  
+    case 2:   // Scrolltext 1
+      if (scrolltext1Checkbox == "checked") {
+        if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start scrolling scrollText1...");
+          switch (text1Font.toInt()){
+            case 1:
               h_TextScroll_8x16(scrollText1.c_str(), text1Delay.toInt());
-            } else {
+              break;
+            case 2:
               h_TextScroll_16x20_v2(scrollText1.c_str(), text1Delay.toInt());
-            }
-            break;
+              break;
+            case 3:
+              uint8_t rand = random(1,3);
+              Serial.println("random: " + String(rand));
+              if (rand == 1) {
+                h_TextScroll_8x16(scrollText1.c_str(), text1Delay.toInt());
+              } else {
+                h_TextScroll_16x20_v2(scrollText1.c_str(), text1Delay.toInt());
+              }
+              break;
+          }
+          Serial.println("Stop scrolling scrollText1.");
+          state = 3;
+          clkTimePre = millis();
         }
-        Serial.println("Stop scrolling scrollText1.");
+      } else {
+        clkTimePre = millis();
         state = 3;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 3;
-    }
-    break;
-    
-  case 3:   // Scrolltext 2
-    if (scrolltext2Checkbox == "checked") {
-      if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start scrolling scrollText2...");
-        switch (text2Font.toInt()){
-          case 1:
-            h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
-            break;
-          case 2:
-            h_TextScroll_16x20_v2(scrollText2.c_str(), text2Delay.toInt());
-            break;
-          case 3:
-            uint8_t rand = random(1,3);
-            Serial.println("random: " + String(rand));
-            if (rand == 1) {
+      break;
+      
+    case 3:   // Scrolltext 2
+      if (scrolltext2Checkbox == "checked") {
+        if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start scrolling scrollText2...");
+          switch (text2Font.toInt()){
+            case 1:
               h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
-            } else {
+              break;
+            case 2:
               h_TextScroll_16x20_v2(scrollText2.c_str(), text2Delay.toInt());
-            }
-            break;
+              break;
+            case 3:
+              uint8_t rand = random(1,3);
+              Serial.println("random: " + String(rand));
+              if (rand == 1) {
+                h_TextScroll_8x16(scrollText2.c_str(), text2Delay.toInt());
+              } else {
+                h_TextScroll_16x20_v2(scrollText2.c_str(), text2Delay.toInt());
+              }
+              break;
+          }
+          Serial.println("Stop scrolling scrollText2.");
+          state = 4;
+          clkTimePre = millis();
         }
-        Serial.println("Stop scrolling scrollText2.");
+      } else {
+        clkTimePre = millis();
         state = 4;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 4;
-    }
-    break;
-
-  case 4:   // Scrolltext 3
-    if (scrolltext3Checkbox == "checked") {
-      if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start scrolling scrollText3...");
-        switch (text3Font.toInt()){
-          case 1:
-            h_TextScroll_8x16(scrollText3.c_str(), text3Delay.toInt());
-            break;
-          case 2:
-            h_TextScroll_16x20_v2(scrollText3.c_str(), text3Delay.toInt());
-            break;
-          case 3:
-            uint8_t rand = random(1,3);
-            Serial.println("random: " + String(rand));
-            if (rand == 1) {
+      break;
+  
+    case 4:   // Scrolltext 3
+      if (scrolltext3Checkbox == "checked") {
+        if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start scrolling scrollText3...");
+          switch (text3Font.toInt()){
+            case 1:
               h_TextScroll_8x16(scrollText3.c_str(), text3Delay.toInt());
-            } else {
+              break;
+            case 2:
               h_TextScroll_16x20_v2(scrollText3.c_str(), text3Delay.toInt());
-            }
-            break;
+              break;
+            case 3:
+              uint8_t rand = random(1,3);
+              Serial.println("random: " + String(rand));
+              if (rand == 1) {
+                h_TextScroll_8x16(scrollText3.c_str(), text3Delay.toInt());
+              } else {
+                h_TextScroll_16x20_v2(scrollText3.c_str(), text3Delay.toInt());
+              }
+              break;
+          }
+          Serial.println("Stop scrolling scrollText3.");
+          state = 5;
+          clkTimePre = millis();
         }
-        Serial.println("Stop scrolling scrollText3.");
+      } else {
+        clkTimePre = millis();
         state = 5;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 5;
-    }
-    break;
-
-  case 5:   // Schneefall viele Flocken
-    if (snowCheckbox == "checked") {
-      if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start falling snow...");
-        snowFall();
-        Serial.println("Stop falling snow.");
+      break;
+  
+    case 5:   // Schneefall viele Flocken
+      if (snowCheckbox == "checked") {
+        if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start falling snow...");
+          snowFall();
+          Serial.println("Stop falling snow.");
+          state = 6;
+          clkTimePre = millis();
+        }
+      } else {
+        clkTimePre = millis();
         state = 6;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 6;
-    }
-    break;
-
-  case 6:   // Weihnachtssymbole
-    if (christmasSymbolsCheckbox == "checked") {
-      if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start drawChristmasSymbols...");
-        drawChristmasSymbols();
-        Serial.println("Stop drawChristmasSymbols.");
+      break;
+  
+    case 6:   // Weihnachtssymbole
+      if (christmasSymbolsCheckbox == "checked") {
+        if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start drawChristmasSymbols...");
+          drawChristmasSymbols();
+          Serial.println("Stop drawChristmasSymbols.");
+          state = 7;
+          clkTimePre = millis();
+        }
+      } else {
+        clkTimePre = millis();
         state = 7;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 7;
-    }
-    break;
-
-  case 7:   // Schneefall einzelne Flocken
-    if (snowFall2Checkbox == "checked") {
-      if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start snowFall2...");
-        snowFall2();
-        Serial.println("Stop snowFall2.");
+      break;
+  
+    case 7:   // Schneefall einzelne Flocken
+      if (snowFall2Checkbox == "checked") {
+        if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start snowFall2...");
+          snowFall2();
+          Serial.println("Stop snowFall2.");
+          state = 8;
+          clkTimePre = millis();
+        }
+      } else {
+        clkTimePre = millis();
         state = 8;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 8;
-    }
-    break;
-
-  case 8:   // Sternenhimmel
-    if (starCheckbox == "checked") {
-      if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre) {
-        wipeRandom();
-        Serial.println("Start star sky...");
-        starrySky();
-        Serial.println("Stop star sky.");
+      break;
+  
+    case 8:   // Sternenhimmel
+      if (starCheckbox == "checked") {
+        if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start star sky...");
+          starrySky();
+          Serial.println("Stop star sky.");
+          state = 9;
+          clkTimePre = millis();
+        }
+      } else {
+        clkTimePre = millis();
+        state = 9;
+      }
+      break;
+  
+    case 9:   // wachsende Schneeflocke
+      if (growingStar16x15Checkbox == "checked") {
+        if (millis() > (preTimeGrowingStar16x15.toInt() * 1000) + clkTimePre) {
+          wipeRandom();
+          Serial.println("Start growingStar_16x15...");
+          growingStar_16x15();
+          Serial.println("Stop growingStar_16x15.");
+          state = 1;
+          clkTimePre = millis();
+        } 
+      } else {
+        clkTimePre = millis();
         state = 1;
-        clkTimePre = millis();
       }
-    } else {
-      clkTimePre = millis();
-      state = 1;
-    }
-    break;
-    
-  }
-
+      break;
+  } 
 }
+
 // =======================================================================
