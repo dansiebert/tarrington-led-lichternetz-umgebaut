@@ -3,9 +3,11 @@
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
 #define DEV
 
+#include "prototypes.h"
 #include "defaultsettings.h"
 #include "fonts.h"
-#include "christmas-symbols_16x16_bin.h"
+#include "digits.h"
+#include "christmas-symbols.h"
 #include "star-symbols.h"
 #include "inputparameters.h"
 #include "website.h"
@@ -243,6 +245,18 @@ int8_t getWifiQuality() {   // converts the dBm to a range between 0 and 100%
     return 100;
   } else {
     return 2 * (dbm + 100);
+  }
+}
+
+// =======================================================================
+
+// Funktion taugt nichts, wenn mehrere Digits gleichzeitig gescrollt werden muessen,
+// da sie in einer geschlossenen Schleife laeuft
+void v_scrollDigit(uint8_t xPos, uint8_t yPos, uint8_t newDigit, uint8_t speed){
+  if (newDigit == 0) newDigit = 10;               // fuer den Uebergang von 9 nach 0
+  for (uint8_t trans = 0; trans < 19; trans++){   // Font-Array Ausschnitt (8x18) gleiten lassen
+    drawImage(xPos, yPos, 8, 18, scrollDigits + trans + (newDigit - 1) * 18);
+    delay(speed);
   }
 }
 
@@ -846,19 +860,17 @@ void getTimeLocal()
 }
 
 byte dig[6] = {0,0,0,0,0,0};
+byte dig2[6] = {0,0,0,0,0,0};
+byte digold[6] = {0,0,0,0,0,0};
+byte digtrans[6] = {0,0,0,0,0,0};
 int dots = 0;
 long dotTime = 0;
+uint8_t scrollInProgress = 0;
+uint8_t transPos = 0;
 
 void showClock() {
-  getTimeLocal();
-
-  dig[0] = h / 10;
-  dig[1] = h % 10;
-  dig[2] = m / 10;
-  dig[3] = m % 10;
-  dig[4] = s / 10;
-  dig[5] = s % 10;
-
+  
+  // Rahmen zeichnen (bei DEV nur seitlich)
   #ifndef DEV
   for (uint8_t x = 0; x <64; x++){
     drawPoint(x, 0, 1);
@@ -870,15 +882,41 @@ void showClock() {
     drawPoint(63, y, 1);
   } 
   
-  if (h > 9) {
-    drawImage(  3, Y_OFFSET, 8, 16, numbers + 16 * dig[0]);
+  getTimeLocal();
+
+  byte digPos[6] = {3, 12, 24, 33, 45, 54};
+  uint8_t i;
+
+  //Serial.println(scrollInProgress);
+  if (scrollInProgress == 0){   // waerend des Scrollens Zeit nicht aendern
+    scrollInProgress = 18;
+    for (i = 0; i < 6; i++) digold[i] = dig[i];
+    dig[0] = h / 10;
+    dig[1] = h % 10;
+    dig[2] = m / 10;
+    dig[3] = m % 10;
+    dig[4] = s / 10;
+    dig[5] = s % 10;
+    for (i = 0; i < 6; i++) digtrans[i] = (dig[i] == digold[i]) ? 0 : 18;   // wenn sich Digit geaendert hat wird digtrans[] 0, sonst 18 (Hoehe des Digits)
+  } else {
+    scrollInProgress--;
+  } 
+
+  for (i = 0; i < 6; i++){
+    if (digtrans[i] == 0){
+      transPos = 0;
+      drawImage(digPos[i], 1, 8, 18, scrollDigits + dig[i] * 18);
+    } else {
+      transPos = 18 - digtrans[i];
+      dig2[i] = dig[i];
+      if (dig[i] == 0) dig2[i] = 10;
+      drawImage(digPos[i], 1, 8, 18, scrollDigits + transPos + (dig2[i] - 1) * 18);
+      digtrans[i]--;
+    }
   }
-  drawImage( 12, Y_OFFSET, 8, 16, numbers + 16 * dig[1]);
-  drawImage( 24, Y_OFFSET, 8, 16, numbers + 16 * dig[2]);
-  drawImage( 33, Y_OFFSET, 8, 16, numbers + 16 * dig[3]);
-  drawImage( 45, Y_OFFSET, 8, 16, numbers + 16 * dig[4]);
-  drawImage( 54, Y_OFFSET, 8, 16, numbers + 16 * dig[5]);
-  
+  transPos = 0;
+  delay(20);
+
   if (dotsCheckbox == "checked") {
     //toggle colons
     if (millis() - dotTime > 500) {
@@ -1409,13 +1447,14 @@ void growingStar_16x15() {
       drawImage( x, y, 16, 15, growingStar16x15 + i * 30);
       delay(growingStar16x15Delay.toInt());
     }
+    uint8_t rev = random(0, 2);
+    if (rev == 1){
+      for (uint8_t i = 0; i < 9; i++) {
+        drawImage( x, y, 16, 15, growingStar16x15 + (8 - i) * 30);
+        delay(growingStar16x15Delay.toInt());
+      }
+    } 
     delay(300);
-    /*
-    for (uint8_t i = 0; i < 9; i++) {
-      drawImage( x, y, 16, 15, growingStar16x15 + (8 - i) * 30);
-      delay(growingStar16x15Delay.toInt());
-    }
-    */
     clearMatrix();
   }
 }  
