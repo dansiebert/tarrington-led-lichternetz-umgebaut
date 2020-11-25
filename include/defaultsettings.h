@@ -51,3 +51,7 @@ String starCheckbox = "checked";
 String christmasSymbolsCheckbox = "checked";
 String growingStar16x15Checkbox = "checked";
 String animClockCheckbox = "checked";
+String pixelFallCheckbox = "checked";
+String pixelFallPreTime = "20";
+String pixelFallDelay = "15";
+String pixelFallDuration = "20";
