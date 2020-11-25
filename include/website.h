@@ -107,6 +107,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <tr><td>Luftfeuchte anzeigen</td><td><input type="checkbox" name="humidityCheckbox" value="checked" %ENABLE_HUMIDITY_INPUT% onClick="this.form.submit();"></td></tr>
     <tr><td>Luftdruck anzeigen</td><td><input type="checkbox" name="pressureCheckbox" value="checked" %ENABLE_PRESSURE_INPUT% onClick="this.form.submit();"></td></tr>
     <tr><td>Ort anzeigen</td><td><input type="checkbox" name="locationCheckbox" value="checked" %ENABLE_LOCATION_INPUT% onClick="this.form.submit();"></td></tr>
+    <tr><td>Uhr animieren</td><td><input type="checkbox" name="animClockCheckbox" value="checked" %ENABLE_ANIMCLOCK_INPUT% onClick="this.form.submit();"></td></tr>
     <tr><td>Blinkende Doppelpunkte</td><td><input type="checkbox" name="dotsCheckbox" value="checked" %ENABLE_DOTS_INPUT% onClick="this.form.submit();"></td></tr>
     </table>
     <br><br>

@@ -50,3 +50,4 @@ String snowFall2Checkbox = "checked";
 String starCheckbox = "checked";
 String christmasSymbolsCheckbox = "checked";
 String growingStar16x15Checkbox = "checked";
+String animClockCheckbox = "checked";

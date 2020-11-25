@@ -51,3 +51,4 @@ const char* PARAM_INPUT_46 = "growingStar16x15Duration";
 const char* PARAM_INPUT_47 = "growingStar16x15Delay";
 const char* PARAM_INPUT_48 = "preTimeGrowingStar16x15";
 const char* PARAM_INPUT_49 = "growingStar16x15Checkbox";
+const char* PARAM_INPUT_50 = "animClockCheckbox";

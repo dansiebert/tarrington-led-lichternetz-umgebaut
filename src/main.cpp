@@ -438,6 +438,8 @@ String processor(const String& var) {
     return locationCheckbox;
   } else if (var == "ENABLE_DOTS_INPUT") {
     return dotsCheckbox;
+  } else if (var == "ENABLE_ANIMCLOCK_INPUT") {
+    return animClockCheckbox;
   } else if (var == "ENABLE_SNOW_INPUT") {
     return snowCheckbox;
   } else if (var == "ENABLE_SNOWFALL2_INPUT") {
@@ -508,6 +510,7 @@ void writeConfig() {
     f.println("pressureCheckbox=" + pressureCheckbox);
     f.println("locationCheckbox=" + locationCheckbox);
     f.println("dotsCheckbox=" + dotsCheckbox);
+    f.println("animClockCheckbox=" + animClockCheckbox);
     f.println("scrollSpeed=" + String(scrollSpeed));
     f.println("text1Delay=" + String(text1Delay));
     f.println("text2Delay=" + String(text2Delay));
@@ -625,6 +628,11 @@ void readConfig() {
       dotsCheckbox = configline.substring(configline.lastIndexOf("dotsCheckbox=") + 13);
       dotsCheckbox.trim();
       Serial.println("dotsCheckbox= " + dotsCheckbox);
+    }
+    if (configline.indexOf("animClockCheckbox=") >= 0) {
+      animClockCheckbox = configline.substring(configline.lastIndexOf("animClockCheckbox=") + 18);
+      animClockCheckbox.trim();
+      Serial.println("animClockCheckbox= " + animClockCheckbox);
     }
     if (configline.indexOf("snowCheckbox=") >= 0) {
       snowCheckbox = configline.substring(configline.lastIndexOf("snowCheckbox=") + 13);
@@ -870,52 +878,85 @@ uint8_t transPos = 0;
 
 void showClock() {
   
-  // Rahmen zeichnen (bei DEV nur seitlich)
-  #ifndef DEV
-  for (uint8_t x = 0; x <64; x++){
+  // Rahmen zeichnen
+  for (uint8_t x = 0; x < 64; x++){
     drawPoint(x, 0, 1);
     drawPoint(x, 19, 1);
   }
-  #endif
-  for (uint8_t y = 0; y < NUM_ROWS; y++){
+  for (uint8_t y = 0; y < 20; y++){
     drawPoint(0, y, 1);
     drawPoint(63, y, 1);
   } 
   
   getTimeLocal();
 
-  byte digPos[6] = {3, 12, 24, 33, 45, 54};
-  uint8_t i;
+  byte digPos[6] = {3, 12, 24, 33, 45, 54};;
 
-  //Serial.println(scrollInProgress);
-  if (scrollInProgress == 0){   // waerend des Scrollens Zeit nicht aendern
-    scrollInProgress = 18;
-    for (i = 0; i < 6; i++) digold[i] = dig[i];
+  if (animClockCheckbox == "checked") {
+    // animierte Uhr
+    uint8_t i;
+    if (scrollInProgress == 0){   // waerend des Scrollens Zeit nicht aendern
+      scrollInProgress = 18;
+      for (i = 0; i < 6; i++) digold[i] = dig[i];
+      dig[0] = h / 10;
+      dig[1] = h % 10;
+      dig[2] = m / 10;
+      dig[3] = m % 10;
+      dig[4] = s / 10;
+      dig[5] = s % 10;
+      for (i = 0; i < 6; i++) digtrans[i] = (dig[i] == digold[i]) ? 0 : 18;   // wenn sich Digit geaendert hat wird digtrans[] 0, sonst 18 (Hoehe des Digits)
+    } else {
+      scrollInProgress--;
+    } 
+
+    for (i = 0; i < 6; i++){
+      if (h < 10){ 
+        if (i > 0){    // fuehrende 0 nicht anzeigen
+          if (digtrans[i] == 0){
+            transPos = 0;
+            drawImage(digPos[i], 1, 8, 18, scrollDigits + dig[i] * 18);
+          } else {
+            transPos = 18 - digtrans[i];
+            dig2[i] = dig[i];
+            if (dig[i] == 0) dig2[i] = 10;
+            drawImage(digPos[i], 1, 8, 18, scrollDigits + transPos + (dig2[i] - 1) * 18);
+            digtrans[i]--;
+          }
+        }
+      } else {
+        if (digtrans[i] == 0){
+            transPos = 0;
+            drawImage(digPos[i], 1, 8, 18, scrollDigits + dig[i] * 18);
+        } else {
+          transPos = 18 - digtrans[i];
+          dig2[i] = dig[i];
+          if (dig[i] == 0) dig2[i] = 10;
+          drawImage(digPos[i], 1, 8, 18, scrollDigits + transPos + (dig2[i] - 1) * 18);
+          digtrans[i]--;
+        }
+      } 
+    }
+    transPos = 0;
+    delay(20);
+
+  } else {
+    // normale Uhr
     dig[0] = h / 10;
     dig[1] = h % 10;
     dig[2] = m / 10;
     dig[3] = m % 10;
     dig[4] = s / 10;
     dig[5] = s % 10;
-    for (i = 0; i < 6; i++) digtrans[i] = (dig[i] == digold[i]) ? 0 : 18;   // wenn sich Digit geaendert hat wird digtrans[] 0, sonst 18 (Hoehe des Digits)
-  } else {
-    scrollInProgress--;
-  } 
 
-  for (i = 0; i < 6; i++){
-    if (digtrans[i] == 0){
-      transPos = 0;
-      drawImage(digPos[i], 1, 8, 18, scrollDigits + dig[i] * 18);
-    } else {
-      transPos = 18 - digtrans[i];
-      dig2[i] = dig[i];
-      if (dig[i] == 0) dig2[i] = 10;
-      drawImage(digPos[i], 1, 8, 18, scrollDigits + transPos + (dig2[i] - 1) * 18);
-      digtrans[i]--;
+    if (h > 9) {    // fuehrende 0 nicht anzeigen
+      drawImage(digPos[0], 1, 8, 18, scrollDigits + dig[0] * 18);
     }
+    drawImage(digPos[1], 1, 8, 18, scrollDigits + dig[1] * 18);
+    drawImage(digPos[2], 1, 8, 18, scrollDigits + dig[2] * 18);
+    drawImage(digPos[3], 1, 8, 18, scrollDigits + dig[3] * 18);
+    drawImage(digPos[4], 1, 8, 18, scrollDigits + dig[4] * 18);
+    drawImage(digPos[5], 1, 8, 18, scrollDigits + dig[5] * 18);
   }
-  transPos = 0;
-  delay(20);
 
   if (dotsCheckbox == "checked") {
     //toggle colons
@@ -962,10 +1003,6 @@ void showClock() {
     drawPoint(43,6,0);
     drawPoint(43,11,0);  
   }
-  
-  //String TimeString = "Time: " + String(dig[0]) + String(dig[1]) + ":" + String(dig[2]) + String(dig[3]) + ":" + String(dig[4]) + String(dig[5]);
-  //Serial.println(TimeString);
-  //delay(200);
 }
 /*-------- End NTP code ----------*/
 
@@ -1571,19 +1608,6 @@ void starrySky() {
 
 // =======================================================================
 
-void testVerticalScroll() {
-  for (uint8_t j = 0; j < 5; j++){
-    for (uint8_t i = 0; i < 16; i++){
-      //drawImage(xoffset, yoffset, width, height, *image);
-      drawImage(32, 0 + i, 8, 16 - i, numbers + j * 16);
-      delay(500);
-      clearMatrix();
-    }
-  }
-}
-
-// =======================================================================
-
 void setup() {  
   Serial.begin(115200);
   delay(10);
@@ -1811,6 +1835,11 @@ void setup() {
       } else {
         dotsCheckbox = "unchecked";
       }
+      if (request->hasParam(PARAM_INPUT_50)) {
+        animClockCheckbox = request->getParam(PARAM_INPUT_50)->value();
+      } else {
+        animClockCheckbox = "unchecked";
+      }
       if (request->hasParam(PARAM_INPUT_16)) {
         snowCheckbox = request->getParam(PARAM_INPUT_16)->value();
       } else {
@@ -1866,6 +1895,7 @@ void setup() {
     Serial.println("pressureCheckbox= " + pressureCheckbox);
     Serial.println("locationCheckbox= " + locationCheckbox);
     Serial.println("dotsCheckbox= " + dotsCheckbox);
+    Serial.println("animClockCheckbox= " + animClockCheckbox);
     Serial.println("snowCheckbox= " + snowCheckbox);
     Serial.println("snowFall2Checkbox= " + snowFall2Checkbox);
     Serial.println("starCheckbox= " + starCheckbox);
@@ -1919,7 +1949,7 @@ void setup() {
   wipeLeftShift();
   delay(500);
 
-  String startString = "Webserver-IP: " + WiFi.localIP().toString() + "                       ";
+  String startString = "IP: " + WiFi.localIP().toString() + "                       ";
   h_TextScroll_8x16(startString.c_str(), 25);
 
   clkTimePre = millis();
@@ -1945,7 +1975,7 @@ void loop() {
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
     case 1:   // Wetter
       if (weatherCheckbox == "checked") {
-        if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeWeather.toInt() * 1000) + clkTimePre && !transPos && dots) {   // Effekt erst starten, wenn Vorlaufzeit erreicht, Digit nicht scrollt, und Doppelpunkte an sind
           wipeRandom();
           updCnt--;
           Serial.println("updCnt=" + String(updCnt));
@@ -1979,7 +2009,7 @@ void loop() {
   
     case 2:   // Scrolltext 1
       if (scrolltext1Checkbox == "checked") {
-        if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeText1.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start scrolling scrollText1...");
           switch (text1Font.toInt()){
@@ -2011,7 +2041,7 @@ void loop() {
       
     case 3:   // Scrolltext 2
       if (scrolltext2Checkbox == "checked") {
-        if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeText2.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start scrolling scrollText2...");
           switch (text2Font.toInt()){
@@ -2043,7 +2073,7 @@ void loop() {
   
     case 4:   // Scrolltext 3
       if (scrolltext3Checkbox == "checked") {
-        if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeText3.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start scrolling scrollText3...");
           switch (text3Font.toInt()){
@@ -2075,7 +2105,7 @@ void loop() {
   
     case 5:   // Schneefall viele Flocken
       if (snowCheckbox == "checked") {
-        if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start falling snow...");
           snowFall();
@@ -2091,7 +2121,7 @@ void loop() {
   
     case 6:   // Weihnachtssymbole
       if (christmasSymbolsCheckbox == "checked") {
-        if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeChristmasSymbols.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start drawChristmasSymbols...");
           drawChristmasSymbols();
@@ -2107,7 +2137,7 @@ void loop() {
   
     case 7:   // Schneefall einzelne Flocken
       if (snowFall2Checkbox == "checked") {
-        if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start snowFall2...");
           snowFall2();
@@ -2123,7 +2153,7 @@ void loop() {
   
     case 8:   // Sternenhimmel
       if (starCheckbox == "checked") {
-        if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeStar.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start star sky...");
           starrySky();
@@ -2139,7 +2169,7 @@ void loop() {
   
     case 9:   // wachsende Schneeflocke
       if (growingStar16x15Checkbox == "checked") {
-        if (millis() > (preTimeGrowingStar16x15.toInt() * 1000) + clkTimePre) {
+        if (millis() > (preTimeGrowingStar16x15.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start growingStar_16x15...");
           growingStar_16x15();
