@@ -40,6 +40,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         <!-- <td><select name="scrollSpeed">%SCROLLSPEEDOPTIONS%</select></td> -->
         <td><input name="scrollSpeed" type="number" min="5" max="1000" value=%SCROLLSPEEDOPTIONS%></td>
         <td></td>
+        <td><select name="weatherFont" onchange="this.form.submit();">%WEATHERFONTOPTIONS%</select></td>
       </tr>
       <tr>
         <td>Sternenhimmel </td>

@@ -55,3 +55,4 @@ String pixelFallCheckbox = "checked";
 String pixelFallPreTime = "20";
 String pixelFallDelay = "15";
 String pixelFallDuration = "20";
+String weatherFont = "1";

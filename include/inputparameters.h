@@ -56,3 +56,4 @@ const char* PARAM_INPUT_51 = "pixelFallCheckbox";
 const char* PARAM_INPUT_52 = "pixelFallPreTime";
 const char* PARAM_INPUT_53 = "pixelFallDelay";
 const char* PARAM_INPUT_54 = "pixelFallDuration";
+const char* PARAM_INPUT_55 = "weatherFont";

@@ -376,6 +376,11 @@ String processor(const String& var) {
       String textFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
       textFontOptions.replace(fFont + "'", fFont + "' selected" );
     return textFontOptions;
+  } else if (var == "WEATHERFONTOPTIONS") {
+      String wFont = weatherFont;
+      String weatherFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
+      weatherFontOptions.replace(wFont + "'", wFont + "' selected" );
+    return weatherFontOptions;
   } else if (var == "PRETIMEWEATHEROPTIONS") {
     return preTimeWeather;
   } else if (var == "PRETIMETEXT1OPTIONS") {
@@ -527,6 +532,7 @@ void writeConfig() {
     f.println("text1Font=" + String(text1Font));
     f.println("text2Font=" + String(text2Font));
     f.println("text3Font=" + String(text3Font));
+    f.println("weatherFont=" + String(weatherFont));
     f.println("preTimeWeather=" + String(preTimeWeather));
     f.println("preTimeText1=" + String(preTimeText1));
     f.println("preTimeText2=" + String(preTimeText2));
@@ -719,6 +725,10 @@ void readConfig() {
     if (configline.indexOf("text3Font=") >= 0) {
       text3Font = configline.substring(configline.lastIndexOf("text3Font=") + 10).toInt();
       Serial.println("text3Font= " + String(text3Font));
+    }
+    if (configline.indexOf("weatherFont=") >= 0) {
+      weatherFont = configline.substring(configline.lastIndexOf("weatherFont=") + 12).toInt();
+      Serial.println("weatherFont= " + String(weatherFont));
     }
     if (configline.indexOf("preTimeWeather=") >= 0) {
       preTimeWeather = configline.substring(configline.lastIndexOf("preTimeWeather=") + 15).toInt();
@@ -1000,39 +1010,39 @@ void showClock() {
     dots = 1;
   }
   if (dots) {
-    drawPoint(21,5,1);
-    drawPoint(21,10,1);
-    drawPoint(22,5,1);
-    drawPoint(22,10,1);
-    drawPoint(42,5,1);
-    drawPoint(42,10,1);
-    drawPoint(43,5,1);
-    drawPoint(43,10,1);
     drawPoint(21,6,1);
-    drawPoint(21,11,1);
+    drawPoint(21,12,1);
     drawPoint(22,6,1);
-    drawPoint(22,11,1);
+    drawPoint(22,12,1);
     drawPoint(42,6,1);
-    drawPoint(42,11,1);
+    drawPoint(42,12,1);
     drawPoint(43,6,1);
-    drawPoint(43,11,1);
+    drawPoint(43,12,1);
+    drawPoint(21,7,1);
+    drawPoint(21,13,1);
+    drawPoint(22,7,1);
+    drawPoint(22,13,1);
+    drawPoint(42,7,1);
+    drawPoint(42,13,1);
+    drawPoint(43,7,1);
+    drawPoint(43,13,1);
   } else {
-    drawPoint(21,5,0);
-    drawPoint(21,10,0);
-    drawPoint(22,5,0);
-    drawPoint(22,10,0);
-    drawPoint(42,5,0);
-    drawPoint(42,10,0);  
-    drawPoint(43,5,0);
-    drawPoint(43,10,0);  
     drawPoint(21,6,0);
-    drawPoint(21,11,0);
+    drawPoint(21,12,0);
     drawPoint(22,6,0);
-    drawPoint(22,11,0);
+    drawPoint(22,12,0);
     drawPoint(42,6,0);
-    drawPoint(42,11,0);  
+    drawPoint(42,12,0);  
     drawPoint(43,6,0);
-    drawPoint(43,11,0);  
+    drawPoint(43,12,0);  
+    drawPoint(21,7,0);
+    drawPoint(21,13,0);
+    drawPoint(22,7,0);
+    drawPoint(22,13,0);
+    drawPoint(42,7,0);
+    drawPoint(42,13,0);  
+    drawPoint(43,7,0);
+    drawPoint(43,13,0);  
   }
 }
 /*-------- End NTP code ----------*/
@@ -1612,7 +1622,6 @@ void snowFallMulti() {   // Schneeflocken vertikal scrollen
         starDone[zone] = 1;
       }
       if ( startdelaycount[zone] >= startdelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
-        Serial.println(27 - starimage[3]);
         drawImage( zone * 8, 0, 8, 20, starImage8x7 + 27 - starimage[zone] );      // passenden Ausschnitt aus starImage-Array zeichnen
         if (speeddelaycount[zone] >= speeddelay[zone]) {
           speeddelaycount[zone] = 0;
@@ -1791,6 +1800,9 @@ void setup() {
       }
       if (request->hasParam(PARAM_INPUT_45)) {
         text3Font = request->getParam(PARAM_INPUT_45)->value();
+      }
+      if (request->hasParam(PARAM_INPUT_55)) {
+        weatherFont = request->getParam(PARAM_INPUT_55)->value();
       }
       if (request->hasParam(PARAM_INPUT_17)) {
         preTimeWeather = request->getParam(PARAM_INPUT_17)->value();
@@ -2005,6 +2017,7 @@ void setup() {
     Serial.println("text1Font= " + String(text1Font));
     Serial.println("text2Font= " + String(text2Font));
     Serial.println("text3Font= " + String(text3Font));
+    Serial.println("weatherFont= " + String(weatherFont));
     Serial.println("preTimeWeather= " + String(preTimeWeather));
     Serial.println("preTimeText1= " + String(preTimeText1));
     Serial.println("preTimeText2= " + String(preTimeText2));
@@ -2094,14 +2107,23 @@ void loop() {
           }
           scrollString += weatherString;
           scrollString += "     ";
-          // String fuer Scroll-Funktion in Array wandeln
-          uint8_t stringlength = scrollString.length() + 1;
-          char charBuf[stringlength];
-          scrollString.toCharArray(charBuf, stringlength);
-          // scrollen
-          Serial.println("Start scrolling online weather data...");
-          // horTextScroll_16x20(charBuf, stringlength);
-          h_TextScroll_16x20_v1(charBuf, stringlength, scrollSpeed.toInt());
+          switch (weatherFont.toInt()){
+            case 1:
+              h_TextScroll_8x16(scrollString.c_str(), scrollSpeed.toInt());
+              break;
+            case 2:
+              h_TextScroll_16x20_v2(scrollString.c_str(), scrollSpeed.toInt());
+              break;
+            case 3:
+              uint8_t rand = random(1,3);
+              Serial.println("random: " + String(rand));
+              if (rand == 1) {
+                h_TextScroll_8x16(scrollString.c_str(), scrollSpeed.toInt());
+              } else {
+                h_TextScroll_16x20_v2(scrollString.c_str(), scrollSpeed.toInt());
+              }
+              break;
+          }
           Serial.println("Stop scrolling online weather data.");
           state = 3;
           clkTimePre = millis();
