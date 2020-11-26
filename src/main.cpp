@@ -1583,7 +1583,7 @@ void pixelFall() {   // Pixel vertikal animiert
 
 // =======================================================================
 
-void snowFall() {   // Schneeflocken vertikal scrollen
+void snowFallMulti() {   // Schneeflocken vertikal scrollen
   clearMatrix();
   clkTimeEffect = millis();
   
@@ -1610,13 +1610,14 @@ void snowFall() {   // Schneeflocken vertikal scrollen
         starDone[zone] = 1;
       }
       if ( startdelaycount[zone] >= startdelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
-        drawImage( zone * 8, 2, 8, 20, stars20 + starimage[zone] * 20);      // passendes Image aus stars-Font-Array zeichnen
+        Serial.println(27 - starimage[3]);
+        drawImage( zone * 8, 2, 8, 20, starImage8x7 + 27 - starimage[zone] );      // passenden Ausschnitt aus starImage-Array zeichnen
         if (speeddelaycount[zone] >= speeddelay[zone]) {
           speeddelaycount[zone] = 0;
           starimage[zone]++;                                                 // Flocke eins runter
         }
         speeddelaycount[zone]++;
-        if ( starimage[zone] == 28 ) {                                       // letzter Zustand erreicht (Flocke unten rausgescrollt)
+        if ( starimage[zone] == 28 ) {                                       // letzter Zustand erreicht (Flocke unten rausgescrollt bzw. Ausschnitt am Anfang des starImage-Arrays)
           starimage[zone] = 0;
           startdelaycount[zone] = 0;
           startdelay[zone] = random(0,51);
@@ -1638,24 +1639,17 @@ void snowFall() {   // Schneeflocken vertikal scrollen
 
 // =======================================================================
 
-void snowFall2() {   // 1 Schneeflocke an verschiedenen Positionen vertikal scrollen
+void snowFallSingle() {   // einzelne Schneeflocke an verschiedenen Positionen vertikal scrollen
   clearMatrix();
   clkTimeEffect = millis();
   while (millis() < (snowDuration.toInt() * 1000) + clkTimeEffect) {
-    uint8_t x = random(0,8);
-    for (uint16_t i = 0; i < NUM_ROWS + 8; i++) {   // bei DEV (16 Zeilen) bis 24 zaehlen, sonst bis 28
-      //Serial.println("snow_char= " + String(i));
-      #ifdef DEV
-        const uint8_t *pSrc = stars16 + i * 16;
-      #else
-        const uint8_t *pSrc = stars20 + i * 20;
-      #endif
-      drawImage( x * 8, 2, 8, NUM_ROWS, pSrc);
-      pSrc++;
+    uint8_t x = random(0,57);
+    for (uint8_t i = 0; i <= 27; i++) {
+      drawImage( x, 0, 8, 20, starImage8x7 + 27 - i);
       delay(snowFall2Delay.toInt());
-    }
+    } 
   }
-  delay(1000);
+  delay(500);
   clearMatrix();
 }
 
@@ -2062,18 +2056,8 @@ void setup() {
 
 void loop() {
   AsyncElegantOTA.loop();
+  
   showClock();
-
-  /*
-  // Intervall fuer Online Wetter Daten Aktualisierung
-  if (millis() > timeBetweenUpdates.toInt() * 1000 + clkTimeWeatherUpdate) {
-    clkTimeWeatherUpdate = millis();
-    if (weatherCheckbox == "checked") {
-      Serial.println("Getting online weather data...");
-      getWeatherData();
-    }
-  }
-  */
 
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
      case 1:   // Schneefall (multi)
@@ -2081,8 +2065,7 @@ void loop() {
         if (millis() > (preTimeSnow.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start falling snow...");
-          //snowFall();
-          pixelFall();
+          snowFallMulti();
           Serial.println("Stop falling snow.");
           state = 2;
           clkTimePre = millis();
@@ -2292,7 +2275,7 @@ void loop() {
         if (millis() > (preTimeSnowFall2.toInt() * 1000) + clkTimePre && !transPos && dots) {
           wipeRandom();
           Serial.println("Start snowFall2...");
-          snowFall2();
+          snowFallSingle();
           Serial.println("Stop snowFall2.");
           state = 1;
           clkTimePre = millis();
