@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-#define DEV
+//#define DEV
 
 #include "prototypes.h"
 #include "defaultsettings.h"
@@ -1563,6 +1563,7 @@ void pixelFall() {   // Pixel vertikal animiert
   while ( allPixelsDone < 64 ) {
     for (uint16_t xPos = 0; xPos < 64; xPos++) {
       if ( (millis() > (pixelFallDuration.toInt() * 1000) + clkTimeEffect) and yPos[xPos] == 20 ) {   // wenn Zeit abgelaufen und Pixel unten raus
+        drawPoint(xPos, 19, 0);                                                                       // alten Pixel in Zeile 20 loeschen, da naechstes if nicht mehr greift
         pixelDone[xPos] = 1;                                                                          // dann Pixel an aktueller x-Position als fertig kennzeichnen
       }
       if ( startdelaycount[xPos] >= startdelay[xPos] and pixelDone[xPos] == 0 ) {   // Start des Pixel um eine zufaellige Zeit verzögern
