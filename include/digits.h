@@ -14,10 +14,10 @@ const uint8_t digitals[] = {
   0x00, 0x1C, 0x36, 0x63, 0x63, 0x63, 0x37, 0x1F, 0x03, 0x03, 0x36, 0x3C, 0x00, 0x00, 0x00, 0x00, // 9
 };
 
-// Ziffern 8 Pixel breit, 16 Pixel hoch + Leerzeilen fuer vertikales Scrollen
+// Ziffern 8 Pixel breit, 16 Pixel hoch + Leerzeilen (fuer vertikal Scrollen Effekt)
 uint8_t scrollDigits[] = {
-B00000000,
-B00111100,
+B00000000,   // scrollDigits + 0
+B00111100,   // scrollDigits + 1
 B01111110,
 B11000011,
 B11000011,
@@ -36,7 +36,7 @@ B00111100,
 B00000000,
 
 B00000000,
-B00001000,
+B00001000,   // scrollDigits + 19
 B00011000,
 B00111000,
 B01111000,
@@ -55,7 +55,7 @@ B11111111,
 B00000000,
 
 B00000000,
-B00111110,
+B00111110,   // scrollDigits + 37
 B01111110,
 B11000011,
 B11000011,
