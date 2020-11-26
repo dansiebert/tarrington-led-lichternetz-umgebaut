@@ -1613,7 +1613,7 @@ void snowFallMulti() {   // Schneeflocken vertikal scrollen
       }
       if ( startdelaycount[zone] >= startdelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
         Serial.println(27 - starimage[3]);
-        drawImage( zone * 8, 2, 8, 20, starImage8x7 + 27 - starimage[zone] );      // passenden Ausschnitt aus starImage-Array zeichnen
+        drawImage( zone * 8, 0, 8, 20, starImage8x7 + 27 - starimage[zone] );      // passenden Ausschnitt aus starImage-Array zeichnen
         if (speeddelaycount[zone] >= speeddelay[zone]) {
           speeddelaycount[zone] = 0;
           starimage[zone]++;                                                 // Flocke eins runter
