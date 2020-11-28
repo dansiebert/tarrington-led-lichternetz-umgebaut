@@ -1,59 +1,70 @@
 #include <Arduino.h>
 
-const char* PARAM_INPUT_01 = "scrollText1";
-const char* PARAM_INPUT_02 = "scrollText2";
-const char* PARAM_INPUT_03 = "scrollText3";
-const char* PARAM_INPUT_04 = "scrolltext1Checkbox";
-const char* PARAM_INPUT_05 = "scrolltext2Checkbox";
-const char* PARAM_INPUT_06 = "scrolltext3Checkbox";
-const char* PARAM_INPUT_3 = "weatherCheckbox";
-const char* PARAM_INPUT_6 = "tempCheckbox";
-const char* PARAM_INPUT_7 = "rainCheckbox";
-const char* PARAM_INPUT_8 = "windCheckbox";
-const char* PARAM_INPUT_9 = "humidityCheckbox";
-const char* PARAM_INPUT_10 = "pressureCheckbox";
-const char* PARAM_INPUT_11 = "updatecountCheckbox";
-const char* PARAM_INPUT_12 = "locationCheckbox";
-const char* PARAM_INPUT_13 = "dateCheckbox";
-const char* PARAM_INPUT_14 = "scrollSpeed";
-const char* PARAM_INPUT_15 = "dotsCheckbox";
-const char* PARAM_INPUT_16 = "snowCheckbox";
-const char* PARAM_INPUT_17 = "preTimeWeather";
-const char* PARAM_INPUT_18 = "preTimeText1";
-const char* PARAM_INPUT_19 = "preTimeText2";
-const char* PARAM_INPUT_20 = "cityID";
-const char* PARAM_INPUT_21 = "preTimeText3";
-const char* PARAM_INPUT_22 = "preTimeSnow";
-const char* PARAM_INPUT_23 = "preTimeStar";
-const char* PARAM_INPUT_24 = "snowDuration";
-const char* PARAM_INPUT_25 = "snowDelay";
-const char* PARAM_INPUT_26 = "starDuration";
-const char* PARAM_INPUT_27 = "starDelay";
-const char* PARAM_INPUT_28 = "starCount";
-const char* PARAM_INPUT_29 = "starCheckbox";
-const char* PARAM_INPUT_30 = "text1Delay";
-const char* PARAM_INPUT_31 = "text2Delay";
-const char* PARAM_INPUT_32 = "text3Delay";
-const char* PARAM_INPUT_33 = "mirrorCheckbox";
-const char* PARAM_INPUT_34 = "reverseCheckbox";
-const char* PARAM_INPUT_35 = "preTimeSnowFall2";
-const char* PARAM_INPUT_36 = "snowFall2Duration";
-const char* PARAM_INPUT_37 = "snowFall2Delay";
-const char* PARAM_INPUT_38 = "preTimeChristmasSymbols";
-const char* PARAM_INPUT_39 = "christmasSymbolsDuration";
-const char* PARAM_INPUT_40 = "christmasSymbolsDelay";
-const char* PARAM_INPUT_41 = "snowFall2Checkbox";
-const char* PARAM_INPUT_42 = "christmasSymbolsCheckbox";
-const char* PARAM_INPUT_43 = "text1Font";
-const char* PARAM_INPUT_44 = "text2Font";
-const char* PARAM_INPUT_45 = "text3Font";
-const char* PARAM_INPUT_46 = "growingStar16x15Duration";
-const char* PARAM_INPUT_47 = "growingStar16x15Delay";
-const char* PARAM_INPUT_48 = "preTimeGrowingStar16x15";
-const char* PARAM_INPUT_49 = "growingStar16x15Checkbox";
-const char* PARAM_INPUT_50 = "animClockCheckbox";
-const char* PARAM_INPUT_51 = "pixelFallCheckbox";
-const char* PARAM_INPUT_52 = "pixelFallPreTime";
-const char* PARAM_INPUT_53 = "pixelFallDelay";
-const char* PARAM_INPUT_54 = "pixelFallDuration";
-const char* PARAM_INPUT_55 = "weatherFont";
+const char* PARAM_INPUT_01 = "mirrorCheckbox";
+const char* PARAM_INPUT_02 = "reverseCheckbox";
+
+const char* PARAM_INPUT_03 = "animClockCheckbox";
+const char* PARAM_INPUT_04 = "colonsCheckbox";
+
+const char* PARAM_INPUT_05 = "scrollText1";
+const char* PARAM_INPUT_06 = "scrollText1Checkbox";
+const char* PARAM_INPUT_07 = "scrollText1Leadtime";
+const char* PARAM_INPUT_08 = "scrollText1Delay";
+const char* PARAM_INPUT_09 = "scrollText1Font";
+
+const char* PARAM_INPUT_10 = "scrollText2";
+const char* PARAM_INPUT_11 = "scrollText2Checkbox";
+const char* PARAM_INPUT_12 = "scrollText2Leadtime";
+const char* PARAM_INPUT_13 = "scrollText2Delay";
+const char* PARAM_INPUT_14 = "scrollText2Font";
+
+const char* PARAM_INPUT_15 = "scrollText3";
+const char* PARAM_INPUT_16 = "scrollText3Checkbox";
+const char* PARAM_INPUT_17 = "scrollText3Leadtime";
+const char* PARAM_INPUT_18 = "scrollText3Delay";
+const char* PARAM_INPUT_19 = "scrollText3Font";
+
+const char* PARAM_INPUT_20 = "weatherCheckbox";
+const char* PARAM_INPUT_21 = "weatherLeadtime";
+const char* PARAM_INPUT_22 = "weatherDelay";
+const char* PARAM_INPUT_23 = "weatherFont";
+
+const char* PARAM_INPUT_24 = "weatherLocationCheckbox";
+const char* PARAM_INPUT_25 = "cityID";
+const char* PARAM_INPUT_26 = "dateCheckbox";
+const char* PARAM_INPUT_27 = "tempCheckbox";
+const char* PARAM_INPUT_28 = "rainCheckbox";
+const char* PARAM_INPUT_29 = "windCheckbox";
+const char* PARAM_INPUT_30 = "humidityCheckbox";
+const char* PARAM_INPUT_31 = "pressureCheckbox";
+
+const char* PARAM_INPUT_32 = "snowFallSingleCheckbox";
+const char* PARAM_INPUT_33 = "snowFallSingleLeadtime";
+const char* PARAM_INPUT_34 = "snowFallSingleDelay";
+const char* PARAM_INPUT_35 = "snowFallSingleDuration";
+
+const char* PARAM_INPUT_36 = "snowFallMultiCheckbox";
+const char* PARAM_INPUT_37 = "snowFallMultiLeadtime";
+const char* PARAM_INPUT_38 = "snowFallMultiDelay";
+const char* PARAM_INPUT_39 = "snowFallMultiDuration";
+
+const char* PARAM_INPUT_40 = "pixelFallCheckbox";
+const char* PARAM_INPUT_41 = "pixelFallLeadtime";
+const char* PARAM_INPUT_42 = "pixelFallDelay";
+const char* PARAM_INPUT_43 = "pixelFallDuration";
+
+const char* PARAM_INPUT_44 = "starrySkyCheckbox";
+const char* PARAM_INPUT_45 = "starrySkyLeadtime";
+const char* PARAM_INPUT_46 = "starrySkyDelay";
+const char* PARAM_INPUT_47 = "starrySkyDuration";
+const char* PARAM_INPUT_48 = "starrySkyStarCount";
+
+const char* PARAM_INPUT_49 = "growingStarCheckbox";
+const char* PARAM_INPUT_50 = "growingStarLeadtime";
+const char* PARAM_INPUT_51 = "growingStarDelay";
+const char* PARAM_INPUT_52 = "growingStarDuration";
+
+const char* PARAM_INPUT_53 = "christmasSymbolsCheckbox";
+const char* PARAM_INPUT_54 = "christmasSymbolsLeadtime";
+const char* PARAM_INPUT_55 = "christmasSymbolsDelay";
+const char* PARAM_INPUT_56 = "christmasSymbolsDuration";

@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-const unsigned char growingStar16x15[] = {
+const unsigned char growingStarImage[] = {
 B00000000,B00000000,
 B00000000,B00000000,
 B00000000,B00000000,
@@ -146,7 +146,7 @@ B00000001,B00000000,
 B00000001,B00000000,
 };
 
-const unsigned char starImage8x7[] = {   // Array, um Ausschnitt von 20 Zeilen gleiten zu lassen (Schneefall-Effekt)
+const unsigned char starImage[] = {   // Array, um Ausschnitt von 20 Zeilen gleiten zu lassen (Schneefall-Effekt)
 B00000000,
 B00000000,
 B00000000,
