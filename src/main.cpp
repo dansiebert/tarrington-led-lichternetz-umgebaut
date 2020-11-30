@@ -492,6 +492,21 @@ String processor(const String& var) {
   } else if (var == "CHRISTMASSYMBOLS_DURATION") {
     return christmasSymbolsDuration;
 
+// moveChristmasSymbols
+  } else if (var == "MOVECHRISTMASSYMBOLS_CHECKBOX") {
+    return moveChristmasSymbolsCheckbox;
+  } else if (var == "MOVECHRISTMASSYMBOLS_LEADTIME") {
+    return moveChristmasSymbolsLeadtime;
+  } else if (var == "MOVECHRISTMASSYMBOLS_DELAY") {
+    return moveChristmasSymbolsDelay;
+  } else if (var == "MOVECHRISTMASSYMBOLS_DURATION") {
+    return moveChristmasSymbolsDuration;
+  } else if (var == "MOVECHRISTMASSYMBOLS_SYMBOL") {
+      String cSymbol = moveChristmasSymbolsSymbol;
+      String moveChristmasSymbolsSymbolOptions = "<option value='1'>Schneemann</option><option value='2'>Tannenbaum</option><option value='3'>Kerze</option><option value='4'>Paket</option><option value='5'>random</option>";
+      moveChristmasSymbolsSymbolOptions.replace(cSymbol + "'", cSymbol + "' selected" );
+    return moveChristmasSymbolsSymbolOptions;
+
   }
   return String();
 }
@@ -594,6 +609,13 @@ void writeConfig() {
     f.println("christmasSymbolsLeadtime=" + String(christmasSymbolsLeadtime));
     f.println("christmasSymbolsDelay=" + String(christmasSymbolsDelay));
     f.println("christmasSymbolsDuration=" + String(christmasSymbolsDuration));
+
+    f.println("moveChristmasSymbolsCheckbox=" + moveChristmasSymbolsCheckbox);
+    f.println("moveChristmasSymbolsLeadtime=" + String(moveChristmasSymbolsLeadtime));
+    f.println("moveChristmasSymbolsDelay=" + String(moveChristmasSymbolsDelay));
+    f.println("moveChristmasSymbolsDuration=" + String(moveChristmasSymbolsDuration));
+    f.println("moveChristmasSymbolsSymbol=" + String(moveChristmasSymbolsSymbol));
+
   }
   f.close();
 }
@@ -889,7 +911,30 @@ void readConfig() {
       christmasSymbolsDuration = configline.substring(configline.lastIndexOf("christmasSymbolsDuration=") + 25).toInt();
       Serial.println("christmasSymbolsDuration= " + String(christmasSymbolsDuration));
     }
-    
+
+    // moveChristmaSymbols
+    if (configline.indexOf("moveChristmasSymbolsCheckbox=") >= 0) {
+      moveChristmasSymbolsCheckbox = configline.substring(configline.lastIndexOf("moveChristmasSymbolsCheckbox=") + 29);
+      moveChristmasSymbolsCheckbox.trim();
+      Serial.println("moveChristmasSymbolsCheckbox= " + moveChristmasSymbolsCheckbox);
+    }
+    if (configline.indexOf("moveChristmasSymbolsLeadtime=") >= 0) {
+      moveChristmasSymbolsLeadtime = configline.substring(configline.lastIndexOf("moveChristmasSymbolsLeadtime=") + 29).toInt();
+      Serial.println("moveChristmasSymbolsLeadtime= " + String(moveChristmasSymbolsLeadtime));
+    }
+    if (configline.indexOf("moveChristmasSymbolsDelay=") >= 0) {
+      moveChristmasSymbolsDelay = configline.substring(configline.lastIndexOf("moveChristmasSymbolsDelay=") + 26).toInt();
+      Serial.println("moveChristmasSymbolsDelay= " + String(moveChristmasSymbolsDelay));
+    }
+    if (configline.indexOf("moveChristmasSymbolsDuration=") >= 0) {
+      moveChristmasSymbolsDuration = configline.substring(configline.lastIndexOf("moveChristmasSymbolsDuration=") + 29).toInt();
+      Serial.println("moveChristmasSymbolsDuration= " + String(moveChristmasSymbolsDuration));
+    }
+    if (configline.indexOf("moveChristmasSymbolsSymbol=") >= 0) {
+      moveChristmasSymbolsSymbol = configline.substring(configline.lastIndexOf("moveChristmasSymbolsSymbol=") + 27).toInt();
+      Serial.println("moveChristmasSymbolsSymbol= " + String(moveChristmasSymbolsSymbol));
+    }
+   
   }  
   fr.close();
   Serial.println();
@@ -1478,49 +1523,66 @@ void drawChristmasSymbols() {
   while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
     uint8_t y = random(0,4);
-    uint8_t s = random(0,4);
+    uint8_t s = random(1,5);
     drawImage( x, y, 16, 16, christmasSymbols16x16 + s * 32);
     delay(christmasSymbolsDelay.toInt() * 100);
     clearMatrix();
   }
 }  
   
-// =======================================================================  
-String moveChristmasSymbolsDuration = "20";
-String moveChristmasSymbolsDelay = "120";
-void moveChristmasSymbols() {
+// =======================================================================
+
+void moveChristmasSymbols(uint8_t symbol) {
   Serial.println("Start moveChristmasSymbols...");
+  Serial.println("randomSymbol= " + String(symbol));
   clkTimeEffect = millis();
-  uint8_t x = random(0,48);
-  uint8_t y = random(0,4);  
+  uint8_t x = random(0,48);   // zufaelliger Startwert x
+  uint8_t y = random(0,4);    // zufaelliger Startwert y
   while (millis() < (moveChristmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
-    uint8_t direction = random(0,4);
-    Serial.println("x: " + String(x));
-    Serial.println("y: " + String(y));
-    Serial.println("direction: " + String(direction));
-    drawImage( x, y, 16, 16, christmasSymbols16x16);
-    delay(moveChristmasSymbolsDelay.toInt());
-    clearMatrix();
-    switch (direction){
-      case 0:
-        // left
-        if (x > 0) x--;
-        break;
-      case 1:
-        // right
-        if (x < 47) x++;
-        break;
-      case 2:
-        // up;
-        if (y > 0) y--;
-        break;
-      case 3:
-        // down;
-        if (y < 3) y++;
-        break;
-    }
+    uint8_t direction = random(0,4);   // zufaellige Richtung
+    uint8_t steps = random(0,24);
+    for (uint8_t i = 0; i < steps; i++) {
+      drawImage( x, y, 16, 16, christmasSymbols16x16 + 32 * symbol);
+      delay(moveChristmasSymbolsDelay.toInt());
+      drawImage( x, y, 16, 16, christmasSymbols16x16);  // alte Position loeschen (erste 32 Byte im Array )
+      switch (direction){
+        case 0:
+          // left
+          if (x > 0){
+            x--;
+          } else {
+            direction = 1;
+          }    
+          break;
+        case 1:
+          // right
+          if (x < 47){
+            x++;
+          } else {
+            direction = 0;
+          }  
+          break;
+        case 2:
+          // up;
+          if (y > 0){
+            y--;
+          } else{
+            direction = random(2,4);
+          } 
+          break;
+        case 3:
+          // down;
+          if (y < 3){
+            y++;
+          } else{
+            direction = random(0,4);
+          } 
+          break;
+      }
+    } 
   }
   delay(500);
+  clearMatrix();
 }  
   
 // =======================================================================  
@@ -1953,6 +2015,16 @@ void setup() {
     if (request->hasParam(PARAM_INPUT_55)) christmasSymbolsDelay = request->getParam(PARAM_INPUT_55)->value();
     if (request->hasParam(PARAM_INPUT_56)) christmasSymbolsDuration = request->getParam(PARAM_INPUT_56)->value();    
     
+    // moveChristmasSymbols
+    if (request->hasParam(PARAM_INPUT_57)) { moveChristmasSymbolsCheckbox = request->getParam(PARAM_INPUT_57)->value();
+    } else {
+      moveChristmasSymbolsCheckbox = "unchecked";
+    }
+    if (request->hasParam(PARAM_INPUT_58)) moveChristmasSymbolsLeadtime = request->getParam(PARAM_INPUT_58)->value();
+    if (request->hasParam(PARAM_INPUT_59)) moveChristmasSymbolsDelay = request->getParam(PARAM_INPUT_59)->value();
+    if (request->hasParam(PARAM_INPUT_60)) moveChristmasSymbolsDuration = request->getParam(PARAM_INPUT_60)->value();
+    if (request->hasParam(PARAM_INPUT_61)) moveChristmasSymbolsSymbol = request->getParam(PARAM_INPUT_61)->value();  
+    
     Serial.println("mirrorCheckbox = " + mirrorCheckbox);
     Serial.println("reverseCheckbox = " + reverseCheckbox);
 
@@ -2017,6 +2089,12 @@ void setup() {
     Serial.println("christmasSymbolsDelay = " + String(christmasSymbolsDelay));
     Serial.println("christmasSymbolsDuration = " + String(christmasSymbolsDuration));
 
+    Serial.println("moveChristmasSymbolsCheckbox = " + moveChristmasSymbolsCheckbox);
+    Serial.println("moveChristmasSymbolsLeadtime = " + String(moveChristmasSymbolsLeadtime));
+    Serial.println("moveChristmasSymbolsDelay = " + String(moveChristmasSymbolsDelay));
+    Serial.println("moveChristmasSymbolsDuration = " + String(moveChristmasSymbolsDuration));
+    Serial.println("moveChristmasSymbolsSymbol = " + String(moveChristmasSymbolsSymbol));
+
     writeConfig();
     request->redirect("/");
   });
@@ -2053,19 +2131,17 @@ void loop() {
   showClock();
 
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
-     case 1:   // Schneefall (multi)
+    case 1:   // Schneefall (multi)
       if (snowFallMultiCheckbox == "checked") {
         if (millis() > (snowFallMultiLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {   // Effekt erst, wenn Vorlaufzeit erreicht, Uhr-Digit nicht scrollt, und Doppelpunkte an sind
           wipeRandom();
-          Serial.println("Start falling snow...");
           snowFallMulti();
-          Serial.println("Stop falling snow.");
-          state = 2;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 2;
+        state++;
       }
       break;
   
@@ -2074,7 +2150,7 @@ void loop() {
         if (millis() > (weatherLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
           updCnt--;
-          Serial.println("updCnt=" + String(updCnt));
+          Serial.println("Wetter-Update-Count= " + String(updCnt));
           if (updCnt <= 0) {
             updCnt = 10;
             getWeatherData();
@@ -2102,37 +2178,49 @@ void loop() {
               }
               break;
           }
-          Serial.println("Stop scrolling online weather data.");
-          state = 3;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 3;
+        state++;
       }
       break;
   
-     case 3:   // Sternenhimmel
+    case 3:   // Sternenhimmel
       if (starrySkyCheckbox == "checked") {
         if (millis() > (starrySkyLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start starrySky...");
           starrySky();
-          Serial.println("Stop starrySky.");
-          state = 4;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 4;
+        state++;
+      }
+      break;
+    
+    case 4:   // bewegte Symbole
+      if (moveChristmasSymbolsCheckbox == "checked") {
+        if (millis() > (moveChristmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
+          wipeRandom();
+          uint8_t symbolSelection = moveChristmasSymbolsSymbol.toInt();
+          if (symbolSelection == 5) symbolSelection = random(1,5);
+          moveChristmasSymbols(symbolSelection);
+          state++;
+          clkTimeLeadtime = millis();
+        }
+      } else {
+        clkTimeLeadtime = millis();
+        state++;
       }
       break;
   
-    case 4:   // Scrolltext 1
+    case 5:   // Scrolltext 1
       if (scrollText1Checkbox == "checked") {
         if (millis() > (scrollText1Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start scrolling scrollText1...");
           switch (scrollText1Font.toInt()){
             case 1:
               textScroll_8x16(scrollText1.c_str(), scrollText1Delay.toInt());
@@ -2142,7 +2230,7 @@ void loop() {
               break;
             case 3:
               uint8_t rand = random(1,3);
-              Serial.println("random: " + String(rand));
+              Serial.println("randomTextSize= " + String(rand));
               if (rand == 1) {
                 textScroll_8x16(scrollText1.c_str(), scrollText1Delay.toInt());
               } else {
@@ -2150,38 +2238,33 @@ void loop() {
               }
               break;
           }
-          Serial.println("Stop scrolling scrollText1.");
-          state = 5;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 5;
+        state++;
       }
       break;
 
-   case 5:   // Symbole
+    case 6:   // Symbole
       if (christmasSymbolsCheckbox == "checked") {
         if (millis() > (christmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start drawChristmasSymbols...");
-          //drawChristmasSymbols();
-          moveChristmasSymbols();
-          Serial.println("Stop drawChristmasSymbols.");
-          state = 6;
+          drawChristmasSymbols();
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 6;
+        state++;
       }
       break;
 
-    case 6:   // Scrolltext 2
+    case 7:   // Scrolltext 2
       if (scrollText2Checkbox == "checked") {
         if (millis() > (scrollText2Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start scrolling scrollText2...");
           switch (scrollText2Font.toInt()){
             case 1:
               textScroll_8x16(scrollText2.c_str(), scrollText2Delay.toInt());
@@ -2191,7 +2274,7 @@ void loop() {
               break;
             case 3:
               uint8_t rand = random(1,3);
-              Serial.println("random: " + String(rand));
+              Serial.println("randomTextSize= " + String(rand));
               if (rand == 1) {
                 textScroll_8x16(scrollText2.c_str(), scrollText2Delay.toInt());
               } else {
@@ -2199,53 +2282,47 @@ void loop() {
               }
               break;
           }
-          Serial.println("Stop scrolling scrollText2.");
-          state = 7;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 7;
+        state++;
       }
       break;
  
-    case 7:   // Schneefall (Pixel)
+    case 8:   // Schneefall (Pixel)
       if (pixelFallCheckbox == "checked") {
         if (millis() > (pixelFallLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start pixelFall...");
           pixelFall();
-          Serial.println("Stop pixelFall.");
-          state = 8;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 8;
+        state++;
       }
       break;
   
-   case 8:   // wachsende Schneeflocke
+    case 9:   // wachsende Schneeflocke
       if (growingStarCheckbox == "checked") {
         if (millis() > (growingStarLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start growingStar...");
           growingStar();
-          Serial.println("Stop growingStar.");
-          state = 9;
+          state++;
           clkTimeLeadtime = millis();
         } 
       } else {
         clkTimeLeadtime = millis();
-        state = 9;
+        state++;
       }
       break;
 
-    case 9:   // Scrolltext 3
+    case 10:   // Scrolltext 3
       if (scrollText3Checkbox == "checked") {
         if (millis() > (scrollText3Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start scrolling scrollText3...");
           switch (scrollText3Font.toInt()){
             case 1:
               textScroll_8x16(scrollText3.c_str(), scrollText3Delay.toInt());
@@ -2255,7 +2332,7 @@ void loop() {
               break;
             case 3:
               uint8_t rand = random(1,3);
-              Serial.println("random: " + String(rand));
+              Serial.println("randomTextSize= " + String(rand));
               if (rand == 1) {
                 textScroll_8x16(scrollText3.c_str(), scrollText3Delay.toInt());
               } else {
@@ -2263,23 +2340,20 @@ void loop() {
               }
               break;
           }
-          Serial.println("Stop scrolling scrollText3.");
-          state = 10;
+          state++;
           clkTimeLeadtime = millis();
         }
       } else {
         clkTimeLeadtime = millis();
-        state = 10;
+        state++;
       }
       break;
   
-  case 10:   // Schneefall (single)
+    case 11:   // Schneefall (single)
       if (snowFallSingleCheckbox == "checked") {
         if (millis() > (snowFallSingleLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
-          Serial.println("Start snowFallSingle...");
           snowFallSingle();
-          Serial.println("Stop snowFallSingle.");
           state = 1;
           clkTimeLeadtime = millis();
         }

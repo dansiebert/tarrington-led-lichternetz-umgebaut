@@ -24,7 +24,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td>Vorlauf </td>
         <td>Speed </td>
         <td>Dauer </td>
-        <td>Font </td>
+        <td></td>
       </tr>
        <tr>
         <td>Schneefall (multi) </td>
@@ -49,6 +49,14 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td><input name="starrySkyDuration" type="number" min="0" max="300" value="%STARRYSKY_DURATION%"></td>
       </tr>
       <tr>
+        <td>wandernde Symbole </td>
+        <td><input type="checkbox" name="moveChristmasSymbolsCheckbox" value="checked" %MOVECHRISTMASSYMBOLS_CHECKBOX% onClick="this.form.submit();"></td>
+        <td><input name="moveChristmasSymbolsLeadtime" type="number" min="0" max="300" value="%MOVECHRISTMASSYMBOLS_LEADTIME%"></td>
+        <td><input name="moveChristmasSymbolsDelay" type="number" min="5" max="1000" value=%MOVECHRISTMASSYMBOLS_DELAY%></td>
+        <td><input name="moveChristmasSymbolsDuration" type="number" min="0" max="300" value="%MOVECHRISTMASSYMBOLS_DURATION%"></td>
+        <td><select name="moveChristmasSymbolsSymbol" onchange="this.form.submit();">%MOVECHRISTMASSYMBOLS_SYMBOL%</select></td>
+      </tr>
+      <tr>
         <td>Text 1 </td>
         <td><input type="checkbox" name="scrollText1Checkbox" value="checked" %SCROLLTEXT1_CHECKBOX% onClick="this.form.submit();"></td>
         <td><input name="scrollText1Leadtime" type="number" min="0" max="300" value="%SCROLLTEXT1_LEADTIME%"></td>
@@ -57,7 +65,7 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td><select name="scrollText1Font" onchange="this.form.submit();">%SCROLLTEXT1_FONT%</select></td>
       </tr>
       <tr>
-        <td>Symbole </td>
+        <td>wechselnde Symbole </td>
         <td><input type="checkbox" name="christmasSymbolsCheckbox" value="checked" %CHRISTMASSYMBOLS_CHECKBOX% onClick="this.form.submit();"></td>
         <td><input name="christmasSymbolsLeadtime" type="number" min="0" max="300" value="%CHRISTMASSYMBOLS_LEADTIME%"></td>
         <td><input name="christmasSymbolsDelay" type="number" min="5" max="1000" value=%CHRISTMASSYMBOLS_DELAY%></td>
