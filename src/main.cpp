@@ -1017,12 +1017,12 @@ void showClock() {
         if (i > 0){                 // fuehrende 0 nicht anzeigen
           if (digtrans[i] == 0){    // wenn Digit sich nicht geaendert hat
             transPos = 0;
-            drawImage(digPos[i], 1, 8, 18, scrollDigits + dig[i] * shiftRange);
+            drawImage(digPos[i], 1, 8, 16, scrollDigits + dig[i] * shiftRange);
           } else {
             transPos = 18 - digtrans[i];
             dig2[i] = dig[i];
             if (dig[i] == 0) dig2[i] = 10;
-            drawImage(digPos[i], 1, 8, 18, scrollDigits + transPos + (dig[i] - 1) * shiftRange);
+            drawImage(digPos[i], 1, 8, 16, scrollDigits + transPos + (dig2[i] - 1) * shiftRange);
             digtrans[i]--;
           }
         }
@@ -1473,7 +1473,7 @@ void textScroll_8x16(const char *s, uint8_t sdelay) {                         //
 // =======================================================================
 
 void drawChristmasSymbols() {
-  Serial.println("Start drawing christmasSymbols");
+  Serial.println("Start drawChristmasSymbols...");
   clkTimeEffect = millis();
   while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
@@ -1486,9 +1486,47 @@ void drawChristmasSymbols() {
 }  
   
 // =======================================================================  
+String moveChristmasSymbolsDuration = "20";
+String moveChristmasSymbolsDelay = "120";
+void moveChristmasSymbols() {
+  Serial.println("Start moveChristmasSymbols...");
+  clkTimeEffect = millis();
+  uint8_t x = random(0,48);
+  uint8_t y = random(0,4);  
+  while (millis() < (moveChristmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
+    uint8_t direction = random(0,4);
+    Serial.println("x: " + String(x));
+    Serial.println("y: " + String(y));
+    Serial.println("direction: " + String(direction));
+    drawImage( x, y, 16, 16, christmasSymbols16x16);
+    delay(moveChristmasSymbolsDelay.toInt());
+    clearMatrix();
+    switch (direction){
+      case 0:
+        // left
+        if (x > 0) x--;
+        break;
+      case 1:
+        // right
+        if (x < 47) x++;
+        break;
+      case 2:
+        // up;
+        if (y > 0) y--;
+        break;
+      case 3:
+        // down;
+        if (y < 3) y++;
+        break;
+    }
+  }
+  delay(500);
+}  
+  
+// =======================================================================  
 
 void growingStar() {
-  Serial.println("Start growingStar");
+  Serial.println("Start growingStar...");
   clkTimeEffect = millis();
   while (millis() < (growingStarDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
@@ -1512,6 +1550,7 @@ void growingStar() {
 // ======================================================================= 
 
 void pixelFall() {   // Pixel vertikal animiert
+  Serial.println("Start pixelFall...");
   clearMatrix();
   clkTimeEffect = millis();
   
@@ -1569,6 +1608,7 @@ void pixelFall() {   // Pixel vertikal animiert
 // =======================================================================
 
 void snowFallMulti() {   // Schneeflocken vertikal scrollen
+  Serial.println("Start snowFallMulti...");
   clearMatrix();
   clkTimeEffect = millis();
   
@@ -1624,6 +1664,7 @@ void snowFallMulti() {   // Schneeflocken vertikal scrollen
 // =======================================================================
 
 void snowFallSingle() {   // einzelne Schneeflocke an verschiedenen Positionen vertikal scrollen
+  Serial.println("Start snowFallSingle...");
   clearMatrix();
   clkTimeEffect = millis();
   while (millis() < (snowFallSingleDuration.toInt() * 1000) + clkTimeEffect) {
@@ -1640,6 +1681,7 @@ void snowFallSingle() {   // einzelne Schneeflocke an verschiedenen Positionen v
 // =======================================================================
 
 void starrySky() {   // funkelnder Sternenhimmel
+  Serial.println("Start starrySky...");
   clearMatrix();
   uint8_t xPos[1000];
   uint8_t yPos[1000];
@@ -2123,7 +2165,8 @@ void loop() {
         if (millis() > (christmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
           Serial.println("Start drawChristmasSymbols...");
-          drawChristmasSymbols();
+          //drawChristmasSymbols();
+          moveChristmasSymbols();
           Serial.println("Stop drawChristmasSymbols.");
           state = 6;
           clkTimeLeadtime = millis();
