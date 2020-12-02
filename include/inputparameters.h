@@ -74,3 +74,10 @@ const char* PARAM_INPUT_58 = "moveChristmasSymbolsLeadtime";
 const char* PARAM_INPUT_59 = "moveChristmasSymbolsDelay";
 const char* PARAM_INPUT_60 = "moveChristmasSymbolsDuration";
 const char* PARAM_INPUT_61 = "moveChristmasSymbolsSymbol";
+
+const char* PARAM_INPUT_62 = "christmasCounterText";
+const char* PARAM_INPUT_63 = "christmasCounterCheckbox";
+const char* PARAM_INPUT_64 = "christmasCounterLeadtime";
+const char* PARAM_INPUT_65 = "christmasCounterDelay";
+const char* PARAM_INPUT_66 = "christmasCounterFont";
+

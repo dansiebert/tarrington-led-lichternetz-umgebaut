@@ -2354,15 +2354,49 @@ void loop() {
         if (millis() > (snowFallSingleLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
           snowFallSingle();
-          state = 1;
+          state++;
           clkTimeLeadtime = millis();
         }
+      } else {
+        clkTimeLeadtime = millis();
+        state++;
+      }
+      break;
+
+     case 12:   // Text Weihnachtscounter
+      getTimeLocal();
+      if (christmasCounterCheckbox == "checked" && mo == 12 && d < 24) {
+        if (millis() > (christmasCounterLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
+          uint8_t daysToChristmas = 24 - d;
+          String christmasCounterText = "Schon Geschenke besorgt?   Noch " + String(daysToChristmas) + " Tage bis Weihnachten...        ";
+          if (daysToChristmas == 1) christmasCounterText = "Schon Geschenke besorgt?   Nur noch 1 Tag bis Weihnachten!        ";
+          wipeRandom();
+          switch (christmasCounterFont.toInt()){
+           case 1:
+             textScroll_8x16(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             break;
+           case 2:
+             textScroll_16x20(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             break;
+           case 3:
+             uint8_t rand = random(1,3);
+             Serial.println("randomTextSize= " + String(rand));
+             if (rand == 1) {
+               textScroll_8x16(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             } else {
+               textScroll_16x20(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             }
+             break;
+         }
+          state = 1;
+          clkTimeLeadtime = millis();
+        } 
       } else {
         clkTimeLeadtime = millis();
         state = 1;
       }
       break;
-  
+ 
   } 
 }
 

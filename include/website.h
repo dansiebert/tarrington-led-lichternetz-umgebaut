@@ -15,6 +15,7 @@ const char index_html[] PROGMEM = R"rawliteral(
       <tr><td>Text 1 </td><td><input type="text" size="80" name="scrollText1" value="%SCROLLTEXT1_INPUT%" required onchange="this.form.submit();"></td></tr>
       <tr><td>Text 2 </td><td><input type="text" size="80" name="scrollText2" value="%SCROLLTEXT2_INPUT%" required onchange="this.form.submit();"></td></tr>
       <tr><td>Text 3 </td><td><input type="text" size="80" name="scrollText3" value="%SCROLLTEXT3_INPUT%" required onchange="this.form.submit();"></td></tr>
+      <tr><td>Weihnachtscounter Text </td><td><input type="text" size="80" name="christmasCounterText" value="CHRISTMASCOUNTER_TEXT" required onchange="this.form.submit();"></td></tr>
     </table>
     <br><br>
     <table>
@@ -108,7 +109,13 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td><input name="snowFallSingleDelay" type="number" min="5" max="1000" value=%SNOWFALLSINGLE_DELAY%></td>
         <td><input name="snowFallSingleDuration" type="number" min="0" max="300" value="%SNOWFALLSINGLE_DURATION%"></td>
       </tr>
-    </table>
+      <tr>
+        <td>Weihnachtscounter </td>
+        <td><input type="checkbox" name="christmasCounterCheckbox" value="checked" %CHRISTMASCOUNTER_CHECKBOX% onClick="this.form.submit();"></td>
+        <td><input name="christmasCounterLeadtime" type="number" min="0" max="300" value="%CHRISTMASCOUNTER_LEADTIME%"></td>
+        <td><input name="christmasCounterDelay" type="number" min="5" max="1000" value=%CHRISTMASCOUNTER_DELAY%></td>
+      </tr>
+   </table>
     <br><br>
     <table>
     <tr><td>Scrollrichtung umkehren</td><td><input type="checkbox" name="mirrorCheckbox" value="checked" %MIRROR_CHECKBOX% onClick="this.form.submit();"></td></tr>

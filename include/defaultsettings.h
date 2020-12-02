@@ -72,3 +72,11 @@ String moveChristmasSymbolsLeadtime = "20";
 String moveChristmasSymbolsDelay = "55";
 String moveChristmasSymbolsDuration = "40";
 String moveChristmasSymbolsSymbol = "5";   // 1-Schneemann, 2-Tannenbaum, 3-Kerze, 4-Paket, 5-random
+
+String christmasCounterTextBefore = "Schon Geschenke besorgt?   Noch ";
+String christmasCounterTextAfter = " bis Weihnachten";
+String christmasCounterCheckbox = "checked";
+String christmasCounterLeadtime = "20";
+String christmasCounterDelay = "40";
+String christmasCounterFont = "2";
+
