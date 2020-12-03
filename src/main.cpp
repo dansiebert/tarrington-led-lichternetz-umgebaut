@@ -2107,18 +2107,28 @@ void setup() {
   Serial.println("HTTP webserver starrySkyted.");
   
   Udp.begin(localPort);
+  Serial.println();
   Serial.print("Local port: ");
   Serial.println(Udp.localPort());
   Serial.println("Waiting for time sync...");
+
   setSyncProvider(getNtpTime);
+  uint8_t repeatCounter = 0;
+  while ((timeStatus() == timeNotSet) && repeatCounter < 10) {
+    Serial.println("Unable to get time...");
+    delay(1000);
+    setSyncProvider(getNtpTime);
+    repeatCounter++;
+  }
   setSyncInterval(86400);                            // Anzahl der Sekunden zwischen dem erneuten Synchronisieren ein. 86400 = 1 Tag
+  Serial.println();
 
   delay(2000);
   wipeLeftShift();
   delay(500);
 
-  String starrySkytString = "IP: " + WiFi.localIP().toString() + "                       ";
-  textScroll_8x16(starrySkytString.c_str(), 25);
+  String ipInfo = "IP: " + WiFi.localIP().toString() + "                       ";
+  textScroll_8x16(ipInfo.c_str(), 25);
 
   clkTimeLeadtime = millis();
 }
@@ -2128,7 +2138,11 @@ void setup() {
 void loop() {
   AsyncElegantOTA.loop();
   
-  showClock();
+  if (timeStatus() == timeSet){   // Uhr nur anzeigen, wenn NTP OK
+    showClock();
+  } else {
+    // hier muss noch was her, das die Zeit bis zum naechsten Effekt non-blocking ueberbrueckt
+  }
 
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
     case 1:   // Schneefall (multi)
