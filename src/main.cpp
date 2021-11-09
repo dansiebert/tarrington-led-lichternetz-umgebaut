@@ -15,9 +15,7 @@
 #include <LittleFS.h>
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
-#include <Timezone.h>
-#include <TimeLib.h>   // https://github.com/PaulStoffregen/Time
-#include <WiFiUdp.h>
+#include <time.h>           // https://werner.rothschopf.net/201802_arduino_esp8266_ntp.htm
 
 // https://randomnerdtutorials.com/esp32-esp8266-input-data-html-form/
 #include <ESPAsyncTCP.h>
@@ -34,11 +32,17 @@
 
 #define CONFIG "/config.txt"
 
+#define MY_NTP_SERVER "de.pool.ntp.org"           
+#define MY_TZ "CET-1CEST,M3.5.0,M10.5.0/3"   // https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+
+time_t now;            // this is the epoch
+struct tm tm;          // the structure tm holds time information in a more convient way
+int h, m, s, w, mo, ye, d;
+
 // create different instances
 WiFiClient client;
 AsyncWebServer server(80);
 DNSServer dns;
-WiFiUDP Udp;
 
 #ifdef DEV
   #define Y_OFFSET 0
@@ -84,20 +88,6 @@ int humidity, pressure, clouds, windDeg;
 float onlinetemp, tempMin, tempMax, windSpeed;
 
 // =======================================================================
-
-int h, m, s, w, mo, ye, d;
-long localMillisAtUpdate = 0;
-static const char ntpServerName[] = "de.pool.ntp.org";    // Finde lokale Server unter http://www.pool.ntp.org/zone/ch
-const int timeZone = 0;                                   // 0 wenn mit <Timezone.h> gearbeitet wird sonst stimmt es nachher nicht
-unsigned int localPort = 8888;                            // lokaler Port zum Abhören von UDP-Paketen
-time_t getNtpTime();
-void sendNTPpacket(IPAddress &address);
-
-// Einstellungen entsprechend Zeitzone und Sommerzeit.
-// TimeZone Einstellungen Details https://github.com/JChristensen/Timezone
-TimeChangeRule CEST = {"CEST", Last, Sun, Mar, 2, 120};     // Central European Time (Frankfurt, Paris)
-TimeChangeRule CET = {"CET ", Last, Sun, Oct, 3, 60};       // Central European Time (Frankfurt, Paris)
-Timezone CE(CEST, CET);
 
 String scrollString;
 String dayName[] = {"Err", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
@@ -236,6 +226,30 @@ ICACHE_RAM_ATTR void timer1_ISR() {
 }
 
 // =======================================================================
+
+void getTimeLocal(){
+  /*
+  Member    Type  Meaning Range
+  tm_sec    int   seconds after the minute  0-61*
+  tm_min    int   minutes after the hour  0-59
+  tm_hour   int   hours since midnight  0-23
+  tm_mday   int   day of the month  1-31
+  tm_mon    int   months since January  0-11
+  tm_year   int   years since 1900
+  tm_wday   int   days since Sunday 0-6
+  tm_yday   int   days since January 1  0-365
+  tm_isdst  int   Daylight Saving Time flag
+  */
+  time(&now);                       // read the current time
+  localtime_r(&now, &tm);           // update the structure tm with the current time
+  h = tm.tm_hour;
+  m = tm.tm_min;
+  s = tm.tm_sec;
+  ye = tm.tm_year + 1900;
+  mo = tm.tm_mon + 1;
+  d = tm.tm_mday;
+  w = tm.tm_wday;
+}
 
 int8_t getWifiQuality() {   // converts the dBm to a range between 0 and 100%
   int32_t dbm = WiFi.RSSI();
@@ -942,78 +956,6 @@ void readConfig() {
 
 // =======================================================================
 
-/*-------- NTP code ----------*/
-const int NTP_PACKET_SIZE = 48; // NTP-Zeit in den ersten 48 Bytes der Nachricht
-byte packetBuffer[NTP_PACKET_SIZE]; //Puffer für eingehende und ausgehende Pakete
-
-time_t getNtpTime()
-{
-  IPAddress ntpServerIP; // NTP server's ip Adresse
-
-  while (Udp.parsePacket() > 0) ; // alle zuvor empfangenen Pakete verwerfen
-  Serial.println("Transmit NTP Request");
-  // einen zufälligen Server aus dem Pool holen
-  WiFi.hostByName(ntpServerName, ntpServerIP);
-  Serial.print(ntpServerName);
-  Serial.print(": ");
-  Serial.println(ntpServerIP);
-  sendNTPpacket(ntpServerIP);
-  uint32_t beginWait = millis();
-  while (millis() - beginWait < 3000) {
-    int size = Udp.parsePacket();
-    if (size >= NTP_PACKET_SIZE) {
-      Serial.println("Receive NTP Response");
-      Udp.read(packetBuffer, NTP_PACKET_SIZE);  // Paket in den Puffer einlesen
-      unsigned long secsSince1900;
-      // vier Bytes ab Position 40 in eine lange Ganzzahl umwandeln
-      secsSince1900 =  (unsigned long)packetBuffer[40] << 24;
-      secsSince1900 |= (unsigned long)packetBuffer[41] << 16;
-      secsSince1900 |= (unsigned long)packetBuffer[42] << 8;
-      secsSince1900 |= (unsigned long)packetBuffer[43];
-      return secsSince1900 - 2208988800UL + timeZone * SECS_PER_HOUR;
-    }
-  }
-  Serial.println("keine NTP Antwort");
-  return 0; // gibt 0 zurück, wenn die Zeit nicht ermittelt werden kann.
-}
-
-// send an NTP request to the time server at the given address
-void sendNTPpacket(IPAddress &address)
-{
-  // alle Bytes im Puffer auf 0 setzen
-  memset(packetBuffer, 0, NTP_PACKET_SIZE);
-  // Initialisieren von Werten, die für die Bildung von NTP-Requests benötigt werden.
-  // (siehe URL oben für Details zu den Paketen)
-  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
-  packetBuffer[1] = 0;     // Stratum, or type of clock
-  packetBuffer[2] = 6;     // Polling Interval
-  packetBuffer[3] = 0xEC;  // Peer Clock Precision
-  // 8 bytes of zero for Root Delay & Root Dispersion
-  packetBuffer[12] = 49;
-  packetBuffer[13] = 0x4E;
-  packetBuffer[14] = 49;
-  packetBuffer[15] = 52;
-  // alle NTP-Felder wurden jetzt mit Werten versehen
-  // Sie können ein Paket senden, das einen Zeitstempel anfordert.:
-  Udp.beginPacket(address, 123); //NTP-Requests sollen auf Port 123 erfolgen
-  Udp.write(packetBuffer, NTP_PACKET_SIZE);
-  Udp.endPacket();
-}
-
-void getTimeLocal()
-{
-  time_t tT = now();
-  time_t tTlocal = CE.toLocal(tT);
-  w = weekday(tTlocal);
-  d = day(tTlocal);
-  mo = month(tTlocal);
-  ye = year(tTlocal);
-  h = hour(tTlocal);
-  m = minute(tTlocal);
-  s = second(tTlocal);
-  localMillisAtUpdate = millis();
-}
-
 byte dig[6] = {0,0,0,0,0,0};
 byte dig2[6] = {0,0,0,0,0,0};
 byte digold[6] = {0,0,0,0,0,0};
@@ -1151,7 +1093,6 @@ void showClock() {
     drawPoint(43,13,0);  
   }
 }
-/*-------- End NTP code ----------*/
 
 // =======================================================================
 
@@ -1781,7 +1722,7 @@ void setup() {
 
   AsyncWiFiManager wifiManager(&server,&dns);
   
-  if(!wifiManager.autoConnect("LED-Matrix")) {
+  if(!wifiManager.autoConnect("LED-Lichternetz")) {
     Serial.println("Failed to connect and hit timeout!");
     delay(3000);
     //reset and try again, or maybe put it to deep sleep
@@ -2102,27 +2043,9 @@ void setup() {
   server.onNotFound(notFound);
 
   AsyncElegantOTA.begin(&server);   // je nach Library (IDE oder GitHub)
-  // AsyncElegantOTA.begin(server);    // je nach Library (IDE oder GitHub)
   server.begin();
-  Serial.println("HTTP webserver starrySkyted.");
+  Serial.println("HTTP webserver started.");
   
-  Udp.begin(localPort);
-  Serial.println();
-  Serial.print("Local port: ");
-  Serial.println(Udp.localPort());
-  Serial.println("Waiting for time sync...");
-
-  setSyncProvider(getNtpTime);
-  uint8_t repeatCounter = 0;
-  while ((timeStatus() == timeNotSet) && repeatCounter < 10) {
-    Serial.println("Unable to get time...");
-    delay(1000);
-    setSyncProvider(getNtpTime);
-    repeatCounter++;
-  }
-  setSyncInterval(86400);                            // Anzahl der Sekunden zwischen dem erneuten Synchronisieren ein. 86400 = 1 Tag
-  Serial.println();
-
   delay(2000);
   wipeLeftShift();
   delay(500);
@@ -2136,14 +2059,8 @@ void setup() {
 // =======================================================================
 
 void loop() {
-  AsyncElegantOTA.loop();
+  showClock();
   
-  if (timeStatus() == timeSet){   // Uhr nur anzeigen, wenn NTP OK
-    showClock();
-  } else {
-    // hier muss noch was her, das die Zeit bis zum naechsten Effekt non-blocking ueberbrueckt
-  }
-
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
     case 1:   // Schneefall (multi)
       if (snowFallMultiCheckbox == "checked") {
