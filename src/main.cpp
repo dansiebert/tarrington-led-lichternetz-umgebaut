@@ -517,7 +517,7 @@ String processor(const String& var) {
     return moveChristmasSymbolsDuration;
   } else if (var == "MOVECHRISTMASSYMBOLS_SYMBOL") {
       String cSymbol = moveChristmasSymbolsSymbol;
-      String moveChristmasSymbolsSymbolOptions = "<option value='1'>Schneemann</option><option value='2'>Tannenbaum</option><option value='3'>Kerze</option><option value='4'>Paket</option><option value='5'>random</option>";
+      String moveChristmasSymbolsSymbolOptions = "<option value='1'>Schneemann</option><option value='2'>Tannenbaum</option><option value='3'>Kerze</option><option value='4'>Paket</option><option value='5'>Schneeflocke</option><option value='6'>Zufall</option>";
       moveChristmasSymbolsSymbolOptions.replace(cSymbol + "'", cSymbol + "' selected" );
     return moveChristmasSymbolsSymbolOptions;
 
@@ -563,29 +563,29 @@ void writeConfig() {
 
     f.println("scrollText1=" + scrollText1);
     f.println("scrollText1Checkbox=" + scrollText1Checkbox);
-    f.println("scrollText1Leadtime=" + String(scrollText1Leadtime));
-    f.println("scrollText1Delay=" + String(scrollText1Delay));
-    f.println("scrollText1Font=" + String(scrollText1Font));
+    f.println("scrollText1Leadtime=" + scrollText1Leadtime);
+    f.println("scrollText1Delay=" + scrollText1Delay);
+    f.println("scrollText1Font=" + scrollText1Font);
 
     f.println("scrollText2=" + scrollText2);
     f.println("scrollText2Checkbox=" + scrollText2Checkbox);
-    f.println("scrollText2Leadtime=" + String(scrollText2Leadtime));
-    f.println("scrollText2Delay=" + String(scrollText2Delay));
-    f.println("scrollText2Font=" + String(scrollText2Font));
+    f.println("scrollText2Leadtime=" + scrollText2Leadtime);
+    f.println("scrollText2Delay=" + scrollText2Delay);
+    f.println("scrollText2Font=" + scrollText2Font);
 
     f.println("scrollText3=" + scrollText3);
     f.println("scrollText3Checkbox=" + scrollText3Checkbox);
-    f.println("scrollText3Leadtime=" + String(scrollText3Leadtime));
-    f.println("scrollText3Delay=" + String(scrollText3Delay));
-    f.println("scrollText3Font=" + String(scrollText3Font));
+    f.println("scrollText3Leadtime=" + scrollText3Leadtime);
+    f.println("scrollText3Delay=" + scrollText3Delay);
+    f.println("scrollText3Font=" + scrollText3Font);
 
     f.println("weatherCheckbox=" + weatherCheckbox);
-    f.println("weatherLeadtime=" + String(weatherLeadtime));
-    f.println("weatherDelay=" + String(weatherDelay));
-    f.println("weatherFont=" + String(weatherFont));
+    f.println("weatherLeadtime=" + weatherLeadtime);
+    f.println("weatherDelay=" + weatherDelay);
+    f.println("weatherFont=" + weatherFont);
 
     f.println("weatherLocationCheckbox=" + weatherLocationCheckbox);
-    f.println("cityID=" + String(cityID));
+    f.println("cityID=" + cityID);
     f.println("dateCheckbox=" + dateCheckbox);
     f.println("tempCheckbox=" + tempCheckbox);
     f.println("rainCheckbox=" + rainCheckbox);
@@ -594,41 +594,41 @@ void writeConfig() {
     f.println("pressureCheckbox=" + pressureCheckbox);
 
     f.println("snowFallSingleCheckbox=" + snowFallSingleCheckbox);
-    f.println("snowFallSingleLeadtime=" + String(snowFallSingleLeadtime));
-    f.println("snowFallSingleDelay=" + String(snowFallSingleDelay));
-    f.println("snowFallSingleDuration=" + String(snowFallSingleDuration));
+    f.println("snowFallSingleLeadtime=" + snowFallSingleLeadtime);
+    f.println("snowFallSingleDelay=" + snowFallSingleDelay);
+    f.println("snowFallSingleDuration=" + snowFallSingleDuration);
 
     f.println("snowFallMultiCheckbox=" + snowFallMultiCheckbox);
-    f.println("snowFallMultiLeadtime=" + String(snowFallMultiLeadtime));
-    f.println("snowFallMultiDuration=" + String(snowFallMultiDuration));
-    f.println("snowFallMultiDelay=" + String(snowFallMultiDelay));
+    f.println("snowFallMultiLeadtime=" + snowFallMultiLeadtime);
+    f.println("snowFallMultiDuration=" + snowFallMultiDuration);
+    f.println("snowFallMultiDelay=" + snowFallMultiDelay);
 
     f.println("pixelFallCheckbox=" + pixelFallCheckbox);
-    f.println("pixelFallLeadtime=" + String(pixelFallLeadtime));
-    f.println("pixelFallDelay=" + String(pixelFallDelay));
-    f.println("pixelFallDuration=" + String(pixelFallDuration));
+    f.println("pixelFallLeadtime=" + pixelFallLeadtime);
+    f.println("pixelFallDelay=" + pixelFallDelay);
+    f.println("pixelFallDuration=" + pixelFallDuration);
 
     f.println("starrySkyCheckbox=" + starrySkyCheckbox);
-    f.println("starrySkyLeadtime=" + String(starrySkyLeadtime));
-    f.println("starrySkyDuration=" + String(starrySkyDuration));
-    f.println("starrySkyDelay=" + String(starrySkyDelay));
-    f.println("starrySkyStarCount=" + String(starrySkyStarCount));
+    f.println("starrySkyLeadtime=" + starrySkyLeadtime);
+    f.println("starrySkyDuration=" + starrySkyDuration);
+    f.println("starrySkyDelay=" + starrySkyDelay);
+    f.println("starrySkyStarCount=" + starrySkyStarCount);
 
     f.println("growingStarCheckbox=" + growingStarCheckbox);
-    f.println("growingStarLeadtime=" + String(growingStarLeadtime));
-    f.println("growingStarDelay=" + String(growingStarDelay));
-    f.println("growingStarDuration=" + String(growingStarDuration));
+    f.println("growingStarLeadtime=" + growingStarLeadtime);
+    f.println("growingStarDelay=" + growingStarDelay);
+    f.println("growingStarDuration=" + growingStarDuration);
 
     f.println("christmasSymbolsCheckbox=" + christmasSymbolsCheckbox);
-    f.println("christmasSymbolsLeadtime=" + String(christmasSymbolsLeadtime));
-    f.println("christmasSymbolsDelay=" + String(christmasSymbolsDelay));
-    f.println("christmasSymbolsDuration=" + String(christmasSymbolsDuration));
+    f.println("christmasSymbolsLeadtime=" + christmasSymbolsLeadtime);
+    f.println("christmasSymbolsDelay=" + christmasSymbolsDelay);
+    f.println("christmasSymbolsDuration=" + christmasSymbolsDuration);
 
     f.println("moveChristmasSymbolsCheckbox=" + moveChristmasSymbolsCheckbox);
-    f.println("moveChristmasSymbolsLeadtime=" + String(moveChristmasSymbolsLeadtime));
-    f.println("moveChristmasSymbolsDelay=" + String(moveChristmasSymbolsDelay));
-    f.println("moveChristmasSymbolsDuration=" + String(moveChristmasSymbolsDuration));
-    f.println("moveChristmasSymbolsSymbol=" + String(moveChristmasSymbolsSymbol));
+    f.println("moveChristmasSymbolsLeadtime=" + moveChristmasSymbolsLeadtime);
+    f.println("moveChristmasSymbolsDelay=" + moveChristmasSymbolsDelay);
+    f.println("moveChristmasSymbolsDuration=" + moveChristmasSymbolsDuration);
+    f.println("moveChristmasSymbolsSymbol=" + moveChristmasSymbolsSymbol);
 
   }
   f.close();
@@ -689,15 +689,15 @@ void readConfig() {
     }
     if (configline.indexOf("scrollText1Leadtime=") >= 0) {
       scrollText1Leadtime = configline.substring(configline.lastIndexOf("scrollText1Leadtime=") + 20).toInt();
-      Serial.println("scrollText1Leadtime= " + String(scrollText1Leadtime));
+      Serial.println("scrollText1Leadtime= " + scrollText1Leadtime);
     }
     if (configline.indexOf("scrollText1Delay=") >= 0) {
       scrollText1Delay = configline.substring(configline.lastIndexOf("scrollText1Delay=") + 17).toInt();
-      Serial.println("scrollText1Delay= " + String(scrollText1Delay));
+      Serial.println("scrollText1Delay= " + scrollText1Delay);
     }
     if (configline.indexOf("scrollText1Font=") >= 0) {
       scrollText1Font = configline.substring(configline.lastIndexOf("scrollText1Font=") + 16).toInt();
-      Serial.println("scrollText1Font= " + String(scrollText1Font));
+      Serial.println("scrollText1Font= " + scrollText1Font);
     }
 
     // scrollText2
@@ -713,15 +713,15 @@ void readConfig() {
     }
     if (configline.indexOf("scrollText2Leadtime=") >= 0) {
       scrollText2Leadtime = configline.substring(configline.lastIndexOf("scrollText2Leadtime=") + 20).toInt();
-      Serial.println("scrollText2Leadtime= " + String(scrollText2Leadtime));
+      Serial.println("scrollText2Leadtime= " + scrollText2Leadtime);
     }
     if (configline.indexOf("scrollText2Delay=") >= 0) {
       scrollText2Delay = configline.substring(configline.lastIndexOf("scrollText2Delay=") + 17).toInt();
-      Serial.println("scrollText2Delay= " + String(scrollText2Delay));
+      Serial.println("scrollText2Delay= " + scrollText2Delay);
     }
     if (configline.indexOf("scrollText2Font=") >= 0) {
       scrollText2Font = configline.substring(configline.lastIndexOf("scrollText2Font=") + 16).toInt();
-      Serial.println("scrollText2Font= " + String(scrollText2Font));
+      Serial.println("scrollText2Font= " + scrollText2Font);
     }
 
     // scrollText3
@@ -737,15 +737,15 @@ void readConfig() {
     }
     if (configline.indexOf("scrollText3Leadtime=") >= 0) {
       scrollText3Leadtime = configline.substring(configline.lastIndexOf("scrollText3Leadtime=") + 20).toInt();
-      Serial.println("scrollText3Leadtime= " + String(scrollText3Leadtime));
+      Serial.println("scrollText3Leadtime= " + scrollText3Leadtime);
     }
     if (configline.indexOf("scrollText3Delay=") >= 0) {
       scrollText3Delay = configline.substring(configline.lastIndexOf("scrollText3Delay=") + 17).toInt();
-      Serial.println("scrollText3Delay= " + String(scrollText3Delay));
+      Serial.println("scrollText3Delay= " + scrollText3Delay);
     }
     if (configline.indexOf("scrollText3Font=") >= 0) {
       scrollText3Font = configline.substring(configline.lastIndexOf("scrollText3Font=") + 16).toInt();
-      Serial.println("scrollText3Font= " + String(scrollText3Font));
+      Serial.println("scrollText3Font= " + scrollText3Font);
     }
 
     // weather
@@ -756,15 +756,15 @@ void readConfig() {
     }
     if (configline.indexOf("weatherLeadtime=") >= 0) {
       weatherLeadtime = configline.substring(configline.lastIndexOf("weatherLeadtime=") + 16).toInt();
-      Serial.println("weatherLeadtime= " + String(weatherLeadtime));
+      Serial.println("weatherLeadtime= " + weatherLeadtime);
     }
     if (configline.indexOf("weatherDelay=") >= 0) {
       weatherDelay = configline.substring(configline.lastIndexOf("weatherDelay=") + 13).toInt();
-      Serial.println("weatherDelay= " + String(weatherDelay));
+      Serial.println("weatherDelay= " + weatherDelay);
     }
     if (configline.indexOf("weatherFont=") >= 0) {
       weatherFont = configline.substring(configline.lastIndexOf("weatherFont=") + 12).toInt();
-      Serial.println("weatherFont= " + String(weatherFont));
+      Serial.println("weatherFont= " + weatherFont);
     }
     
     if (configline.indexOf("weatherLocationCheckbox=") >= 0) {
@@ -775,7 +775,7 @@ void readConfig() {
     if (configline.indexOf("cityID=") >= 0) {
       cityID = configline.substring(configline.lastIndexOf("cityID=") + 7);
       cityID.trim();
-      Serial.println("cityID= " + String(cityID));
+      Serial.println("cityID= " + cityID);
     }
     if (configline.indexOf("dateCheckbox=") >= 0) {
       dateCheckbox = configline.substring(configline.lastIndexOf("dateCheckbox=") + 13);
@@ -816,15 +816,15 @@ void readConfig() {
     }
     if (configline.indexOf("snowFallSingleLeadtime=") >= 0) {
       snowFallSingleLeadtime = configline.substring(configline.lastIndexOf("snowFallSingleLeadtime=") + 23).toInt();
-      Serial.println("snowFallSingleLeadtime= " + String(snowFallSingleLeadtime));
+      Serial.println("snowFallSingleLeadtime= " + snowFallSingleLeadtime);
     }
     if (configline.indexOf("snowFallSingleDelay=") >= 0) {
       snowFallSingleDelay = configline.substring(configline.lastIndexOf("snowFallSingleDelay=") + 20).toInt();
-      Serial.println("snowFallSingleDelay= " + String(snowFallSingleDelay));
+      Serial.println("snowFallSingleDelay= " + snowFallSingleDelay);
     }
     if (configline.indexOf("snowFallSingleDuration=") >= 0) {
       snowFallSingleDuration = configline.substring(configline.lastIndexOf("snowFallSingleDuration=") + 23).toInt();
-      Serial.println("snowFallSingleDuration= " + String(snowFallSingleDuration));
+      Serial.println("snowFallSingleDuration= " + snowFallSingleDuration);
     }
 
     // snowFallMulti
@@ -835,15 +835,15 @@ void readConfig() {
     }
     if (configline.indexOf("snowFallMultiLeadtime=") >= 0) {
       snowFallMultiLeadtime = configline.substring(configline.lastIndexOf("snowFallMultiLeadtime=") + 22).toInt();
-      Serial.println("snowFallMultiLeadtime= " + String(snowFallMultiLeadtime));
+      Serial.println("snowFallMultiLeadtime= " + snowFallMultiLeadtime);
     }
     if (configline.indexOf("snowFallMultiDelay=") >= 0) {
       snowFallMultiDelay = configline.substring(configline.lastIndexOf("snowFallMultiDelay=") + 19).toInt();
-      Serial.println("snowFallMultiDelay= " + String(snowFallMultiDelay));
+      Serial.println("snowFallMultiDelay= " + snowFallMultiDelay);
     }
     if (configline.indexOf("snowFallMultiDuration=") >= 0) {
       snowFallMultiDuration = configline.substring(configline.lastIndexOf("snowFallMultiDuration=") + 22).toInt();
-      Serial.println("snowFallMultiDuration= " + String(snowFallMultiDuration));
+      Serial.println("snowFallMultiDuration= " + snowFallMultiDuration);
     }
 
     // pixelFall
@@ -854,15 +854,15 @@ void readConfig() {
     }
     if (configline.indexOf("pixelFallLeadtime=") >= 0) {
       pixelFallLeadtime = configline.substring(configline.lastIndexOf("pixelFallLeadtime=") + 18).toInt();
-      Serial.println("pixelFallLeadtime= " + String(pixelFallLeadtime));
+      Serial.println("pixelFallLeadtime= " + pixelFallLeadtime);
     }
     if (configline.indexOf("pixelFallDelay=") >= 0) {
       pixelFallDelay = configline.substring(configline.lastIndexOf("pixelFallDelay=") + 15).toInt();
-      Serial.println("pixelFallDelay= " + String(pixelFallDelay));
+      Serial.println("pixelFallDelay= " + pixelFallDelay);
     }
     if (configline.indexOf("pixelFallDuration=") >= 0) {
       pixelFallDuration = configline.substring(configline.lastIndexOf("pixelFallDuration=") + 18).toInt();
-      Serial.println("pixelFallDuration= " + String(pixelFallDuration));
+      Serial.println("pixelFallDuration= " + pixelFallDuration);
     }
     
     // starrySky
@@ -873,19 +873,19 @@ void readConfig() {
     }
     if (configline.indexOf("starrySkyLeadtime=") >= 0) {
       starrySkyLeadtime = configline.substring(configline.lastIndexOf("starrySkyLeadtime=") + 18).toInt();
-      Serial.println("starrySkyLeadtime= " + String(starrySkyLeadtime));
+      Serial.println("starrySkyLeadtime= " + starrySkyLeadtime);
     }
     if (configline.indexOf("starrySkyDelay=") >= 0) {
       starrySkyDelay = configline.substring(configline.lastIndexOf("starrySkyDelay=") + 15).toInt();
-      Serial.println("starrySkyDelay= " + String(starrySkyDelay));
+      Serial.println("starrySkyDelay= " + starrySkyDelay);
     }
     if (configline.indexOf("starrySkyDuration=") >= 0) {
       starrySkyDuration = configline.substring(configline.lastIndexOf("starrySkyDuration=") + 18).toInt();
-      Serial.println("starrySkyDuration= " + String(starrySkyDuration));
+      Serial.println("starrySkyDuration= " + starrySkyDuration);
     }
     if (configline.indexOf("starrySkyStarCount=") >= 0) {
       starrySkyStarCount = configline.substring(configline.lastIndexOf("starrySkyStarCount=") + 19).toInt();
-      Serial.println("starrySkyStarCount= " + String(starrySkyStarCount));
+      Serial.println("starrySkyStarCount= " + starrySkyStarCount);
     }
     
     // growingStar
@@ -896,15 +896,15 @@ void readConfig() {
     }
     if (configline.indexOf("growingStarLeadtime=") >= 0) {
       growingStarLeadtime = configline.substring(configline.lastIndexOf("growingStarLeadtime=") + 20).toInt();
-      Serial.println("growingStarLeadtime= " + String(growingStarLeadtime));
+      Serial.println("growingStarLeadtime= " + growingStarLeadtime);
     }
     if (configline.indexOf("growingStarDelay=") >= 0) {
       growingStarDelay = configline.substring(configline.lastIndexOf("growingStarDelay=") + 17).toInt();
-      Serial.println("growingStarDelay= " + String(growingStarDelay));
+      Serial.println("growingStarDelay= " + growingStarDelay);
     }
     if (configline.indexOf("growingStarDuration=") >= 0) {
       growingStarDuration = configline.substring(configline.lastIndexOf("growingStarDuration=") + 20).toInt();
-      Serial.println("growingStarDuration= " + String(growingStarDuration));
+      Serial.println("growingStarDuration= " + growingStarDuration);
     }
     
     // christmaSymbols
@@ -915,15 +915,15 @@ void readConfig() {
     }
     if (configline.indexOf("christmasSymbolsLeadtime=") >= 0) {
       christmasSymbolsLeadtime = configline.substring(configline.lastIndexOf("christmasSymbolsLeadtime=") + 25).toInt();
-      Serial.println("christmasSymbolsLeadtime= " + String(christmasSymbolsLeadtime));
+      Serial.println("christmasSymbolsLeadtime= " + christmasSymbolsLeadtime);
     }
     if (configline.indexOf("christmasSymbolsDelay=") >= 0) {
       christmasSymbolsDelay = configline.substring(configline.lastIndexOf("christmasSymbolsDelay=") + 22).toInt();
-      Serial.println("christmasSymbolsDelay= " + String(christmasSymbolsDelay));
+      Serial.println("christmasSymbolsDelay= " + christmasSymbolsDelay);
     }
     if (configline.indexOf("christmasSymbolsDuration=") >= 0) {
       christmasSymbolsDuration = configline.substring(configline.lastIndexOf("christmasSymbolsDuration=") + 25).toInt();
-      Serial.println("christmasSymbolsDuration= " + String(christmasSymbolsDuration));
+      Serial.println("christmasSymbolsDuration= " + christmasSymbolsDuration);
     }
 
     // moveChristmaSymbols
@@ -934,19 +934,19 @@ void readConfig() {
     }
     if (configline.indexOf("moveChristmasSymbolsLeadtime=") >= 0) {
       moveChristmasSymbolsLeadtime = configline.substring(configline.lastIndexOf("moveChristmasSymbolsLeadtime=") + 29).toInt();
-      Serial.println("moveChristmasSymbolsLeadtime= " + String(moveChristmasSymbolsLeadtime));
+      Serial.println("moveChristmasSymbolsLeadtime= " + moveChristmasSymbolsLeadtime);
     }
     if (configline.indexOf("moveChristmasSymbolsDelay=") >= 0) {
       moveChristmasSymbolsDelay = configline.substring(configline.lastIndexOf("moveChristmasSymbolsDelay=") + 26).toInt();
-      Serial.println("moveChristmasSymbolsDelay= " + String(moveChristmasSymbolsDelay));
+      Serial.println("moveChristmasSymbolsDelay= " + moveChristmasSymbolsDelay);
     }
     if (configline.indexOf("moveChristmasSymbolsDuration=") >= 0) {
       moveChristmasSymbolsDuration = configline.substring(configline.lastIndexOf("moveChristmasSymbolsDuration=") + 29).toInt();
-      Serial.println("moveChristmasSymbolsDuration= " + String(moveChristmasSymbolsDuration));
+      Serial.println("moveChristmasSymbolsDuration= " + moveChristmasSymbolsDuration);
     }
     if (configline.indexOf("moveChristmasSymbolsSymbol=") >= 0) {
       moveChristmasSymbolsSymbol = configline.substring(configline.lastIndexOf("moveChristmasSymbolsSymbol=") + 27).toInt();
-      Serial.println("moveChristmasSymbolsSymbol= " + String(moveChristmasSymbolsSymbol));
+      Serial.println("moveChristmasSymbolsSymbol= " + moveChristmasSymbolsSymbol);
     }
    
   }  
@@ -1464,7 +1464,7 @@ void drawChristmasSymbols() {
   while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
     uint8_t y = random(0,4);
-    uint8_t s = random(1,5);
+    uint8_t s = random(1,6);
     drawImage( x, y, 16, 16, christmasSymbols16x16 + s * 32);
     delay(christmasSymbolsDelay.toInt() * 100);
     clearMatrix();
@@ -1638,13 +1638,13 @@ void snowFallMulti() {   // Schneeflocken vertikal scrollen
         starDone[zone] = 1;
       }
       if ( startDelayCount[zone] >= startDelay[zone] and starDone[zone] == 0 ) {   // Start der Flocke um eine zufaellige Zeit verzögern
-        drawImage( zone * 8, 0, 8, 20, starImage + 27 - starImageCutout[zone] );        // passenden Ausschnitt aus starImage-Array zeichnen
+        drawImage( zone * 8, 0, 8, 20, starImage + 27 - starImageCutout[zone] );   // passenden Ausschnitt aus starImage-Array zeichnen
         if (speedDelayCount[zone] >= speedDelay[zone]) {
           speedDelayCount[zone] = 0;
-          starImageCutout[zone]++;                                                 // Flocke eins runter
+          starImageCutout[zone]++;   // Flocke eins runter
         }
         speedDelayCount[zone]++;
-        if ( starImageCutout[zone] == 28 ) {                                 // letzter Zustand erreicht (Flocke unten rausgescrollt bzw. Ausschnitt am Anfang des starImage-Arrays)
+        if ( starImageCutout[zone] == 28 ) {   // letzter Zustand erreicht (Flocke unten rausgescrollt bzw. Ausschnitt am Anfang des starImage-Arrays)
           starImageCutout[zone] = 0;
           startDelayCount[zone] = 0;
           startDelay[zone] = random(0,51);
@@ -1974,29 +1974,29 @@ void setup() {
 
     Serial.println("scrollText1 = " + scrollText1);
     Serial.println("scrollText1Checkbox = " + scrollText1Checkbox);
-    Serial.println("scrollText1Leadtime = " + String(scrollText1Leadtime));
-    Serial.println("scrollText1Delay = " + String(scrollText1Delay));
-    Serial.println("scrollText1Font = " + String(scrollText1Font));
+    Serial.println("scrollText1Leadtime = " + scrollText1Leadtime);
+    Serial.println("scrollText1Delay = " + scrollText1Delay);
+    Serial.println("scrollText1Font = " + scrollText1Font);
 
     Serial.println("scrollText2 = " + scrollText2);
     Serial.println("scrollText2Checkbox = " + scrollText2Checkbox);
-    Serial.println("scrollText2Leadtime = " + String(scrollText2Leadtime));
-    Serial.println("scrollText2Delay = " + String(scrollText2Delay));
-    Serial.println("scrollText2Font = " + String(scrollText2Font));
+    Serial.println("scrollText2Leadtime = " + scrollText2Leadtime);
+    Serial.println("scrollText2Delay = " + scrollText2Delay);
+    Serial.println("scrollText2Font = " + scrollText2Font);
 
     Serial.println("scrollText3 = " + scrollText3);
     Serial.println("scrollText3Checkbox = " + scrollText3Checkbox);
-    Serial.println("scrollText3Leadtime = " + String(scrollText3Leadtime));
-    Serial.println("scrollText3Delay = " + String(scrollText3Delay));
-    Serial.println("scrollText3Font = " + String(scrollText3Font));
+    Serial.println("scrollText3Leadtime = " + scrollText3Leadtime);
+    Serial.println("scrollText3Delay = " + scrollText3Delay);
+    Serial.println("scrollText3Font = " + scrollText3Font);
 
     Serial.println("weatherCheckbox = " + weatherCheckbox);
-    Serial.println("weatherLeadtime = " + String(weatherLeadtime));
-    Serial.println("weatherDelay = " + String(weatherDelay));
-    Serial.println("weatherFont = " + String(weatherFont));
+    Serial.println("weatherLeadtime = " + weatherLeadtime);
+    Serial.println("weatherDelay = " + weatherDelay);
+    Serial.println("weatherFont = " + weatherFont);
 
     Serial.println("weatherLocationCheckbox = " + weatherLocationCheckbox);
-    Serial.println("cityID = " + String(cityID));
+    Serial.println("cityID = " + cityID);
     Serial.println("dateCheckbox = " + dateCheckbox);
     Serial.println("tempCheckbox = " + tempCheckbox);
     Serial.println("rainCheckbox = " + rainCheckbox);
@@ -2005,36 +2005,36 @@ void setup() {
     Serial.println("pressureCheckbox = " + pressureCheckbox);
 
     Serial.println("snowFallSingleCheckbox = " + snowFallSingleCheckbox);
-    Serial.println("snowFallSingleLeadtime = " + String(snowFallSingleLeadtime));
-    Serial.println("snowFallSingleDuration = " + String(snowFallSingleDuration));
-    Serial.println("snowFallSingleDelay = " + String(snowFallSingleDelay));
+    Serial.println("snowFallSingleLeadtime = " + snowFallSingleLeadtime);
+    Serial.println("snowFallSingleDuration = " + snowFallSingleDuration);
+    Serial.println("snowFallSingleDelay = " + snowFallSingleDelay);
 
     Serial.println("snowFallMultiCheckbox = " + snowFallMultiCheckbox);
-    Serial.println("snowFallMultiLeadtime = " + String(snowFallMultiLeadtime));
-    Serial.println("snowFallMultiDelay = " + String(snowFallMultiDelay));
-    Serial.println("snowFallMultiDuration = " + String(snowFallMultiDuration));
+    Serial.println("snowFallMultiLeadtime = " + snowFallMultiLeadtime);
+    Serial.println("snowFallMultiDelay = " + snowFallMultiDelay);
+    Serial.println("snowFallMultiDuration = " + snowFallMultiDuration);
 
     Serial.println("pixelFallCheckbox = " + pixelFallCheckbox);
-    Serial.println("pixelFallLeadtime = " + String(pixelFallLeadtime));
-    Serial.println("pixelFallDelay = " + String(pixelFallDelay));
-    Serial.println("pixelFallDuration = " + String(pixelFallDuration));
+    Serial.println("pixelFallLeadtime = " + pixelFallLeadtime);
+    Serial.println("pixelFallDelay = " + pixelFallDelay);
+    Serial.println("pixelFallDuration = " + pixelFallDuration);
 
     Serial.println("starrySkyCheckbox = " + starrySkyCheckbox);
-    Serial.println("starrySkyLeadtime = " + String(starrySkyLeadtime));
-    Serial.println("starrySkyDelay = " + String(starrySkyDelay));
-    Serial.println("starrySkyDuration = " + String(starrySkyDuration));
-    Serial.println("starrySkyStarCount = " + String(starrySkyStarCount));
+    Serial.println("starrySkyLeadtime = " + starrySkyLeadtime);
+    Serial.println("starrySkyDelay = " + starrySkyDelay);
+    Serial.println("starrySkyDuration = " + starrySkyDuration);
+    Serial.println("starrySkyStarCount = " + starrySkyStarCount);
 
     Serial.println("christmasSymbolsCheckbox = " + christmasSymbolsCheckbox);
-    Serial.println("christmasSymbolsLeadtime = " + String(christmasSymbolsLeadtime));
-    Serial.println("christmasSymbolsDelay = " + String(christmasSymbolsDelay));
-    Serial.println("christmasSymbolsDuration = " + String(christmasSymbolsDuration));
+    Serial.println("christmasSymbolsLeadtime = " + christmasSymbolsLeadtime);
+    Serial.println("christmasSymbolsDelay = " + christmasSymbolsDelay);
+    Serial.println("christmasSymbolsDuration = " + christmasSymbolsDuration);
 
     Serial.println("moveChristmasSymbolsCheckbox = " + moveChristmasSymbolsCheckbox);
-    Serial.println("moveChristmasSymbolsLeadtime = " + String(moveChristmasSymbolsLeadtime));
-    Serial.println("moveChristmasSymbolsDelay = " + String(moveChristmasSymbolsDelay));
-    Serial.println("moveChristmasSymbolsDuration = " + String(moveChristmasSymbolsDuration));
-    Serial.println("moveChristmasSymbolsSymbol = " + String(moveChristmasSymbolsSymbol));
+    Serial.println("moveChristmasSymbolsLeadtime = " + moveChristmasSymbolsLeadtime);
+    Serial.println("moveChristmasSymbolsDelay = " + moveChristmasSymbolsDelay);
+    Serial.println("moveChristmasSymbolsDuration = " + moveChristmasSymbolsDuration);
+    Serial.println("moveChristmasSymbolsSymbol = " + moveChristmasSymbolsSymbol);
 
     writeConfig();
     request->redirect("/");
@@ -2137,7 +2137,7 @@ void loop() {
         if (millis() > (moveChristmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           wipeRandom();
           uint8_t symbolSelection = moveChristmasSymbolsSymbol.toInt();
-          if (symbolSelection == 5) symbolSelection = random(1,5);
+          if (symbolSelection == 6) symbolSelection = random(1,6);
           moveChristmasSymbols(symbolSelection);
           state++;
           clkTimeLeadtime = millis();
