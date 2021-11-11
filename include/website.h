@@ -15,17 +15,12 @@ const char index_html[] PROGMEM = R"rawliteral(
       <tr><td>Text 1 </td><td><input type="text" size="80" name="scrollText1" value="%SCROLLTEXT1_INPUT%" required onchange="this.form.submit();"></td></tr>
       <tr><td>Text 2 </td><td><input type="text" size="80" name="scrollText2" value="%SCROLLTEXT2_INPUT%" required onchange="this.form.submit();"></td></tr>
       <tr><td>Text 3 </td><td><input type="text" size="80" name="scrollText3" value="%SCROLLTEXT3_INPUT%" required onchange="this.form.submit();"></td></tr>
-      <tr><td>Weihnachtscounter Text </td><td><input type="text" size="80" name="christmasCounterText" value="CHRISTMASCOUNTER_TEXT" required onchange="this.form.submit();"></td></tr>
+      <tr><td>Weihnachtscounter Text </td><td><input type="text" size="80" name="christmasCounterText" value="%CHRISTMASCOUNTER_TEXT%" required onchange="this.form.submit();"></td></tr>
     </table>
     <br><br>
     <table>
       <tr>
-        <td></td>
-        <td></td>
-        <td>Vorlauf </td>
-        <td>Speed </td>
-        <td>Dauer </td>
-        <td></td>
+        <td></td><td></td><td>Vorlauf </td><td>Speed </td><td>Dauer </td><td>Item/Font</td>
       </tr>
        <tr>
         <td>Schneefall (multi) </td>
@@ -114,6 +109,8 @@ const char index_html[] PROGMEM = R"rawliteral(
         <td><input type="checkbox" name="christmasCounterCheckbox" value="checked" %CHRISTMASCOUNTER_CHECKBOX% onClick="this.form.submit();"></td>
         <td><input name="christmasCounterLeadtime" type="number" min="0" max="300" value="%CHRISTMASCOUNTER_LEADTIME%"></td>
         <td><input name="christmasCounterDelay" type="number" min="5" max="1000" value=%CHRISTMASCOUNTER_DELAY%></td>
+        <td></td>
+        <td><select name="christmasCounterFont" onchange="this.form.submit();">%CHRISTMASCOUNTER_FONT%</select></td>
       </tr>
    </table>
     <br><br>

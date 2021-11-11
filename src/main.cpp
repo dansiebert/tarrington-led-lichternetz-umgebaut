@@ -412,6 +412,21 @@ String processor(const String& var) {
       textFont3Options.replace(tFont3 + "'", tFont3 + "' selected" );
     return textFont3Options;
 
+// christmasCounter(Text)
+  } else if (var == "CHRISTMASCOUNTER_TEXT") {
+    return christmasCounterText;
+  } else if (var == "CHRISTMASCOUNTER_CHECKBOX") {
+    return christmasCounterCheckbox;
+  } else if (var == "CHRISTMASCOUNTER_LEADTIME") {
+    return christmasCounterLeadtime;
+  } else if (var == "CHRISTMASCOUNTER_DELAY") {
+    return christmasCounterDelay;
+  } else if (var == "CHRISTMASCOUNTER_FONT") {
+      String ccFont = christmasCounterFont;
+      String ccFontOptions = "<option value='1'>8x16</option><option value='2'>16x20</option><option value='3'>random</option>";
+      ccFontOptions.replace(ccFont + "'", ccFont + "' selected" );
+    return ccFontOptions;
+
 // weather
   } else if (var == "WEATHER_CHECKBOX") {
     return weatherCheckbox;
@@ -630,6 +645,11 @@ void writeConfig() {
     f.println("moveChristmasSymbolsDuration=" + moveChristmasSymbolsDuration);
     f.println("moveChristmasSymbolsSymbol=" + moveChristmasSymbolsSymbol);
 
+    f.println("christmasCounterText= " + christmasCounterText);
+    f.println("christmasCounterCheckbox= " + christmasCounterCheckbox);
+    f.println("christmasCounterLeadtime= " + christmasCounterLeadtime);
+    f.println("christmasCounterDelay= " + christmasCounterDelay);
+    f.println("christmasCounterFont= " + christmasCounterFont);
   }
   f.close();
 }
@@ -746,6 +766,30 @@ void readConfig() {
     if (configline.indexOf("scrollText3Font=") >= 0) {
       scrollText3Font = configline.substring(configline.lastIndexOf("scrollText3Font=") + 16).toInt();
       Serial.println("scrollText3Font= " + scrollText3Font);
+    }
+
+    // christmasCounter(Text)
+    if (configline.indexOf("christmasCounterText=") >= 0) {
+      christmasCounterText = configline.substring(configline.lastIndexOf("christmasCounterText=") + 21);
+      christmasCounterText = christmasCounterText.substring(0,christmasCounterText.length()-1);
+      Serial.println("christmasCounterText= " + christmasCounterText);
+    }
+    if (configline.indexOf("christmasCounterCheckbox=") >= 0) {
+      christmasCounterCheckbox = configline.substring(configline.lastIndexOf("christmasCounterCheckbox=") + 25);
+      christmasCounterCheckbox.trim();
+      Serial.println("christmasCounterCheckbox= " + christmasCounterCheckbox);
+    }
+    if (configline.indexOf("christmasCounterLeadtime=") >= 0) {
+      christmasCounterLeadtime = configline.substring(configline.lastIndexOf("christmasCounterLeadtime=") + 25).toInt();
+      Serial.println("christmasCounterLeadtime= " + christmasCounterLeadtime);
+    }
+    if (configline.indexOf("christmasCounterDelay=") >= 0) {
+      christmasCounterDelay = configline.substring(configline.lastIndexOf("christmasCounterDelay=") + 22).toInt();
+      Serial.println("christmasCounterDelay= " + christmasCounterDelay);
+    }
+    if (configline.indexOf("christmasCounterFont=") >= 0) {
+      christmasCounterFont = configline.substring(configline.lastIndexOf("christmasCounterFont=") + 21).toInt();
+      Serial.println("christmasCounterFont= " + christmasCounterFont);
     }
 
     // weather
@@ -1965,6 +2009,16 @@ void setup() {
     if (request->hasParam(PARAM_INPUT_59)) moveChristmasSymbolsDelay = request->getParam(PARAM_INPUT_59)->value();
     if (request->hasParam(PARAM_INPUT_60)) moveChristmasSymbolsDuration = request->getParam(PARAM_INPUT_60)->value();
     if (request->hasParam(PARAM_INPUT_61)) moveChristmasSymbolsSymbol = request->getParam(PARAM_INPUT_61)->value();  
+
+    // christmasCounter
+    if (request->hasParam(PARAM_INPUT_63)) { christmasCounterCheckbox = request->getParam(PARAM_INPUT_63)->value();
+    } else {
+      christmasCounterCheckbox = "unchecked";
+    }
+    if (request->hasParam(PARAM_INPUT_62)) christmasCounterText = request->getParam(PARAM_INPUT_62)->value();
+    if (request->hasParam(PARAM_INPUT_64)) christmasCounterLeadtime = request->getParam(PARAM_INPUT_64)->value();
+    if (request->hasParam(PARAM_INPUT_65)) christmasCounterDelay = request->getParam(PARAM_INPUT_65)->value();
+    if (request->hasParam(PARAM_INPUT_66)) christmasCounterFont = request->getParam(PARAM_INPUT_66)->value();
     
     Serial.println("mirrorCheckbox = " + mirrorCheckbox);
     Serial.println("reverseCheckbox = " + reverseCheckbox);
@@ -2035,6 +2089,12 @@ void setup() {
     Serial.println("moveChristmasSymbolsDelay = " + moveChristmasSymbolsDelay);
     Serial.println("moveChristmasSymbolsDuration = " + moveChristmasSymbolsDuration);
     Serial.println("moveChristmasSymbolsSymbol = " + moveChristmasSymbolsSymbol);
+
+    Serial.println("christmasCounterText = " + christmasCounterText);
+    Serial.println("christmasCounterCheckbox = " + christmasCounterCheckbox);
+    Serial.println("christmasCounterLeadtime = " + christmasCounterLeadtime);
+    Serial.println("christmasCounterDelay = " + christmasCounterDelay);
+    Serial.println("christmasCounterFont = " + christmasCounterFont);
 
     writeConfig();
     request->redirect("/");
@@ -2299,23 +2359,23 @@ void loop() {
       if (christmasCounterCheckbox == "checked" && mo == 12 && d < 24) {
         if (millis() > (christmasCounterLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           uint8_t daysToChristmas = 24 - d;
-          String christmasCounterText = "Schon Geschenke besorgt?   Noch " + String(daysToChristmas) + " Tage bis Weihnachten...        ";
-          if (daysToChristmas == 1) christmasCounterText = "Schon Geschenke besorgt?   Nur noch 1 Tag bis Weihnachten!        ";
+          String christmasCounterScrollText = christmasCounterText + "Noch " + String(daysToChristmas) + " Tage bis Weihnachten...        ";
+          if (daysToChristmas == 1) christmasCounterScrollText = christmasCounterText + "Morgen ist Weihnachten!        ";
           wipeRandom();
           switch (christmasCounterFont.toInt()){
            case 1:
-             textScroll_8x16(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             textScroll_8x16(christmasCounterScrollText.c_str(), christmasCounterDelay.toInt());
              break;
            case 2:
-             textScroll_16x20(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+             textScroll_16x20(christmasCounterScrollText.c_str(), christmasCounterDelay.toInt());
              break;
            case 3:
              uint8_t rand = random(1,3);
              Serial.println("randomTextSize= " + String(rand));
              if (rand == 1) {
-               textScroll_8x16(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+               textScroll_8x16(christmasCounterScrollText.c_str(), christmasCounterDelay.toInt());
              } else {
-               textScroll_16x20(christmasCounterText.c_str(), christmasCounterDelay.toInt());
+               textScroll_16x20(christmasCounterScrollText.c_str(), christmasCounterDelay.toInt());
              }
              break;
          }
