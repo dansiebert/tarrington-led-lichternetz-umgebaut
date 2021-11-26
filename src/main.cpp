@@ -1574,6 +1574,7 @@ void moveChristmasSymbols(uint8_t symbol) {
 
 void growingStar() {
   Serial.println("Start growingStar...");
+  clearMatrix();
   clkTimeEffect = millis();
   while (millis() < (growingStarDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
@@ -2119,16 +2120,23 @@ void setup() {
 // =======================================================================
 
 void loop() {
-  showClock();
+  //showClock();
   
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
     case 1:   // Schneefall (multi)
       if (snowFallMultiCheckbox == "checked") {
+        if (snowFallMultiLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (snowFallMultiLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {   // Effekt erst, wenn Vorlaufzeit erreicht, Uhr-Digit nicht scrollt, und Doppelpunkte an sind
-          wipeRandom();
+          //wipeRandom();
           snowFallMulti();
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2138,8 +2146,13 @@ void loop() {
   
     case 2:   // Wetter
       if (weatherCheckbox == "checked") {
+        if (weatherLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (weatherLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           updCnt--;
           Serial.println("Wetter-Update-Count= " + String(updCnt));
           if (updCnt <= 0) {
@@ -2171,6 +2184,8 @@ void loop() {
           }
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2180,11 +2195,18 @@ void loop() {
   
     case 3:   // Sternenhimmel
       if (starrySkyCheckbox == "checked") {
+        if (starrySkyLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (starrySkyLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           starrySky();
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2194,13 +2216,20 @@ void loop() {
     
     case 4:   // bewegte Symbole
       if (moveChristmasSymbolsCheckbox == "checked") {
+        if (moveChristmasSymbolsLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (moveChristmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           uint8_t symbolSelection = moveChristmasSymbolsSymbol.toInt();
           if (symbolSelection == 6) symbolSelection = random(1,6);
           moveChristmasSymbols(symbolSelection);
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2210,8 +2239,13 @@ void loop() {
   
     case 5:   // Scrolltext 1
       if (scrollText1Checkbox == "checked") {
+        if (scrollText1Leadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (scrollText1Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           switch (scrollText1Font.toInt()){
             case 1:
               textScroll_8x16(scrollText1.c_str(), scrollText1Delay.toInt());
@@ -2231,6 +2265,8 @@ void loop() {
           }
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2240,11 +2276,18 @@ void loop() {
 
     case 6:   // Symbole
       if (christmasSymbolsCheckbox == "checked") {
+        if (christmasSymbolsLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (christmasSymbolsLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           drawChristmasSymbols();
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2254,8 +2297,13 @@ void loop() {
 
     case 7:   // Scrolltext 2
       if (scrollText2Checkbox == "checked") {
+        if (scrollText2Leadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (scrollText2Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           switch (scrollText2Font.toInt()){
             case 1:
               textScroll_8x16(scrollText2.c_str(), scrollText2Delay.toInt());
@@ -2275,6 +2323,8 @@ void loop() {
           }
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2284,12 +2334,19 @@ void loop() {
  
     case 8:   // Schneefall (Pixel)
       if (pixelFallCheckbox == "checked") {
+        if (pixelFallLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        } 
         if (millis() > (pixelFallLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           pixelFall();
           state++;
           clkTimeLeadtime = millis();
-        }
+        } else {
+          showClock(); 
+        } 
       } else {
         clkTimeLeadtime = millis();
         state++;
@@ -2298,11 +2355,18 @@ void loop() {
   
     case 9:   // wachsende Schneeflocke
       if (growingStarCheckbox == "checked") {
+        if (growingStarLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        } 
         if (millis() > (growingStarLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           growingStar();
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         } 
       } else {
         clkTimeLeadtime = millis();
@@ -2312,8 +2376,13 @@ void loop() {
 
     case 10:   // Scrolltext 3
       if (scrollText3Checkbox == "checked") {
+        if (scrollText3Leadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (scrollText3Leadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           switch (scrollText3Font.toInt()){
             case 1:
               textScroll_8x16(scrollText3.c_str(), scrollText3Delay.toInt());
@@ -2333,6 +2402,8 @@ void loop() {
           }
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2342,11 +2413,18 @@ void loop() {
   
     case 11:   // Schneefall (single)
       if (snowFallSingleCheckbox == "checked") {
+        if (snowFallSingleLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (snowFallSingleLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
-          wipeRandom();
+          //wipeRandom();
           snowFallSingle();
           state++;
           clkTimeLeadtime = millis();
+        } else {
+          showClock();
         }
       } else {
         clkTimeLeadtime = millis();
@@ -2354,14 +2432,19 @@ void loop() {
       }
       break;
 
-     case 12:   // Text Weihnachtscounter
+     case 12:   // Text Weihnachtscounter Dezember
       getTimeLocal();
       if (christmasCounterCheckbox == "checked" && mo == 12 && d < 24) {
+        if (christmasCounterLeadtime == "0"){ 
+          scrollInProgress = 0;
+          colons = 1;
+          clkTimeLeadtime = 0;
+        }
         if (millis() > (christmasCounterLeadtime.toInt() * 1000) + clkTimeLeadtime && !scrollInProgress && colons) {
           uint8_t daysToChristmas = 24 - d;
           String christmasCounterScrollText = christmasCounterText + "Noch " + String(daysToChristmas) + " Tage bis Weihnachten...        ";
           if (daysToChristmas == 1) christmasCounterScrollText = christmasCounterText + "Morgen ist Weihnachten!        ";
-          wipeRandom();
+          //wipeRandom();
           switch (christmasCounterFont.toInt()){
            case 1:
              textScroll_8x16(christmasCounterScrollText.c_str(), christmasCounterDelay.toInt());
@@ -2381,7 +2464,9 @@ void loop() {
          }
           state = 1;
           clkTimeLeadtime = millis();
-        } 
+        } else {
+          showClock();
+        }
       } else {
         clkTimeLeadtime = millis();
         state = 1;
