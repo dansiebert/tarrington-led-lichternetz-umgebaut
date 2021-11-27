@@ -130,8 +130,9 @@ const char index_html[] PROGMEM = R"rawliteral(
     <tr><td>Blinkende Doppelpunkte</td><td><input type="checkbox" name="colonsCheckbox" value="checked" %COLONS_CHECKBOX% onClick="this.form.submit();"></td></tr>
     </table>
     <br><br>
-    <a href="/ota">Firmwareupdate</a>
-    <br><br>
     <input type="submit" value="speichern">
+    <br><br>
+    <a href="/ota">Firmwareupdate</a><br>
+    <a href="/reboot">Reboot</a>
   </form>
 </body></html>)rawliteral";

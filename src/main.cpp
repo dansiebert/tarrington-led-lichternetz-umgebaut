@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV: setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-#define DEV
+//#define DEV
 
 #include "prototypes.h"
 #include "defaultsettings.h"
@@ -39,6 +39,8 @@ time_t now;            // this is the epoch
 struct tm tm;          // the structure tm holds time information in a more convient way
 int h, m, s, w, mo, ye, d;
 
+bool shouldReboot = false;
+
 // create different instances
 WiFiClient client;
 AsyncWebServer server(80);
@@ -72,7 +74,7 @@ DNSServer dns;
   const int le   = D6;               // TM1818 latch pin
   const int oe   = D1;               // TM1818 output enable pin
   uint8_t mask = 0x00;               // reverse matrix: mask = 0xff, normal matrix: mask =0x00
-  bool mirror = 1;                   // Display horizontal spiegeln ?
+  bool mirror = 0;                   // Display horizontal spiegeln ?
   String mirrorCheckbox = "checked";
   String reverseCheckbox = "unchecked";
 #endif
@@ -673,6 +675,8 @@ void readConfig() {
       Serial.println("mirrorCheckbox= " + mirrorCheckbox);
       if (mirrorCheckbox == "checked") {
         mirror = 1;
+      } else {
+        mirror = 0;
       }
     }
     if (configline.indexOf("reverseCheckbox=") >= 0) {
@@ -681,6 +685,8 @@ void readConfig() {
       Serial.println("reverseCheckbox= " + reverseCheckbox);
       if (reverseCheckbox == "checked") {
         mask = 0xff;
+      } else {
+        mask = 0x00;
       }
     }
 
@@ -1504,6 +1510,7 @@ void textScroll_8x16(const char *s, uint8_t sdelay) {                         //
 
 void drawChristmasSymbols() {
   Serial.println("Start drawChristmasSymbols...");
+  clearMatrix();
   clkTimeEffect = millis();
   while (millis() < (christmasSymbolsDuration.toInt() * 1000) + clkTimeEffect) {
     uint8_t x = random(0,48);
@@ -1520,6 +1527,7 @@ void drawChristmasSymbols() {
 void moveChristmasSymbols(uint8_t symbol) {
   Serial.println("Start moveChristmasSymbols...");
   Serial.println("randomSymbol= " + String(symbol));
+  clearMatrix();
   clkTimeEffect = millis();
   uint8_t x = random(0,48);   // zufaelliger Startwert x
   uint8_t y = random(0,4);    // zufaelliger Startwert y
@@ -1566,7 +1574,7 @@ void moveChristmasSymbols(uint8_t symbol) {
       }
     } 
   }
-  delay(500);
+  delay(300);
   clearMatrix();
 }  
   
@@ -1649,7 +1657,7 @@ void pixelFall() {   // Pixel vertikal animiert
     delay(pixelFallDelay.toInt());
   }
   
-  delay(500);
+  delay(300);
   clearMatrix();
 }
 
@@ -1705,7 +1713,7 @@ void snowFallMulti() {   // Schneeflocken vertikal scrollen
     delay(snowFallMultiDelay.toInt());
   }
   
-  delay(1000);
+  delay(300);
   clearMatrix();
 }
 
@@ -1722,7 +1730,7 @@ void snowFallSingle() {   // einzelne Schneeflocke an verschiedenen Positionen v
       delay(snowFallSingleDelay.toInt());
     } 
   }
-  delay(500);
+  delay(300);
   clearMatrix();
 }
 
@@ -1751,7 +1759,7 @@ void starrySky() {   // funkelnder Sternenhimmel
     delay(starrySkyDelay.toInt());
     drawPoint(xPos[i], yPos[i], 0);
   }
-  delay(1000);
+  delay(300);
   clearMatrix();
 }
 
@@ -1817,6 +1825,11 @@ void setup() {
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html", index_html, processor);
+  });
+
+  server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->redirect("/");
+    shouldReboot = true;
   });
 
   server.on("/ota", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -2120,6 +2133,12 @@ void setup() {
 // =======================================================================
 
 void loop() {
+  if(shouldReboot){
+      textScroll_8x16("        Rebooting...        ", 25);
+      delay(500);
+      ESP.restart();
+  }
+
   //showClock();
   
   switch (state) {   // https://www.instructables.com/id/Finite-State-Machine-on-an-Arduino/
