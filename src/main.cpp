@@ -1791,6 +1791,8 @@ void setup() {
   Serial.println(WiFi.localIP());
   Serial.println("\n");
 
+  configTime(MY_TZ, MY_NTP_SERVER);
+
   if (weatherCheckbox == "checked") {
     Serial.println("Getting online weather data...");
     getWeatherData();
