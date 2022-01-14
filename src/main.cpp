@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // DEV: setzen, wenn fuer Entwicklungsmatrix (64x16) kompiliert werden soll
-//#define DEV
+#define DEV
 
 #include "prototypes.h"
 #include "defaultsettings.h"
@@ -92,7 +92,7 @@ float onlinetemp, tempMin, tempMax, windSpeed;
 // =======================================================================
 
 String scrollString;
-String dayName[] = {"Err", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
+String dayName[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
 
 unsigned long clkTimeEffect = 0;
 unsigned long clkTimeLeadtime = 0;
