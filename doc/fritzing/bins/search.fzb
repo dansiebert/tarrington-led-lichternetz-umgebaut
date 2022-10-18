@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.4.2019-12-01.CD-498-0-a1ffcea" icon="Search.png" search="led">
+    <title>Search</title>
+    <instances>
+        <instance moduleIdRef="e89358121bacffbe9b6372e42e4799f4LEDModuleID" modelIndex="85412633" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led-rgb-6pin.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-2X2-" modelIndex="85412635" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-2x2-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Real_Time_Clock_Module___DS1307_RTC_Breakout_Board" modelIndex="85412637" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Real_Time_Clock_Module___DS1307_RTC_Breakout_Board.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-4X4-" modelIndex="85412638" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-4x4-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_Conductivity Circuit" modelIndex="85412640" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_Conductivity Circuit.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="3mmColorLEDModuleID" modelIndex="85412641" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED-generic-3mm.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment20an" modelIndex="85412643" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_20,32_an.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_ENV-32X" modelIndex="85412645" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_ENV-32X.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="RN41-v14" modelIndex="85412646" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/RN41-v14.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED-10MMfix" modelIndex="85412647" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led-10mm_fix.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun_BadgerArray" modelIndex="85412649" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SparkFun_BadgerArray.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="fc-51_85d98481ce3be6f2e9b641181c0f798b_1" modelIndex="85412650" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/fc-51-IR-Sensor.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ProtoShield-v25" modelIndex="85412652" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ProtoShield-v25.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="chipkit_BasicIOShield" modelIndex="85412653" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/chipkit_BasicIOShield.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Prolight RGB 3 Watt Star" modelIndex="85412655" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED_Prolight_RGB.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Ardumoto v13" modelIndex="85412656" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Ardumoto v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LUXEON-SMD" modelIndex="85412657" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-luxeon-smd.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="f5sadfcefde5f807268983b38d37da5dLEDModuleID" modelIndex="85412659" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led-rgb-4pin-anode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-ENCODER_2LED-" modelIndex="85412661" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-encoder_2led-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="cellular shield-v12" modelIndex="85412663" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/cellular shield-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="5DOF-v25" modelIndex="85412664" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/5DOF-v25.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="blueIOT_Rc1-final" modelIndex="85412665" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/blueIOT_Rc1-final.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ESP8266-Thing-Dev" modelIndex="85412666" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ESP8266-Thing-Dev.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="603ColorLEDModuleID" modelIndex="85412667" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SMD_LED_generic_0603.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="MP3 Shield-v13" modelIndex="85412669" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/MP3 Shield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TB6612FNG Breakout v11" modelIndex="85412670" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Motor Driver 1A Dual TB6612FNG v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LilyPad-slide-switch13" modelIndex="85412671" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LilyPad-slide-switch13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LIGHTPIPE-7511-" modelIndex="85412673" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-lightpipe-7511-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="microSD_Shield-v13" modelIndex="85412675" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/microSD_Shield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="PowerCell-v13" modelIndex="85412676" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/PowerCell Lipo Charger Booster v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Modkit Shield-v1a" modelIndex="85412677" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Modkit Shield-v1a.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="PHOTON_fix" modelIndex="85412678" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/PHOTON_fix.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_pH Circuit" modelIndex="85412680" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_pH Circuit.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="WeMos_D1_Mini_WS2812B_RGB_Shield_no_headers" modelIndex="85412681" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/WeMos-D1-mini-WS2812B-RGB-Shield-no-headers.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel-arduino_galileo-(simple)" modelIndex="85412682" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel-arduino_galileo-simple.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="144096d13637627703324c683e3211ec_40" modelIndex="85412683" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/OMRON_G5LE.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LiPo-USB-Charger-v21" modelIndex="85412685" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LiPo-USB-Charger-v21.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Shield_Eth06-PoE" modelIndex="85412686" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Shield_Eth06-PoE.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment20cat" modelIndex="85412687" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_20,32_cat.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LED_Matrix_Kingbright_TC07-11" modelIndex="85412689" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED_Matrix_Kingbright_TC07-11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LilyPad-Simple-v25" modelIndex="85412691" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LilyPad-Simple-v25.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LUXEON-REBEL-" modelIndex="85412693" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-luxeon-rebel-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="sparkfun_storage_microsd" modelIndex="85412695" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun_storage_microsd.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="pinoccio_board" modelIndex="85412697" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/pinoccio.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Arduino_Micro_Rev03(fix)" modelIndex="85412698" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Arduino_Micro_Rev03(fix).fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LED-SMD_RGB(WS2812)" modelIndex="85412699" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-WS2812.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment10an" modelIndex="85412701" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_9,9_an.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment13cat" modelIndex="85412702" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_13_cat.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-PowerIC-ZXLD1360-" modelIndex="85412704" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-poweric-zxld1360-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Memoire-1.0" modelIndex="85412706" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Memoire-1.0.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="f2341c24e2a6d9182a55c653b6bbefed" modelIndex="85412707" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7-segment_display.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SPARKCORE_v1_fix" modelIndex="85412709" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SPARKCORE_v1_fix.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment100cat" modelIndex="85412710" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_100_cat.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="5mmColorLEDModuleID" modelIndex="85412712" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED-generic-5mm.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-WS2801-" modelIndex="85412713" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-ws2801-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="MIDI_Shield-v13" modelIndex="85412715" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/MIDI_Shield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Button-LED-Breakout-v10" modelIndex="85412717" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED Tactile Button Breakout v10.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LED_Matrix_Kingbright_TA07-11" modelIndex="85412718" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LED_Matrix_Kingbright_TA07-11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="sx1509-breakout" modelIndex="85412719" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sx1509-breakout.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="CathodeLEDSuperfluxModuleID" modelIndex="85412720" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led_flux_blue_cathode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-MAX232-SOIC16" modelIndex="85412722" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-max232-soic16.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-AnalogIC-MCP41XXX-" modelIndex="85412724" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-analogic-mcp41xxx-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED--FKIT-1206" modelIndex="85412726" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led--fkit-1206.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-4DIGIT-PTH" modelIndex="85412728" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-4digit-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="760832bc79fe1f34e99f420ad872a0b8" modelIndex="85412730" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="XBee-Regulated-v12" modelIndex="85412731" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/XBee-Regulated-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ws2812b" modelIndex="85412732" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ws2812b.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="quadstep-v12" modelIndex="85412734" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/quadstep-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Power Screwshield 1.0a" modelIndex="85412735" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Power Screwshield 1.0a.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Arduino_Leonardo_Rev3(fix)" modelIndex="85412736" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Arduino_Leonardo_Rev3(fix).fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Dagu_DGServo_9g_header_male" modelIndex="85412737" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Dagu DGServo 9g header (male).fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="AnodeLEDRGBSuperfluxModuleID" modelIndex="85412739" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led_flux_rgb_anode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel-arduino_galileo_gen2-(simple)" modelIndex="85412741" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel-arduino_galileo_gen2-simple.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel-arduino_galileo" modelIndex="85412742" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel-arduino_galileo.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-AnalogIC-MCP42XXX-" modelIndex="85412744" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-analogic-mcp42xxx-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="PowerIR-v11" modelIndex="85412746" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/PowerIR-v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="MPR121-Breakout-v13" modelIndex="85412747" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/MPR121-Breakout-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Connectors-MAGJACK-" modelIndex="85412748" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-connectors-magjack-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="blueIOT_RevB" modelIndex="85412750" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Arduino-BLE-LowPower-RevB-final_5.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="electron_board" modelIndex="85412752" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/electron_board.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-2X2--SPECIAL" modelIndex="85412754" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-2x2--special.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Connectors-MAGJACK-2-" modelIndex="85412756" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-connectors-magjack-2-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-4DIGIT-YOUNGSUN-LONGPADS" modelIndex="85412758" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-4digit-youngsun-longpads.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="f0d627984e1614e5c1c797471f529619" modelIndex="85412760" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2pe.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-2X2SINGLE-" modelIndex="85412761" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-2x2single-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="canbus_shield-v12" modelIndex="85412763" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/canbus_shield-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="145b5412a0ffbe91a876166139419e15" modelIndex="85412765" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2sx.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Breadboard Power Supply - SMD v12" modelIndex="85412766" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Breadboard Power Supply - SMD v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="DUO_LED_RG" modelIndex="85412767" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/DUO_LED_RG.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="huzzah_esp8266" modelIndex="85412769" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/huzzah_esp8266.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment100an" modelIndex="85412771" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_100_an.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="xbeeshield-v13" modelIndex="85412773" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/xbeeshield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="RJ45_TRXCOM" modelIndex="85412774" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/RJ45_TRXCOM.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-HEF4543-PTH" modelIndex="85412776" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-hef4543-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel_edison_minibreakout_fix" modelIndex="85412778" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel_edison_minibreakout_fix.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="2d3cbb853835749c51cc0d6e4bfd2c90" modelIndex="85412780" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2e.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="805ColorLEDModuleID" modelIndex="85412781" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SMD_LED_generic_0805.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Gizwits_WiFi_Witty_ESP_12F" modelIndex="85412783" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Gizwits_WiFi_Witty_ESP_12F.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-4DIGIT-YOUNGSUN-" modelIndex="85412785" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-4digit-youngsun-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="0d35715c371dab9d8b52b3c09444f755" modelIndex="85412787" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led-rgb-4pin-anode_rbg.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="1206ColorLEDModuleID" modelIndex="85412789" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SMD_LED_generic_1206.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LeDeuligne1.1" modelIndex="85412791" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LeDeuligne1.1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED-TRICOLOR-" modelIndex="85412792" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led-tricolor-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED-0603" modelIndex="85412794" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led-0603.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED_BARGRAPH_10-" modelIndex="85412796" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led_bargraph_10-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-4DIGIT-FOR_POGOBED_ONLY" modelIndex="85412798" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-4digit-for_pogobed_only.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="grove_oled_128x96" modelIndex="85412800" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/seeed_grove_oled_128x96.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ds1809_ic_dip" modelIndex="85412801" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ds2809_ic.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LDH-45-350B" modelIndex="85412803" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LDH-45-350B.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="AnodeLEDSuperfluxModuleID" modelIndex="85412805" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led_flux_blue_anode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED-1206" modelIndex="85412806" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led-1206.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="screwshield-v15" modelIndex="85412808" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/screwshield-v15.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-TAC_SWITCH-KSA_SEALED" modelIndex="85412809" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-tac_switch-ksa_sealed.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-STP16CP05-" modelIndex="85412811" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-stp16cp05-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ArduinoBluetoothMatev13" modelIndex="85412813" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ArduinoBluetoothMatev13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="5f7b51547fafb902305f5b3cbb81bb74" modelIndex="85412814" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2p40.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="mp3-trigger-v22" modelIndex="85412815" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/mp3-trigger-v22.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment13an" modelIndex="85412816" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_13_an.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Color-LCD-Shield-v14" modelIndex="85412818" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Color-LCD-Shield-v14.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="pololu0002_a988" modelIndex="85412819" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/pololu0002_a988.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment56,9cat" modelIndex="85412821" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_56,9_cat.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="IRF520_mos_module_7115327c8b8b62b1ba195a98bd66e077_5" modelIndex="85412823" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/IFR520_MOS_module.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-ENCODER_RGB_CA-" modelIndex="85412825" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-encoder_rgb_ca-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LilyPad_LED-v14" modelIndex="85412827" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LilyPad_LED-v14.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="d4d5af9700923b8a114f57961f29a8a0" modelIndex="85412829" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led-rgb-4pin-cathode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intelEdison-HiroseDF40" modelIndex="85412830" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel_edison-hirosedf40.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_FLO-30 Circuit" modelIndex="85412831" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_FLO-30 Circuit.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="M5450_LED_Driver" modelIndex="85412832" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/M5450_LED_Driver.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="74f3591ccbd4ba20730577a93d0aeda9" modelIndex="85412833" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led-rgb-4pin-cathode_rbg.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="CathodeLEDRGBSuperfluxModuleID" modelIndex="85412835" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/led_flux_rgb_cathode.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="MIDI Music Shield-v13" modelIndex="85412837" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/MIDI Music Shield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-TLC5940-PWP" modelIndex="85412838" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-tlc5940-pwp.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="EspruinoPico" modelIndex="85412840" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/EspruinoPico_8fb644a5b6642112445ed6d90bc494d8_6.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-4X4-SPECIAL" modelIndex="85412842" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-4x4-special.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Electromechanical-BUTTONPAD-2X2SINGLE-KIT" modelIndex="85412844" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-electromechanical-buttonpad-2x2single-kit.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="2d505f861194750183f944ba86c13b44_28" modelIndex="85412846" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/tsop312.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="GPSShield-v15" modelIndex="85412848" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/GPSShield-v15.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Raspberry_Pi_Zero_rev1.1" modelIndex="85412849" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Raspberry_Pi_Zero_1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="FTDI Basic-v13_lily" modelIndex="85412850" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/FTDI Basic-v13_lily.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LED_RING-" modelIndex="85412852" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-led_ring-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="PocketBeagle" modelIndex="85412854" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/PocketBeagle.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel_edison_minibreakout_bottom_fix" modelIndex="85412856" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel_edison_minibreakout-bottom_fix.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-RF-GS406SMD-SOCKET" modelIndex="85412858" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-rf-gs406smd-socket.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Level-Converter-v11" modelIndex="85412860" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Level-Converter-v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Amplified-Mic-Electret-v14" modelIndex="85412861" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Amplified-Mic-Electret-v14.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Dagu_DGServo_9g_header_connector_female" modelIndex="85412862" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Dagu DGServo 9g header connector (female).fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Arduino_Esplora" modelIndex="85412864" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Arduino_Esplora.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Sensors-DCM01-" modelIndex="85412865" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-sensors-dcm01-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="intel-arduino_galileo_gen2" modelIndex="85412866" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/intel-arduino_galileo_gen2.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="4d5dcc6408079f54cbda4d35e4d0b8fa" modelIndex="85412868" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2p24.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SHT1x-Breakout" modelIndex="85412869" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SHT1x-Breakout.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-A6282--LP" modelIndex="85412870" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-a6282--lp.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="5cc9de9cdfa593d8e073514cde1c7c77" modelIndex="85412872" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/BASIC_Stamp_2px24.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="0b6deb11c8005423ea8d84452203654d" modelIndex="85412873" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/HCMS-29xx.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="jlpcb-089" modelIndex="85412874" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/jlpcb-089.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="RFID_USB_Reader-v14" modelIndex="85412875" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/RFID_USB_Reader-v14.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment56,9an" modelIndex="85412876" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_56,9_an.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-MAX7219-DIP" modelIndex="85412878" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-max7219-dip.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-DISPLAY-PTH" modelIndex="85412880" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-display-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="LilyPad_Arduino_USB" modelIndex="85412882" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LilyPad_Arduino_USB.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="red_led_matrix8x8" modelIndex="85412884" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/LBT2088AH.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ArduPilotMega_v15" modelIndex="85412886" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ArduPilotMega_v15.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="PWM-Shield-v12" modelIndex="85412887" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/PWM-Shield-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-RF-GS406SMD-MATING_SMD_***SPECIAL" modelIndex="85412888" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-rf-gs406smd-mating_smd____special.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-APA3010SF4C-" modelIndex="85412889" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-apa3010sf4c-.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-LED-LTE-302-" modelIndex="85412891" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-led-lte-302-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="arch_v1.1" modelIndex="85412893" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/seeed_arch_v1.1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="bf73a00d2ecd04be25675ebfb2d130c0" modelIndex="85412894" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Humidity_Sensor_SHT15.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-A6282--ES" modelIndex="85412895" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-a6282--es.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TalonSRX_1" modelIndex="85412897" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/TalonSRX_1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ITG-3200-v11" modelIndex="85412899" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ITG-3200-v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_Pre-AssembledFemaleBNC" modelIndex="85412900" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_Pre-AssembledFemaleBNC.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Mega_Shield-v13" modelIndex="85412901" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Mega_Shield-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="FTDI Basic-v13" modelIndex="85412902" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/FTDI Basic-v13.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Rotoshield-1.0a" modelIndex="85412903" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Rotoshield-1.0a.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="WeMos_D1_Mini_OLED_Shield_no_headers" modelIndex="85412904" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/WeMos-D1-mini-OLED-Shield-no-headers.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="audiojack_breakout-v11" modelIndex="85412905" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/audiojack_breakout-v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="cb9c6041c0b15c9c1a63560527d7693a" modelIndex="85412906" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Peppermill Power Board.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Trackballer-v12" modelIndex="85412907" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Trackballer-v12.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="arch_pro_v1" modelIndex="85412908" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/seeed_arch_pro_v1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="ISD1932 Breakout-v11" modelIndex="85412909" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/ISD1932 Breakout-v11.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-MAX232-PTH" modelIndex="85412910" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-max232-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Bean_revE" modelIndex="85412912" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Bean_revE.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7segment10cat" modelIndex="85412913" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/7segment_9,9_cat.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="femtobuck" modelIndex="85412915" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/femtobuck.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_ORP Circuit" modelIndex="85412917" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_ORP Circuit.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="Tricolor-LED v16" modelIndex="85412918" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Tricolor-LED v16.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-ALPHANUMERIC-PTH" modelIndex="85412920" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-alphanumeric-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="7e3598758afd7c1363215b7f0c124af8" modelIndex="85412922" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/Digital_Panel_Meter__Voltage__DMS_20PC.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="atlas-sientific_PWR-SNS" modelIndex="85412923" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/atlas-sientific_PWR-SNS.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DiscreteSemi-CNZ1120-PTH" modelIndex="85412924" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-discretesemi-cnz1120-pth.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="RGB_matrix_v25" modelIndex="85412926" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/RGB_matrix_v25.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-TLC5940--RHB" modelIndex="85412927" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-tlc5940--rhb.fzp" flippedSMD="true">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-Displays-7-SEGMENT-4DIGIT-" modelIndex="85412929" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-displays-7-segment-4digit-.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun-DigitalIC-TLC5940--NT" modelIndex="85412931" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/sparkfun-digitalic-tlc5940--nt.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="FTDI Basic-v13_3.3v" modelIndex="85412933" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/FTDI Basic-v13_3.3v.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="SparkFun_BadgerStick" modelIndex="85412935" path="C:/fritzing.0.9.4.64.pc/fritzing-parts/core/SparkFun_BadgerStick.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TM1818_bace92b13b8dba982c91ca7139fd471f_1" modelIndex="85412936" path="C:/Users/dansi/Documents/Fritzing/parts/user/TM1818_bace92b13b8dba982c91ca7139fd471f_1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TM1818_bace92b13b8dba982c91ca7139fd471f_1" modelIndex="85412937" path="C:/Users/dansi/Documents/Fritzing/parts/user/TM1818_bace92b13b8dba982c91ca7139fd471f_1.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TM1818_bace92b13b8dba982c91ca7139fd471f_1_hs_1.1mm_0.508mm" modelIndex="85412938" path="C:/Users/dansi/AppData/Roaming/Fritzing/partfactory/e8c2ed9429cdb42400b2765dadf3ea87/core/TM1818_bace92b13b8dba982c91ca7139fd471f_1_hs_1.1mm_0.508mm.fzp">
+            <views/>
+        </instance>
+        <instance moduleIdRef="TM1818_013e0227b1206efbe308b7d94f5f8d18_1" modelIndex="85412940" path="C:/Users/dansi/Documents/Fritzing/parts/user/TM1818_013e0227b1206efbe308b7d94f5f8d18_1.fzp">
+            <views/>
+        </instance>
+    </instances>
+</module>

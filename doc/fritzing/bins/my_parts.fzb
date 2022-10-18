@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module fritzingVersion="0.9.4.2019-12-01.CD-498-0-a1ffcea" icon="Mine.png">
+    <title>My Parts</title>
+    <instances>
+        <instance moduleIdRef="prefix0000_c2dd03fb20f29014a51bda0ed63f899c_2" modelIndex="5773" path="C:/Users/dansi/Documents/Fritzing/parts/user/prefix0000_c2dd03fb20f29014a51bda0ed63f899c_2.fzp">
+            <property name="chip label" value="74HC138"/>
+            <views>
+                <iconView layer="icon">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+            </views>
+        </instance>
+        <instance moduleIdRef="TM1818_013e0227b1206efbe308b7d94f5f8d18_1" modelIndex="85411697" path="C:/Users/dansi/Documents/Fritzing/parts/user/TM1818_013e0227b1206efbe308b7d94f5f8d18_1.fzp">
+            <property name="chip label" value="TM1818"/>
+            <views>
+                <iconView layer="breadboard">
+                    <geometry z="0" x="-1" y="-1"/>
+                </iconView>
+            </views>
+        </instance>
+    </instances>
+</module>

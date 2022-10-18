@@ -1,0 +1,6 @@
+J2       IC1                 IC2                 IC3
+21   cs1 cs2 cs3         cs1 cs2 cs3         cs1 cs2 cs3
+LL    H   L   L   on      L   L   L   off     L   L   L   off
+HL    H   H   L   off     H   L   L   on      L   L   L   off
+LH    H   L   H   off     L   L   H   off     H   L   L   on
+HH    H   H   H   off     H   L   H   off     H   L   L   on
