@@ -82,7 +82,6 @@ DNSServer dns;
 // =======================================================================
 
 const char* weatherHost = "api.openweathermap.org";
-String weatherKey = "OpenWheaterMap-API-Key_eintragen";
 String weatherLang = "&lang=en";
 String weatherString;
 String deg = String(char('~' + 25));
@@ -92,7 +91,7 @@ float onlinetemp, tempMin, tempMax, windSpeed;
 // =======================================================================
 
 String scrollString;
-String dayName[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
+String dayName[] = {"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"};
 
 unsigned long clkTimeEffect = 0;
 unsigned long clkTimeLeadtime = 0;
@@ -446,6 +445,8 @@ String processor(const String& var) {
     return weatherLocationCheckbox;
   } else if (var == "WEATHERLOCATION") {
     return weatherLocation;
+  } else if (var == "APIKEY") {
+    return apiKey;
   } else if (var == "CITYID") {
     return cityID;
   } else if (var == "DATE_CHECKBOX") {
@@ -602,6 +603,7 @@ void writeConfig() {
     f.println("weatherFont=" + weatherFont);
 
     f.println("weatherLocationCheckbox=" + weatherLocationCheckbox);
+    f.println("apiKey=" + apiKey);
     f.println("cityID=" + cityID);
     f.println("dateCheckbox=" + dateCheckbox);
     f.println("tempCheckbox=" + tempCheckbox);
@@ -821,6 +823,11 @@ void readConfig() {
       weatherLocationCheckbox = configline.substring(configline.lastIndexOf("weatherLocationCheckbox=") + 24);
       weatherLocationCheckbox.trim();
       Serial.println("weatherLocationCheckbox= " + weatherLocationCheckbox);
+    }
+    if (configline.indexOf("apiKey=") >= 0) {
+      apiKey = configline.substring(configline.lastIndexOf("apiKey=") + 7);
+      apiKey.trim();
+      Serial.println("apiKey= " + apiKey);
     }
     if (configline.indexOf("cityID=") >= 0) {
       cityID = configline.substring(configline.lastIndexOf("cityID=") + 7);
@@ -1153,7 +1160,7 @@ void getWeatherData()
   Serial.println("Connecting to " + String(weatherHost) + "...");
   WiFiClient client;
   if (client.connect(weatherHost, 80)) {
-    client.println(String("GET /data/2.5/weather?id=") + cityID + "&units=metric&appid=" + weatherKey + weatherLang + "\r\n" +
+    client.println(String("GET /data/2.5/weather?id=") + cityID + "&units=metric&appid=" + apiKey + weatherLang + "\r\n" +
                    "Host: " + weatherHost + "\r\nUser-Agent: ArduinoWiFi/1.1\r\n" +
                    "Connection: close\r\n\r\n");
   } else {
@@ -1197,9 +1204,9 @@ void getWeatherData()
   weatherString = "";
   if (tempCheckbox == "checked") {
     if (weatherLocationCheckbox == "checked") {
-      weatherString = "Temperatur in " + weatherLocation + ": " + String(onlinetemp, 1) + "`C    ";   // `-Zeichen ist im Font als Grad definiert
+      weatherString = weatherLocation + " " + String(onlinetemp, 1) + "`C    ";
     } else {
-      weatherString = "Temperatur: " + String(onlinetemp, 1) + "`C    ";
+      weatherString = String(onlinetemp, 1) + "`C    ";
     }
   }
   if (humidityCheckbox == "checked") {
@@ -1924,6 +1931,7 @@ void setup() {
     } else {
       weatherLocationCheckbox = "unchecked";
     }
+    if (request->hasParam(PARAM_INPUT_67)) apiKey = request->getParam(PARAM_INPUT_67)->value();
     if (request->hasParam(PARAM_INPUT_25)) cityID = request->getParam(PARAM_INPUT_25)->value();
     if (request->hasParam(PARAM_INPUT_26)) {
       dateCheckbox = request->getParam(PARAM_INPUT_26)->value();
@@ -2066,6 +2074,7 @@ void setup() {
     Serial.println("weatherFont = " + weatherFont);
 
     Serial.println("weatherLocationCheckbox = " + weatherLocationCheckbox);
+    Serial.println("apiKey = " + apiKey);
     Serial.println("cityID = " + cityID);
     Serial.println("dateCheckbox = " + dateCheckbox);
     Serial.println("tempCheckbox = " + tempCheckbox);
@@ -2182,10 +2191,10 @@ void loop() {
           }
           scrollString = "";
           if (dateCheckbox == "checked") {
-            scrollString += dayName[w]  + ", " + String(d) + "." + String(mo) + "." + String(ye) + "    ";
+            scrollString += dayName[w]  + ". " + String(d) + "." + String(mo) + "." + String(ye) + "    ";
           }
           scrollString += weatherString;
-          scrollString += "        ";
+          scrollString += "            ";
           switch (weatherFont.toInt()){
             case 1:
               textScroll_8x16(scrollString.c_str(), weatherDelay.toInt());

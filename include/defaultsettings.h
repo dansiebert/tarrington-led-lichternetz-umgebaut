@@ -27,7 +27,8 @@ String weatherDelay = "45";
 String weatherFont = "1";   // random 16x20 oder 8x16
 
 String weatherLocationCheckbox = "unchecked";
-String cityID = "2944098";           // Brandenburg/Briest;
+String apiKey = "a1b2c3d4e5f6g7h8i9j0";   // OpenWheathermap API-Key
+String cityID = "2944098";           // Brandenburg/Briest
 String weatherLocation = "Briest";   // passend zur CityID
 String dateCheckbox = "checked";
 String tempCheckbox = "checked";

@@ -117,6 +117,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <table>
     <tr><td>Scrollrichtung umkehren</td><td><input type="checkbox" name="mirrorCheckbox" value="checked" %MIRROR_CHECKBOX% onClick="this.form.submit();"></td></tr>
     <tr><td>Display invertieren</td><td><input type="checkbox" name="reverseCheckbox" value="checked" %REVERSE_CHECKBOX% onClick="this.form.submit();"></td></tr>
+    <tr><td>Api-Key</td><td><input name="apiKey" type="text" size="32" value="%APIKEY%"></td></tr>
     <tr><td>City-ID</td><td><input name="cityID" type="text" size="7" value="%CITYID%">&nbsp;%WEATHERLOCATION%</td></tr>
     <tr><td>Anzahl Sterne</td><td><input name="starrySkyStarCount" type="number" min="1" max="1000" value=%STARRYSKY_STARCOUNT%></td></tr>
     <tr><td>Datum</td><td><input type="checkbox" name="dateCheckbox" value="checked" %DATE_CHECKBOX% onClick="this.form.submit();"></td></tr>

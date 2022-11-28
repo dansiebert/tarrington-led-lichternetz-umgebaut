@@ -81,3 +81,5 @@ const char* PARAM_INPUT_64 = "christmasCounterLeadtime";
 const char* PARAM_INPUT_65 = "christmasCounterDelay";
 const char* PARAM_INPUT_66 = "christmasCounterFont";
 
+const char* PARAM_INPUT_67 = "apiKey";
+
